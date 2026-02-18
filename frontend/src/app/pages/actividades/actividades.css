@@ -1,0 +1,43 @@
+.kpis{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.card{
+  padding:10px;
+  border-radius:6px;
+  background:#eee;
+}
+
+.card.riesgo{
+  background:#ffcccc;
+}
+
+.btn-nueva{
+  margin-bottom:10px;
+}
+
+.formulario{
+  display:flex;
+  gap:8px;
+  margin-bottom:15px;
+}
+
+.formulario input,
+.formulario select{
+  padding:6px;
+  border-radius:4px;
+  border:1px solid #ccc;
+}
+
+.tabla{
+  width:100%;
+  border-collapse: collapse;
+}
+
+.tabla th,
+.tabla td{
+  border:1px solid #ddd;
+  padding:6px;
+}

@@ -1,0 +1,702 @@
+<div class="actividades-container">
+  <!-- Header -->
+  <div class="page-header">
+  <h1>Gestión de Actividades</h1>
+</div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Dashboard Stats -->
+  <div class="stats-section">
+    <div class="stat-card">
+      <p class="stat-label">En Progreso</p>
+      <p class="stat-number">{{ conteoEstado('en progreso') }}</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Cerradas</p>
+      <p class="stat-number">{{ conteoEstado('cerrado') }}</p>
+    </div>
+    <div class="stat-card stat-danger">
+      <p class="stat-label">Vencidas</p>
+      <p class="stat-number">{{ conteoVencidas() }}</p>
+    </div>
+  </div>
+
+  <!-- Formulario Nueva Actividad -->
+  <div class="formulario-section">
+    <button class="btn-primary" (click)="toggleFormulario()">
+      {{ showFormulario ? '✕ Cancelar' : '+ Nueva Actividad' }}
+    </button>
+
+    <div *ngIf="showFormulario" class="formulario-card">
+      <h3>Crear Nueva Actividad</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="proyecto">Proyecto:</label>
+          <input
+            type="text"
+            id="proyecto"
+            [(ngModel)]="formData.proyecto"
+            name="proyecto"
+            placeholder="Nombre del proyecto"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="tipificacion">Tipificación:</label>
+          <select
+            id="tipificacion"
+            [(ngModel)]="formData.tipificacion"
+            name="tipificacion"
+            (change)="cargarActividadesCatalogo()"
+          >
+            <option value="">Selecciona tipificación</option>
+            <option *ngFor="let tip of tipificaciones" [value]="tip">
+              {{ tip }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="actividad">Actividad:</label>
+          <select
+            id="actividad"
+            [(ngModel)]="formData.actividadCatalogo"
+            name="actividadCatalogo"
+          >
+            <option value="">Selecciona actividad</option>
+            <option
+              *ngFor="let act of actividadesCatalogo"
+              [value]="act.actividad"
+            >
+              {{ act.actividad }} ({{ act.diasHabiles }} días)
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="horas">Horas Estimadas:</label>
+          <input
+            type="number"
+            id="horas"
+            [(ngModel)]="formData.horas"
+            name="horas"
+            placeholder="0"
+            min="0"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <textarea
+          id="descripcion"
+          [(ngModel)]="formData.descripcion"
+          name="descripcion"
+          placeholder="Describe la actividad"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <button
+        class="btn-success"
+        (click)="crearActividad()"
+        [disabled]="loading"
+      >
+        {{ loading ? 'Creando...' : 'Crear Actividad' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla de Actividades -->
+  <div class="actividades-section">
+    <h2>Actividades Registradas</h2>
+
+    <div *ngIf="loadingActividades" class="loading">
+      <p>Cargando actividades...</p>
+    </div>
+
+    <div *ngIf="!loadingActividades && actividadesFiltradas.length === 0" class="empty-state">
+      <p>No hay actividades registradas</p>
+    </div>
+
+    <div *ngIf="!loadingActividades && actividadesFiltradas.length > 0" class="tabla-wrapper">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Proyecto</th>
+            <th>Tipificación</th>
+            <th>Actividad</th>
+            <th>Descripción</th>
+            <!-- ✅ Columna Lider SOLO para Coordinador, Senior, Admin -->
+            <th *ngIf="usuario?.rol !== 'lider'">Líder</th>
+            <th>Estado</th>
+            <th>Riesgo</th>
+            <!-- ✅ Nueva columna: Fecha de Modificación -->
+            <th>Modificación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ACTIVIDAD -->
+          <ng-container *ngFor="let actividad of actividadesFiltradas">
+            <tr [ngClass]="'estado-' + calcularRiesgo(actividad)">
+              <td>{{ actividad.proyecto }}</td>
+              <td>{{ actividad.tipificacion }}</td>
+              <td>{{ actividad.actividadCatalogo }}</td>
+              <td class="descripcion-cell">{{ actividad.descripcion }}</td>
+              <!-- ✅ Columna Lider SOLO para Coordinador, Senior, Admin -->
+              <td *ngIf="usuario?.rol !== 'lider'">{{ actividad.lider }}</td>
+              <td>
+                <span class="badge" [ngClass]="'badge-' + actividad.estado">
+                  {{ actividad.estado }}
+                </span>
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="'badge-' + calcularRiesgo(actividad)"
+                >
+                  {{ getRiesgoTexto(actividad) }}
+                </span>
+              </td>
+              <!-- ✅ NUEVA COLUMNA: Fecha de Modificación -->
+              <td>{{ actividad.fechaModificacion | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="acciones">
+                <button
+                  *ngIf="actividad.estado === 'en progreso'"
+                  class="btn-small btn-warning"
+                  (click)="cerrarActividad(actividad._id)"
+                >
+                  Cerrar
+                </button>
+                <button
+                  class="btn-small btn-info"
+                  (click)="toggleObservaciones(actividad._id!)"
+                >
+                  Obs
+                </button>
+              </td>
+            </tr>
+
+            <!-- OBSERVACIONES (DENTRO DE LA TABLA) -->
+            <tr *ngIf="expandedObservaciones[actividad._id!]" class="observaciones-row">
+              <!-- ✅ Colspan actualizado para incluir la columna de Modificación -->
+              <td [attr.colspan]="usuario?.rol !== 'lider' ? 10 : 9">
+                <div class="observaciones-content">
+                  <!-- Agregar observación (solo si NO está cerrada) -->
+                  <div class="obs-form" *ngIf="actividad.estado !== 'cerrado'">
+                    <textarea
+                      [(ngModel)]="observacionForm[actividad._id!]"
+                      placeholder="Agregar observación..."
+                      rows="2"
+                    ></textarea>
+                    <button
+                      class="btn-success btn-small"
+                      (click)="guardarObservacion(actividad._id)"
+                    >
+                      Agregar
+                    </button>
+                  </div>
+
+                  <!-- Listar observaciones -->
+                  <div
+                    *ngIf="actividad.observaciones && actividad.observaciones.length > 0"
+                    class="obs-list"
+                  >
+                    <h4>📝 Histórico de Observaciones:</h4>
+                    <div *ngFor="let obs of actividad.observaciones" class="obs-item">
+                      <!-- ✅ MOSTRAR FECHA, USUARIO Y ROL -->
+                     <div class="obs-header">
+  <p class="obs-fecha">{{ obs.fecha | date: 'dd/MM/yyyy HH:mm' }}</p>
+  <p class="obs-usuario">👤 {{ obs.usuario }}</p>
+</div>
+                      <p class="obs-comentario">{{ obs.comentario }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Mensaje si no hay observaciones -->
+                  <div *ngIf="!actividad.observaciones || actividad.observaciones.length === 0" class="obs-empty">
+                    <p>No hay observaciones registradas</p>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  .actividades-container {
+    min-height: 100vh;
+    background: #f5f5f5;
+  }
+
+  .header {
+    background: white;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .header-left {
+    flex: 1;
+  }
+
+  .header-left h1 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    font-size: 1.8rem;
+  }
+
+  .user-info {
+    margin: 0;
+    color: #999;
+    font-size: 0.9rem;
+  }
+
+  .btn-logout {
+    padding: 0.6rem 1.2rem;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+    white-space: nowrap;
+  }
+
+  .btn-logout:hover {
+    background: #b71c1c;
+  }
+
+  .alert {
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    border-left: 4px solid;
+  }
+
+  .alert-danger {
+    background: #ffebee;
+    color: #d32f2f;
+    border-left-color: #d32f2f;
+  }
+
+  .stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .stat-card.stat-danger {
+    background: #ffebee;
+  }
+
+  .stat-label {
+    margin: 0 0 0.5rem 0;
+    color: #999;
+    font-size: 0.9rem;
+  }
+
+  .stat-number {
+    margin: 0;
+    color: #333;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .formulario-section {
+    padding: 1.5rem;
+  }
+
+  .btn-primary {
+    padding: 0.75rem 1.5rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .btn-primary:hover {
+    background: #5568d3;
+  }
+
+  .formulario-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .formulario-card h3 {
+    margin: 0 0 1rem 0;
+    color: #333;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95rem;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.3s;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .btn-success {
+    padding: 0.75rem 1.5rem;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .btn-success:hover:not(:disabled) {
+    background: #45a049;
+  }
+
+  .btn-success:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .actividades-section {
+    padding: 1.5rem;
+  }
+
+  .actividades-section h2 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+    font-size: 1.5rem;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    color: #667eea;
+    font-weight: 600;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: white;
+    border-radius: 8px;
+    color: #999;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .tabla-wrapper {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+  }
+
+  .tabla {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tabla thead {
+    background: #f5f5f5;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .tabla th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.95rem;
+  }
+
+  .tabla td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .tabla tbody tr {
+    transition: background 0.2s;
+  }
+
+  .tabla tbody tr:hover {
+    background: #fafafa;
+  }
+
+  .estado-danger {
+    background: #ffebee !important;
+  }
+
+  .estado-warning {
+    background: #fff3e0 !important;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .badge-en\ progreso {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+
+  .badge-cerrado {
+    background: #e8f5e9;
+    color: #388e3c;
+  }
+
+  .badge-success {
+    background: #e8f5e9;
+    color: #388e3c;
+  }
+
+  .badge-danger {
+    background: #ffebee;
+    color: #d32f2f;
+  }
+
+  .badge-warning {
+    background: #fff3e0;
+    color: #f57c00;
+  }
+
+  .badge-info {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+
+  .acciones {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .btn-warning {
+    background: #ff9800;
+    color: white;
+  }
+
+  .btn-warning:hover {
+    background: #e68900;
+  }
+
+  .btn-info {
+    background: #2196f3;
+    color: white;
+  }
+
+  .btn-info:hover {
+    background: #1976d2;
+  }
+
+  .descripcion-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .descripcion-cell:hover {
+    white-space: normal;
+    overflow: visible;
+    background: #f0f0f0;
+  }
+
+  .observaciones-row {
+    background: #f9f9f9 !important;
+  }
+
+  .observaciones-content {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-top: 1px solid #eee;
+  }
+
+  .obs-form {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .obs-form textarea {
+    flex: 1;
+  }
+
+  .obs-list {
+    background: white;
+    padding: 1rem;
+    border-radius: 4px;
+    border-left: 3px solid #667eea;
+  }
+
+  .obs-list h4 {
+    margin: 0 0 1rem 0;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .obs-item {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .obs-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  /* ✅ NUEVOS ESTILOS PARA USUARIO Y ROL */
+  .obs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .obs-fecha {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #999;
+    font-weight: 500;
+  }
+
+  .obs-usuario {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 600;
+  }
+
+   .obs-comentario {
+    margin: 0;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .obs-empty {
+    text-align: center;
+    padding: 1rem;
+    color: #999;
+    font-style: italic;
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .tabla {
+      font-size: 0.9rem;
+    }
+
+    .tabla th,
+    .tabla td {
+      padding: 0.75rem;
+    }
+
+    .acciones {
+      flex-direction: column;
+    }
+
+    .btn-small {
+      width: 100%;
+    }
+
+    .obs-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+  }
+</style>
