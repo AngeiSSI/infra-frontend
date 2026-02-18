@@ -1,0 +1,157 @@
+<div class="catalogo-container">
+  <div class="page-header">
+    <h1>📚 Catálogo de Servicios</h1>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div *ngIf="mensaje" class="alert alert-success">{{ mensaje }}</div>
+
+  <!-- Formulario (Solo Coordinador/Admin) -->
+  <div *ngIf="esAutorizado()" class="form-card">
+    <h3>{{ editandoId ? '✏️ Editar Servicio' : '➕ Nuevo Servicio' }}</h3>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="tipificacion">Tipificación:</label>
+        <select [(ngModel)]="formData.tipificacion" id="tipificacion">
+          <option value="">Selecciona tipificación</option>
+          <option *ngFor="let tip of tipificaciones" [value]="tip">
+            {{ tip }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="actividad">Actividad:</label>
+        <input
+          type="text"
+          id="actividad"
+          [(ngModel)]="formData.actividad"
+          placeholder="Nombre de la actividad"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="diasHabiles">Días Hábiles:</label>
+        <input
+          type="number"
+          id="diasHabiles"
+          [(ngModel)]="formData.diasHabiles"
+          min="1"
+          placeholder="Días estimados"
+        />
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem;">
+      <button class="btn-success" (click)="guardar()" [disabled]="loading">
+        {{ loading ? '⏳ Guardando...' : (editandoId ? '✅ Actualizar' : '➕ Crear') }}
+      </button>
+      <button class="btn-secondary" (click)="cancelarEdicion()" *ngIf="editandoId">
+        ✕ Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'oficial'"
+      (click)="cambiarTab('oficial')"
+    >
+      📋 Catálogo Oficial
+    </button>
+    <button 
+      *ngIf="esAutorizado()"
+      class="tab" 
+      [class.active]="activeTab === 'sugerencias'"
+      (click)="cambiarTab('sugerencias')"
+    >
+      💡 Sugerencias por Aprobar
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <p>Cargando catálogo...</p>
+  </div>
+
+  <!-- Tabla -->
+  <div *ngIf="!loading && catalogoFiltrado.length > 0" class="tabla-wrapper">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Tipificación</th>
+          <th>Actividad</th>
+          <th>Días Hábiles</th>
+          <th *ngIf="activeTab === 'sugerencias'">Sugerido por</th>
+          <th *ngIf="activeTab === 'sugerencias'">Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of catalogoFiltrado">
+          <td>{{ item.tipificacion }}</td>
+          <td>{{ item.actividad }}</td>
+          <td>{{ item.diasHabiles }}</td>
+          <td *ngIf="activeTab === 'sugerencias'">
+            {{ item.sugeridoPor }}
+            <span style="color: #999; font-size: 0.85rem;">
+              ({{ item.rolSugeridor | uppercase }})
+            </span>
+          </td>
+          <td *ngIf="activeTab === 'sugerencias'">
+            {{ item.fechaSugerencia | date: 'dd/MM/yyyy HH:mm' }}
+          </td>
+          <td class="acciones">
+            <!-- Aprobar (Solo en sugerencias y si es autorizado) -->
+            <button
+              *ngIf="activeTab === 'sugerencias' && esAutorizado()"
+              class="btn-small btn-success"
+              (click)="aprobar(item._id!)"
+            >
+              ✅ Aprobar
+            </button>
+
+            <!-- Rechazar (Solo en sugerencias y si es autorizado) -->
+            <button
+              *ngIf="activeTab === 'sugerencias' && esAutorizado()"
+              class="btn-small btn-danger"
+              (click)="rechazar(item._id!)"
+            >
+              ❌ Rechazar
+            </button>
+
+            <!-- Editar (Solo oficial y si es autorizado) -->
+            <button
+              *ngIf="activeTab === 'oficial' && esAutorizado()"
+              class="btn-small btn-info"
+              (click)="editar(item)"
+            >
+              ✏️ Editar
+            </button>
+
+            <!-- Eliminar (Solo si es autorizado) -->
+            <button
+              *ngIf="esAutorizado()"
+              class="btn-small btn-danger"
+              (click)="eliminar(item._id!)"
+            >
+              🗑️ Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && catalogoFiltrado.length === 0" class="empty-state">
+    <p>
+      {{ activeTab === 'oficial' 
+        ? 'No hay servicios en el catálogo oficial' 
+        : 'No hay sugerencias por aprobar' }}
+    </p>
+  </div>
+</div>

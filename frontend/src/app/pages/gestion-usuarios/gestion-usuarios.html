@@ -1,0 +1,231 @@
+<div class="gestion-usuarios-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>👥 Gestión de Usuarios</h1>
+  </div>
+
+  <!-- Alertas -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  <div *ngIf="mensaje" class="alert alert-success">
+    {{ mensaje }}
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading && usuarios.length === 0" class="loading">
+    <p>⏳ Cargando usuarios...</p>
+  </div>
+
+  <!-- Contenido -->
+  <div *ngIf="!loading || usuarios.length > 0" class="main-content">
+    
+    <!-- TABLA DE USUARIOS -->
+    <div *ngIf="!mostrarFormulario" class="tabla-usuarios">
+      <div class="tabla-header">
+        <h2>📋 Usuarios Registrados ({{ usuarios.length }})</h2>
+        <button class="btn btn-success" (click)="abrirFormulario()">
+          ➕ Nuevo Usuario
+        </button>
+      </div>
+
+      <div *ngIf="usuarios.length === 0" class="empty-state">
+        <p>No hay usuarios registrados aún</p>
+        <button class="btn btn-success" (click)="abrirFormulario()">
+          ➕ Crear el primer usuario
+        </button>
+      </div>
+
+      <table *ngIf="usuarios.length > 0" class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo Electrónico</th>
+            <th>Perfil</th>
+            <th>Grupo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of usuarios" [class.inactivo]="!u.activo">
+            <td>{{ u.nombre }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+              <span class="badge badge-perfil">{{ u.rol | titlecase }}</span>
+            </td>
+            <td>{{ obtenerGrupo(u) }}</td>
+            <td>
+              <span [class]="u.activo ? 'badge-activo' : 'badge-inactivo'">
+                {{ u.activo ? '✅ Activo' : '❌ Inactivo' }}
+              </span>
+            </td>
+            <td class="acciones">
+              <!-- Editar -->
+              <button
+                class="btn-small btn-info"
+                (click)="editarUsuario(u)"
+                title="Editar usuario"
+              >
+                ✏️ Editar
+              </button>
+
+              <!-- Resetear Contraseña -->
+<button
+  class="btn-small btn-warning"
+  (click)="resetearPassword(u._id!, u.nombre)"
+  title="Resetear contraseña del usuario"
+>
+  🔐 Resetear
+</button>
+
+              <!-- Eliminar -->
+              <button
+                class="btn-small btn-danger"
+                (click)="usuarioSeleccionado = u; eliminarUsuario()"
+                title="Eliminar usuario"
+              >
+                🗑️ Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- FORMULARIO -->
+    <div *ngIf="mostrarFormulario" class="formulario-container">
+      <div class="formulario-header">
+        <h2>{{ usuarioSeleccionado ? '✏️ Editar Usuario' : '➕ Crear Nuevo Usuario' }}</h2>
+        <button class="btn-cerrar" (click)="cerrarFormulario()">✕</button>
+      </div>
+
+      <!-- Info de contraseña por defecto -->
+      <div *ngIf="!usuarioSeleccionado" class="password-info">
+        ℹ️ <strong>Contraseña por defecto:</strong> Infra2024! 
+        <br>El usuario deberá cambiarla en su primer inicio de sesión.
+      </div>
+
+      <!-- Formulario -->
+      <div class="form-grid">
+        <!-- Nombre -->
+        <div class="form-group">
+          <label>
+            Nombre Completo
+            <span class="required">*</span>
+          </label>
+          <input 
+            type="text" 
+            [(ngModel)]="formulario.nombre" 
+            placeholder="ej: Juan Pérez"
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label>
+            Correo Electrónico
+            <span class="required">*</span>
+          </label>
+          <input 
+            type="email" 
+            [(ngModel)]="formulario.email" 
+            placeholder="ej: juan@example.com"
+          />
+        </div>
+
+        <!-- Perfil -->
+        <div class="form-group">
+          <label>
+            Perfil
+            <span class="required">*</span>
+          </label>
+          <select [(ngModel)]="formulario.perfil">
+            <option value="">-- Selecciona un perfil --</option>
+            <option *ngFor="let p of perfiles" [value]="p.valor">
+              {{ p.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Grupo -->
+        <div class="form-group">
+          <label>
+            Grupo
+            <span class="required">*</span>
+          </label>
+          <select [(ngModel)]="formulario.grupo">
+            <option value="">-- Selecciona un grupo --</option>
+            <option *ngFor="let g of grupos" [value]="g.valor">
+              {{ g.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Contraseña (solo para nuevo usuario) -->
+        <div class="form-group" *ngIf="!usuarioSeleccionado">
+          <label>
+            Contraseña
+            <span class="required">*</span>
+          </label>
+          <div class="password-input">
+            <input 
+              type="text" 
+              [(ngModel)]="formulario.password" 
+              placeholder="Contraseña generada"
+              readonly
+            />
+            <button 
+              type="button" 
+              class="btn-generar"
+              (click)="generarPassword()"
+            >
+              🔐 Generar
+            </button>
+          </div>
+        </div>
+
+        <!-- Estado (solo para editar) -->
+        <div class="form-group" *ngIf="usuarioSeleccionado">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="formulario.activo"
+              class="checkbox-input"
+            />
+            <span>✅ Usuario Activo</span>
+          </label>
+          <p class="checkbox-help" *ngIf="!formulario.activo">
+            ℹ️ Este usuario será deshabilitado pero seguirá visible en la lista
+          </p>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="btn-group">
+        <button 
+          class="btn btn-success" 
+          (click)="guardarUsuario()" 
+          [disabled]="loading"
+        >
+          {{ loading ? '⏳ Guardando...' : '✅ Guardar' }}
+        </button>
+        <button 
+          *ngIf="usuarioSeleccionado"
+          class="btn btn-danger" 
+          (click)="eliminarUsuario()" 
+          [disabled]="loading"
+        >
+          🗑️ Eliminar
+        </button>
+        <button 
+          class="btn btn-secondary" 
+          (click)="cerrarFormulario()"
+        >
+          ❌ Cancelar
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

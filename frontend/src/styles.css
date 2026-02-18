@@ -1,0 +1,39 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f6f9;
+}
+
+.topbar {
+  background: #e30613; /* ROJO CLARO */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  align-items: center;
+}
+
+.logo {
+  height: 35px;
+}
+
+.user-info button {
+  background: white;
+  color: #e30613;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.contenido {
+  padding: 20px;
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  padding: 10px;
+  background: #eaeaea;
+}
