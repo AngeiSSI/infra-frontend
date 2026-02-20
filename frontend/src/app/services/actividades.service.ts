@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, forkJoin } from 'rxjs';
 
 export interface Observacion {
   fecha: Date;
@@ -20,8 +20,8 @@ export interface Actividad {
   estado: string;
   estadoCaso?: string;
   horas: number;
-  horasMes?: number; // Horas acumuladas del mes actual
-  horasAcumuladas?: number; // Horas del mes anterior (cuando finaliza el mes)
+  horasMes?: number;
+  horasAcumuladas?: number;
   fechaCreacion: Date;
   fechaModificacion: Date;
   fechaCierre?: Date;
@@ -61,21 +61,28 @@ export class ActividadesService {
 
   // ACTIVIDADES - Obtener y mapear con información del grupo del líder
   getActividades(): Observable<Actividad[]> {
-    return this.http.get<Actividad[]>(`${this.API_URL}/actividades`).pipe(
-      map((actividades) => {
-        // Obtener usuarios para mapear grupos
-        this.getUsuarios().subscribe((usuarios) => {
-          actividades.forEach((actividad) => {
-            // Buscar el usuario que es líder de esta actividad
-            const usuarioLider = usuarios.find(
-              (u: Usuario) => u.nombre === actividad.lider
-            );
-            // Asignar el grupo del líder a la actividad
-            if (usuarioLider) {
-              actividad.grupoLider = usuarioLider.grupo;
-            }
-          });
+    return forkJoin({
+      actividades: this.http.get<Actividad[]>(`${this.API_URL}/actividades`),
+      usuarios: this.http.get<Usuario[]>(`${this.API_URL}/usuarios`)
+    }).pipe(
+      map(({ actividades, usuarios }) => {
+        console.log('📊 [SERVICE] Actividades obtenidas:', actividades.length);
+        console.log('👥 [SERVICE] Usuarios obtenidos:', usuarios.length);
+        
+        // Mapear grupo del líder a cada actividad
+        actividades.forEach((actividad) => {
+          const usuarioLider = usuarios.find(
+            (u: Usuario) => u.nombre === actividad.lider
+          );
+          
+          if (usuarioLider) {
+            actividad.grupoLider = usuarioLider.grupo;
+            console.log(`📌 [SERVICE] ${actividad.lider} → Grupo: ${usuarioLider.grupo}`);
+          } else {
+            console.log(`⚠️ [SERVICE] Usuario no encontrado: ${actividad.lider}`);
+          }
         });
+        
         return actividades;
       })
     );

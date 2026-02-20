@@ -7,68 +7,71 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'https://api-infra-actividades-prod-hygpfxfdeudpfsaz.westcentralus-01.azurewebsites.net/';
-  private readonly TOKEN_KEY = 'auth_token';
-  private readonly USUARIO_KEY = 'auth_usuario';
+  private readonly API_URL = 'https://api-infra-actividades-prod-hygpfxfdeudpfsaz.westcentralus-01.azurewebsites.net';
 
   constructor(private http: HttpClient) {
-    this.initToken();
-  }
-
-  private initToken(): void {
-    console.log('🔐 [AUTH INIT] Token en sessionStorage:', !!sessionStorage.getItem(this.TOKEN_KEY));
+    console.log('🔐 [AUTH SERVICE] Inicializado');
   }
 
   login(email: string, password: string): Observable<any> {
+    console.log('🔐 [AUTH SERVICE] Iniciando login');
     return this.http.post(`${this.API_URL}/login`, { email, password }).pipe(
       tap((response: any) => {
         console.log('✅ [AUTH] Login response recibido:', response);
-        this.setToken(response.token, response.usuario);
+        console.log('💾 [AUTH] Guardando token y usuario en sessionStorage');
+        
+        if (response.token) {
+          sessionStorage.setItem('auth_token', response.token);
+        }
+        
+        if (response.usuario) {
+          sessionStorage.setItem('auth_usuario', JSON.stringify(response.usuario));
+          console.log('💾 [AUTH] Usuario guardado:', response.usuario);
+        }
       })
     );
   }
 
-  setToken(token: string, usuario: any): void {
-    console.log('💾 [AUTH] Guardando token y usuario en sessionStorage');
-    sessionStorage.setItem(this.TOKEN_KEY, token);
-    sessionStorage.setItem(this.USUARIO_KEY, JSON.stringify(usuario));
-    console.log('💾 [AUTH] Usuario guardado:', usuario);
+  recuperarPassword(email: string): Observable<any> {
+    console.log('🔐 [AUTH SERVICE] Enviando solicitud de recuperación de contraseña');
+    return this.http.post(`${this.API_URL}/recuperar-password`, { email });
+  }
+
+  resetearPassword(token: string, nueva_password: string): Observable<any> {
+    console.log('🔐 [AUTH SERVICE] Reseteando contraseña con token');
+    return this.http.post(`${this.API_URL}/resetear-password`, { token, nueva_password });
+  }
+
+  cambiarPasswordPrimeraVez(nueva_password: string): Observable<any> {
+    console.log('🔐 [AUTH SERVICE] Cambiando contraseña primera vez');
+    return this.http.post(`${this.API_URL}/cambiar-password-primera-vez`, { nueva_password });
   }
 
   getToken(): string | null {
-    return sessionStorage.getItem(this.TOKEN_KEY);
+    return sessionStorage.getItem('auth_token');
   }
 
   getUsuario(): any {
-    const usuario = sessionStorage.getItem(this.USUARIO_KEY);
-    return usuario ? JSON.parse(usuario) : null;
+    const usuarioJson = sessionStorage.getItem('auth_usuario');
+    if (usuarioJson) {
+      return JSON.parse(usuarioJson);
+    }
+    return null;
   }
 
-  isAuthenticated(): boolean {
-    return !!this.getToken();
-  }
-
-  // ✅ NUEVO MÉTODO
   isPrimeraVez(): boolean {
     const usuario = this.getUsuario();
     console.log('🔐 [AUTH] isPrimeraVez:', usuario?.primeraVez);
     return usuario?.primeraVez === true;
   }
 
-  // ✅ NUEVO MÉTODO
-  cambiarPasswordPrimeraVez(nueva_password: string): Observable<any> {
-    return this.http.post(`${this.API_URL}/cambiar-password-primera-vez`, { nueva_password }).pipe(
-      tap((response: any) => {
-        console.log('✅ [AUTH] Contraseña cambiada, actualizando usuario');
-        const usuarioActualizado = { ...this.getUsuario(), primeraVez: false };
-        this.setToken(this.getToken()!, usuarioActualizado);
-      })
-    );
+  isAutenticado(): boolean {
+    return !!this.getToken();
   }
 
   logout(): void {
-    console.log('🚪 [AUTH] Logout');
-    sessionStorage.removeItem(this.TOKEN_KEY);
-    sessionStorage.removeItem(this.USUARIO_KEY);
+    console.log('🚪 [AUTH] Cerrando sesión');
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('auth_usuario');
   }
 }
