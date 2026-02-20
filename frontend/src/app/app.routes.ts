@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login';
 import { CambiarPasswordComponent } from './pages/cambiar-password/cambiar-password.component';
-import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { ActividadesComponent } from './pages/actividades/actividades';
 import { GestionUsuariosComponent } from './pages/gestion-usuarios/gestion-usuarios.component';
 import { CatalogoComponent } from './pages/catalogo/catalogo.component';
@@ -21,27 +20,37 @@ export const appRoutes: Routes = [
     component: RecuperarPasswordComponent
   },
   {
+    path: 'actividades',
+    component: ActividadesComponent,
+    data: { vista: 'mis' }
+  },
+  {
+    path: 'actividades/grupo',
+    component: ActividadesComponent,
+    data: { vista: 'grupo' }
+  },
+  {
+    path: 'actividades/total',
+    component: ActividadesComponent,
+    data: { vista: 'total' }
+  },
+  {
+    path: 'actividades/seguimiento',
+    component: ActividadesComponent,
+    data: { vista: 'seguimiento' }
+  },
+  {
+    path: 'catalogo',
+    component: CatalogoComponent
+  },
+  {
+    path: 'gestion-usuarios',
+    component: GestionUsuariosComponent
+  },
+  {
     path: '',
-    component: MainLayoutComponent,
-    children: [
-      {
-        path: 'actividades',
-        component: ActividadesComponent
-      },
-      {
-        path: 'gestion-usuarios',
-        component: GestionUsuariosComponent
-      },
-      {
-        path: 'catalogo',
-        component: CatalogoComponent
-      },
-      {
-        path: '',
-        redirectTo: 'actividades',
-        pathMatch: 'full'
-      }
-    ]
+    redirectTo: '/actividades',
+    pathMatch: 'full'
   },
   {
     path: '**',

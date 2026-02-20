@@ -1,0 +1,9 @@
+<div style="display: flex; min-height: 100vh; width: 100%;">
+  <!-- Sidebar solo si está autenticado -->
+  <app-sidebar *ngIf="isAuthenticated && !isLoginPage"></app-sidebar>
+  
+  <!-- Contenido principal -->
+  <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; width: 100%;">
+    <router-outlet></router-outlet>
+  </div>
+</div>

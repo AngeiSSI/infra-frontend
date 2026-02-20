@@ -1,36 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ActividadesService, Catalogo, Actividad } from '../../services/actividades.service';
 import { AuthService } from '../../services/auth.service';
 import { ChangeDetectorRef } from '@angular/core';
-
-// ✅ INTERFAZ OBSERVACIÓN
-export interface Observacion {
-  fecha: Date;
-  comentario: string;
-  usuario?: string;   // ✅ NUEVO: Quién hizo la observación
-  rol?: string;       // ✅ NUEVO: Rol del usuario
-}
-
-// ✅ INTERFAZ DEBE ESTAR ANTES DEL @Component
-export interface ActividadComponentInterface {
-  _id?: string;
-  lider: string;
-  proyecto: string;
-  tipificacion: string;
-  actividadCatalogo: string;
-  descripcion: string;
-  estado: string;
-  estadoCaso?: string;
-  horas: number;
-  horasAcumuladas?: number;
-  fechaCreacion: Date;
-  fechaModificacion: Date;
-  fechaCierre?: Date;
-  observaciones?: Observacion[];  // ✅ AHORA USA LA INTERFAZ OBSERVACION
-}
 
 @Component({
   selector: 'app-actividades',
@@ -38,58 +12,38 @@ export interface ActividadComponentInterface {
   imports: [CommonModule, FormsModule, DatePipe],
   templateUrl: './actividades.html',
   styles: [`
-    .actividades-container {
-      min-height: 100vh;
-      background: #f5f5f5;
-    }
-
     .header {
       background: white;
       padding: 1.5rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 2rem;
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
     }
 
-    .header-left {
-      flex: 1;
-    }
-
-    .header-left h1 {
+    .header h1 {
       margin: 0 0 0.5rem 0;
       color: #333;
       font-size: 1.8rem;
     }
 
-    .user-info {
+    .header-subtitle {
       margin: 0;
       color: #999;
       font-size: 0.9rem;
     }
 
-    .btn-logout {
-      padding: 0.6rem 1.2rem;
-      background: #d32f2f;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s;
-      white-space: nowrap;
-    }
-
-    .btn-logout:hover {
-      background: #b71c1c;
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      background: #f5f5f5;
     }
 
     .alert {
-      margin: 1rem;
       padding: 1rem;
       border-radius: 4px;
       border-left: 4px solid;
+      margin-bottom: 1rem;
     }
 
     .alert-danger {
@@ -100,38 +54,35 @@ export interface ActividadComponentInterface {
 
     .stats-section {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 1rem;
-      padding: 1.5rem;
+      margin-bottom: 1.5rem;
     }
 
     .stat-card {
       background: white;
-      padding: 1.5rem;
+      padding: 1rem;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       text-align: center;
-    }
-
-    .stat-card.stat-danger {
-      background: #ffebee;
     }
 
     .stat-label {
       margin: 0 0 0.5rem 0;
       color: #999;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
     }
 
     .stat-number {
       margin: 0;
       color: #333;
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 700;
     }
 
     .formulario-section {
-      padding: 1.5rem;
+      margin-bottom: 1.5rem;
     }
 
     .btn-primary {
@@ -154,24 +105,7 @@ export interface ActividadComponentInterface {
       padding: 1.5rem;
       border-radius: 8px;
       margin-top: 1rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .formulario-card h3 {
-      margin: 0 0 1rem 0;
-      color: #333;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .form-grid {
@@ -201,7 +135,6 @@ export interface ActividadComponentInterface {
       border-radius: 4px;
       font-size: 1rem;
       font-family: inherit;
-      transition: border-color 0.3s;
     }
 
     input:focus,
@@ -220,7 +153,6 @@ export interface ActividadComponentInterface {
       border-radius: 4px;
       cursor: pointer;
       font-weight: 600;
-      transition: background 0.3s;
     }
 
     .btn-success:hover:not(:disabled) {
@@ -230,16 +162,6 @@ export interface ActividadComponentInterface {
     .btn-success:disabled {
       background: #ccc;
       cursor: not-allowed;
-    }
-
-    .actividades-section {
-      padding: 1.5rem;
-    }
-
-    .actividades-section h2 {
-      margin: 0 0 1.5rem 0;
-      color: #333;
-      font-size: 1.5rem;
     }
 
     .loading {
@@ -257,14 +179,13 @@ export interface ActividadComponentInterface {
       background: white;
       border-radius: 8px;
       color: #999;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .tabla-wrapper {
       background: white;
       border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       overflow-x: auto;
     }
 
@@ -283,7 +204,7 @@ export interface ActividadComponentInterface {
       text-align: left;
       font-weight: 600;
       color: #555;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     .tabla td {
@@ -291,20 +212,8 @@ export interface ActividadComponentInterface {
       border-bottom: 1px solid #eee;
     }
 
-    .tabla tbody tr {
-      transition: background 0.2s;
-    }
-
     .tabla tbody tr:hover {
       background: #fafafa;
-    }
-
-    .estado-danger {
-      background: #ffebee !important;
-    }
-
-    .estado-warning {
-      background: #fff3e0 !important;
     }
 
     .badge {
@@ -356,7 +265,6 @@ export interface ActividadComponentInterface {
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      transition: background 0.3s;
     }
 
     .btn-warning {
@@ -377,19 +285,6 @@ export interface ActividadComponentInterface {
       background: #1976d2;
     }
 
-    .descripcion-cell {
-      max-width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .descripcion-cell:hover {
-      white-space: normal;
-      overflow: visible;
-      background: #f0f0f0;
-    }
-
     .observaciones-row {
       background: #f9f9f9 !important;
     }
@@ -397,17 +292,28 @@ export interface ActividadComponentInterface {
     .observaciones-content {
       background: #f9f9f9;
       padding: 1rem;
-      border-top: 1px solid #eee;
     }
 
     .obs-form {
       margin-bottom: 1rem;
       display: flex;
       gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: flex-start;
     }
 
     .obs-form textarea {
       flex: 1;
+      min-width: 200px;
+    }
+
+    .obs-horas-input {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .obs-horas-input input {
+      width: 150px;
     }
 
     .obs-list {
@@ -417,115 +323,86 @@ export interface ActividadComponentInterface {
       border-left: 3px solid #667eea;
     }
 
-    .obs-list h4 {
-      margin: 0 0 1rem 0;
-      color: #333;
-      font-weight: 600;
-    }
-
     .obs-item {
       margin-bottom: 1rem;
       padding-bottom: 1rem;
       border-bottom: 1px solid #eee;
     }
 
-    .obs-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    /* ✅ NUEVOS ESTILOS PARA USUARIO Y ROL */
-    .obs-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .obs-fecha {
-      margin: 0;
-      font-size: 0.85rem;
-      color: #999;
-      font-weight: 500;
-    }
-
     .obs-usuario {
-      margin: 0;
+      margin: 0 0 0.5rem 0;
       font-size: 0.9rem;
       color: #555;
       font-weight: 600;
     }
 
-    .obs-rol {
-      font-size: 0.75rem;
-      background: #667eea;
-      color: white;
-      padding: 0.2rem 0.5rem;
-      border-radius: 3px;
-      margin-left: 0.5rem;
-      font-weight: 600;
+    .obs-fecha {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.85rem;
+      color: #999;
     }
 
     .obs-comentario {
-      margin: 0;
+      margin: 0 0 0.5rem 0;
       color: #333;
       line-height: 1.5;
     }
 
-    .obs-empty {
-      text-align: center;
-      padding: 1rem;
-      color: #999;
-      font-style: italic;
+    .obs-horas {
+      margin: 0.5rem 0 0 0;
+      font-size: 0.9rem;
+      color: #667eea;
     }
 
-    @media (max-width: 768px) {
-      .header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+    .obs-empty {
+      padding: 1rem;
+      background: white;
+      border-radius: 4px;
+      color: #999;
+      text-align: center;
+    }
 
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
+    .filtros-section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
 
-      .tabla {
-        font-size: 0.9rem;
-      }
+    .btn-secondary {
+      padding: 0.75rem 1.5rem;
+      background: #757575;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
 
-      .tabla th,
-      .tabla td {
-        padding: 0.75rem;
-      }
-
-      .acciones {
-        flex-direction: column;
-      }
-
-      .btn-small {
-        width: 100%;
-      }
-
-      .obs-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-      }
+    .btn-secondary:hover {
+      background: #616161;
     }
   `]
 })
 export class ActividadesComponent implements OnInit {
-  // Catálogo
   catalogo: Catalogo[] = [];
   tipificaciones: string[] = [];
   actividadesCatalogo: Catalogo[] = [];
 
-  // Actividades
   actividades: Actividad[] = [];
   actividadesFiltradas: Actividad[] = [];
 
-  // Formulario
+  vistaActual: 'mis' | 'grupo' | 'total' | 'seguimiento' = 'mis';
+  fechaSeguimientoInicio: Date = new Date();
+
+  // Filtros para seguimiento semanal
+  filtroLiderSeguimiento: string = '';
+  filtroProyectoSeguimiento: string = '';
+  lideresDisponibles: string[] = [];
+  proyectosDisponibles: string[] = [];
+
   formData = {
     proyecto: '',
     tipificacion: '',
@@ -534,10 +411,9 @@ export class ActividadesComponent implements OnInit {
     horas: 0
   };
 
-  // Observación
   observacionForm: { [key: string]: string } = {};
+  horasForm: { [key: string]: number } = {};
 
-  // Estado
   loading = false;
   loadingActividades = false;
   error = '';
@@ -549,6 +425,7 @@ export class ActividadesComponent implements OnInit {
     private actividadesService: ActividadesService,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -559,6 +436,18 @@ export class ActividadesComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
+
+    // Obtener vista de los datos de la ruta
+    this.route.data.subscribe((data) => {
+      if (data['vista']) {
+        this.vistaActual = data['vista'];
+        // Si es seguimiento, calcular fecha inicio (hoy - 7 días)
+        if (this.vistaActual === 'seguimiento') {
+          const hoy = new Date();
+          this.fechaSeguimientoInicio = new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000);
+        }
+      }
+    });
     
     this.cargarCatalogo();
     this.cargarActividades();
@@ -569,60 +458,196 @@ export class ActividadesComponent implements OnInit {
       next: (data) => {
         this.catalogo = data;
         this.tipificaciones = [...new Set(data.map((c) => c.tipificacion))];
-        console.log('Catálogo cargado:', this.catalogo);
       },
       error: (err) => {
         this.error = 'Error al cargar catálogo: ' + (err.error?.message || err.statusText);
-        console.error('Error catálogo:', err);
       }
     });
   }
 
   cargarActividades(): void {
-  this.loadingActividades = true;
-  this.actividadesService.getActividades().subscribe({
-    next: (data) => {
-      this.actividades = data;
-      
-      // ✅ ORDENAR OBSERVACIONES DE MÁS RECIENTE A MÁS ANTIGUA
-      this.actividades.forEach(actividad => {
-        if (actividad.observaciones && actividad.observaciones.length > 0) {
-          actividad.observaciones.sort((a, b) => {
-            const fechaA = new Date(a.fecha).getTime();
-            const fechaB = new Date(b.fecha).getTime();
-            return fechaB - fechaA; // Descendente (más reciente primero)
-          });
-        }
-      });
+    this.loadingActividades = true;
+    this.actividadesService.getActividades().subscribe({
+      next: (data) => {
+        this.actividades = data;
+        this.actividades.forEach(actividad => {
+          if (actividad.observaciones && actividad.observaciones.length > 0) {
+            actividad.observaciones.sort((a: any, b: any) => {
+              const fechaA = new Date(a.fecha).getTime();
+              const fechaB = new Date(b.fecha).getTime();
+              return fechaB - fechaA;
+            });
+          }
+          // Calcular horasMes basado en observaciones del mes actual
+          this.calcularHorasMes(actividad);
+        });
+        
+        // Cargar opciones de filtro
+        this.cargarFiltrosSeguimiento();
+        
+        this.filtrarActividades();
+        this.loadingActividades = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.error = 'Error al cargar actividades: ' + (err.error?.message || err.statusText);
+        this.loadingActividades = false;
+      }
+    });
+  }
 
-      console.log('Actividades cargadas:', this.actividades);
-      console.log('Usuario actual:', this.usuario);
+calcularHorasMes(actividad: Actividad): void {
+  // Obtener mes y año actual
+  const hoy = new Date();
+  const mesActual = hoy.getMonth();
+  const anioActual = hoy.getFullYear();
+
+  let horasMesTemp = 0;
+
+  console.log(`📊 Calculando horas mes para: ${actividad.actividadCatalogo}`);
+
+  // Sumar horas de observaciones del mes actual
+  if (actividad.observaciones && actividad.observaciones.length > 0) {
+    actividad.observaciones.forEach((obs: any) => {
+      const fechaObs = new Date(obs.fecha);
+      const mesObs = fechaObs.getMonth();
+      const anioObs = fechaObs.getFullYear();
       
-      this.filtrarActividades();
-      this.loadingActividades = false;
+      // FIX: Usar obs.horas si existe, sino intentar obtener del comentario
+      const horasEnObs = obs.horas || 0;
       
-      this.cdr.detectChanges();
+      console.log(`  📅 Observación: ${obs.fecha}, Horas: ${horasEnObs}, Mes: ${mesObs}, Año: ${anioObs}`);
       
-      console.log('actividadesFiltradas:', this.actividadesFiltradas);
-      console.log('loadingActividades:', this.loadingActividades);
-    },
-    error: (err) => {
-      this.error = 'Error al cargar actividades: ' + (err.error?.message || err.statusText);
-      this.loadingActividades = false;
-      console.error('Error actividades:', err);
+      if (mesObs === mesActual && anioObs === anioActual && horasEnObs > 0) {
+        horasMesTemp += horasEnObs;
+        console.log(`    ✅ Agregada, Total: ${horasMesTemp}`);
+      }
+    });
+  }
+
+  console.log(`✅ Horas Mes Final: ${horasMesTemp}`);
+
+  // Actualizar horasMes
+  actividad.horasMes = horasMesTemp;
+
+  // Si la actividad está en progreso y es el último día del mes, mover horasMes a horasAcumuladas
+  if (actividad.estado === 'en progreso') {
+    const ultimoDiaDelMes = new Date(anioActual, mesActual + 1, 0).getDate();
+    if (hoy.getDate() === ultimoDiaDelMes) {
+      console.log(`⚠️ Es el último día del mes, moviendo ${horasMesTemp} a horasAcumuladas`);
+      actividad.horasAcumuladas = (actividad.horasAcumuladas || 0) + horasMesTemp;
+      actividad.horasMes = 0;
     }
-  });
+  }
 }
 
+  cargarFiltrosSeguimiento(): void {
+    // Obtener lista única de líderes y proyectos
+    const lideresSet = new Set<string>();
+    const proyectosSet = new Set<string>();
+    
+    this.actividades.forEach(actividad => {
+      lideresSet.add(actividad.lider);
+      proyectosSet.add(actividad.proyecto);
+    });
+    
+    this.lideresDisponibles = Array.from(lideresSet).sort();
+    this.proyectosDisponibles = Array.from(proyectosSet).sort();
+  }
+
   filtrarActividades(): void {
-    if (this.usuario.rol === 'lider') {
-      // ✅ Lider infraestructura solo ve sus propias actividades
-      this.actividadesFiltradas = this.actividades.filter(
-        (a) => a.lider === this.usuario.nombre
-      );
-    } else {
-      // ✅ Coordinador, Senior, Admin ven TODAS las actividades
-      this.actividadesFiltradas = this.actividades;
+    switch (this.vistaActual) {
+      case 'mis':
+        this.actividadesFiltradas = this.actividades.filter(
+          (a) => a.lider === this.usuario.nombre
+        );
+        break;
+      case 'grupo':
+        const grupoUsuario = this.usuario.grupo;
+        console.log('🔍 Grupo del usuario actual:', grupoUsuario);
+        
+        this.actividadesFiltradas = this.actividades.filter((actividad) => {
+          const perteneceMismoGrupo = actividad.grupoLider === grupoUsuario;
+          const esDelUsuario = actividad.lider === this.usuario.nombre;
+          
+          return perteneceMismoGrupo || esDelUsuario;
+        });
+        break;
+      case 'total':
+        // Filtrar todas las actividades
+        let filtradoTotal = this.actividades;
+        
+        // Aplicar filtros adicionales
+        if (this.filtroLiderSeguimiento) {
+          filtradoTotal = filtradoTotal.filter(a => a.lider === this.filtroLiderSeguimiento);
+        }
+        
+        if (this.filtroProyectoSeguimiento) {
+          filtradoTotal = filtradoTotal.filter(a => a.proyecto === this.filtroProyectoSeguimiento);
+        }
+        
+        this.actividadesFiltradas = filtradoTotal;
+        break;
+      case 'seguimiento':
+        // Filtrar actividades de la última semana (en progreso y cerradas)
+        let filtrado = this.actividades.filter((actividad) => {
+          // Solo actividades en progreso o cerradas
+          if (actividad.estado !== 'en progreso' && actividad.estado !== 'cerrado') {
+            return false;
+          }
+          
+          // Actividades creadas en los últimos 7 días
+          if (actividad.fechaCreacion) {
+            const fechaCreacion = new Date(actividad.fechaCreacion);
+            return fechaCreacion >= this.fechaSeguimientoInicio;
+          }
+          
+          return false;
+        });
+        
+        // Aplicar filtros adicionales
+        if (this.filtroLiderSeguimiento) {
+          filtrado = filtrado.filter(a => a.lider === this.filtroLiderSeguimiento);
+        }
+        
+        if (this.filtroProyectoSeguimiento) {
+          filtrado = filtrado.filter(a => a.proyecto === this.filtroProyectoSeguimiento);
+        }
+        
+        this.actividadesFiltradas = filtrado;
+        
+        // Ordenar por fecha de creación (más recientes primero)
+        this.actividadesFiltradas.sort((a, b) => {
+          const fechaA = new Date(a.fechaCreacion).getTime();
+          const fechaB = new Date(b.fechaCreacion).getTime();
+          return fechaB - fechaA;
+        });
+        break;
+      default:
+        this.actividadesFiltradas = [];
+    }
+  }
+
+  // Métodos para los filtros
+  aplicarFiltrosSeguimiento(): void {
+    this.filtrarActividades();
+  }
+
+  limpiarFiltrosSeguimiento(): void {
+    this.filtroLiderSeguimiento = '';
+    this.filtroProyectoSeguimiento = '';
+    this.filtrarActividades();
+  }
+
+  cambiarVista(vista: 'mis' | 'grupo' | 'total' | 'seguimiento'): void {
+    if (vista === 'mis') {
+      this.router.navigate(['/actividades']);
+    } else if (vista === 'grupo') {
+      this.router.navigate(['/actividades/grupo']);
+    } else if (vista === 'total') {
+      this.router.navigate(['/actividades/total']);
+    } else if (vista === 'seguimiento') {
+      this.router.navigate(['/actividades/seguimiento']);
     }
   }
 
@@ -665,7 +690,6 @@ export class ActividadesComponent implements OnInit {
       error: (err) => {
         this.loading = false;
         this.error = 'Error al crear actividad: ' + (err.error?.message || err.statusText);
-        console.error('Error crear:', err);
       }
     });
   }
@@ -673,15 +697,13 @@ export class ActividadesComponent implements OnInit {
   cerrarActividad(actividadId: string | undefined): void {
     if (!actividadId) return;
 
-    // ✅ Buscar la actividad
     const actividad = this.actividades.find(a => a._id === actividadId);
     if (!actividad) return;
 
-    // ✅ Verificar si hay observación del día de hoy
     const hoy = new Date();
-    const hoyString = hoy.toISOString().split('T')[0]; // Formato: YYYY-MM-DD
+    const hoyString = hoy.toISOString().split('T')[0];
 
-    const tieneObservacionHoy = actividad.observaciones?.some(obs => {
+    const tieneObservacionHoy = actividad.observaciones?.some((obs: any) => {
       const fechaObs = new Date(obs.fecha).toISOString().split('T')[0];
       return fechaObs === hoyString;
     });
@@ -694,114 +716,123 @@ export class ActividadesComponent implements OnInit {
     if (confirm('¿Está seguro de cerrar esta actividad?')) {
       this.actividadesService.cerrarActividad(actividadId).subscribe({
         next: (actividadActualizada) => {
-          // ✅ Actualizar en AMBOS arrays
           const indexMain = this.actividades.findIndex(a => a._id === actividadId);
           if (indexMain !== -1) {
             this.actividades[indexMain] = actividadActualizada;
           }
-          
           const indexFiltered = this.actividadesFiltradas.findIndex(a => a._id === actividadId);
           if (indexFiltered !== -1) {
             this.actividadesFiltradas[indexFiltered] = actividadActualizada;
           }
-          
           this.cdr.detectChanges();
-          console.log('✅ Actividad cerrada:', actividadId);
         },
         error: (err) => {
           this.error = 'Error al cerrar actividad: ' + (err.error?.message || err.statusText);
-          console.error('Error cerrar:', err);
         }
       });
     }
   }
 
-guardarObservacion(actividadId: string | undefined): void {
-  if (!actividadId || !this.observacionForm[actividadId]?.trim()) {
-    this.error = 'El comentario no puede estar vacío';
-    return;
-  }
-
-  this.actividadesService.agregarObservacion(actividadId, this.observacionForm[actividadId]).subscribe({
-    next: (actividadActualizada) => {
-      console.log('📥 [OBS] Actividad actualizada desde servidor:', actividadActualizada);
-      console.log('📥 [OBS] Observaciones:', actividadActualizada.observaciones);
-      console.log('📥 [OBS] Última observación:', actividadActualizada.observaciones?.[actividadActualizada.observaciones.length - 1]);
-      
-      // ✅ ORDENAR OBSERVACIONES DE MÁS RECIENTE A MÁS ANTIGUA
-      if (actividadActualizada.observaciones && actividadActualizada.observaciones.length > 0) {
-        actividadActualizada.observaciones.sort((a, b) => {
-          const fechaA = new Date(a.fecha).getTime();
-          const fechaB = new Date(b.fecha).getTime();
-          return fechaB - fechaA; // Descendente (más reciente primero)
-        });
-      }
-      
-      // ✅ Actualizar en AMBOS arrays
-      const indexMain = this.actividades.findIndex(a => a._id === actividadId);
-      if (indexMain !== -1) {
-        this.actividades[indexMain] = actividadActualizada;
-      }
-      
-      const indexFiltered = this.actividadesFiltradas.findIndex(a => a._id === actividadId);
-      if (indexFiltered !== -1) {
-        this.actividadesFiltradas[indexFiltered] = actividadActualizada;
-      }
-      
-      this.observacionForm[actividadId] = '';
-      this.cdr.detectChanges();
-      
-      console.log('✅ Observación agregada a:', actividadId);
-      console.log('📅 fechaModificacion actualizada:', actividadActualizada.fechaModificacion);
-    },
-    error: (err) => {
-      this.error = 'Error al agregar observación: ' + (err.error?.message || err.statusText);
-      console.error('Error obs:', err);
+  guardarObservacion(actividadId: string | undefined): void {
+    if (!actividadId || !this.observacionForm[actividadId]?.trim()) {
+      this.error = 'El comentario no puede estar vacío';
+      return;
     }
-  });
-}
+
+    this.loading = true;
+    this.error = '';
+
+    // Obtener horas si las hay
+    const horas = this.horasForm[actividadId] || 0;
+
+    console.log(`💾 Guardando observación con ${horas} horas`);
+
+    this.actividadesService.agregarObservacion(actividadId, this.observacionForm[actividadId], horas).subscribe({
+      next: (actividadActualizada) => {
+        console.log(`✅ Observación guardada:`, actividadActualizada);
+        
+        if (actividadActualizada.observaciones && actividadActualizada.observaciones.length > 0) {
+          actividadActualizada.observaciones.sort((a: any, b: any) => {
+            const fechaA = new Date(a.fecha).getTime();
+            const fechaB = new Date(b.fecha).getTime();
+            return fechaB - fechaA;
+          });
+        }
+        
+        // Recalcular horasMes
+        this.calcularHorasMes(actividadActualizada);
+        console.log(`📊 HorasMes después de calcular: ${actividadActualizada.horasMes}`);
+        
+        const indexMain = this.actividades.findIndex(a => a._id === actividadId);
+        if (indexMain !== -1) {
+          this.actividades[indexMain] = actividadActualizada;
+        }
+        const indexFiltered = this.actividadesFiltradas.findIndex(a => a._id === actividadId);
+        if (indexFiltered !== -1) {
+          this.actividadesFiltradas[indexFiltered] = actividadActualizada;
+        }
+        this.observacionForm[actividadId] = '';
+        this.horasForm[actividadId] = 0;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = 'Error al agregar observación: ' + (err.error?.message || err.statusText);
+      }
+    });
+  }
 
   calcularRiesgo(actividad: Actividad): string {
     if (actividad.estado === 'cerrado') {
       return 'success';
     }
-
-    const dias = this.diasRestantes(actividad);
-
-    if (dias < 0) {
+    const diasHabiles = this.diasHabilesRestantes(actividad);
+    if (diasHabiles < 0) {
       return 'danger';
     }
-
-    if (dias <= 2) {
+    if (diasHabiles <= 2) {
       return 'warning';
     }
-
     return 'info';
   }
 
-  diasRestantes(actividad: Actividad): number {
+  diasHabilesRestantes(actividad: Actividad): number {
+    if (!actividad.fechaCierre) return 0;
     const hoy = new Date();
-    const cierre = new Date(actividad.fechaCierre!);
-    const diff = cierre.getTime() - hoy.getTime();
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    hoy.setHours(0, 0, 0, 0);
+    const cierre = new Date(actividad.fechaCierre);
+    cierre.setHours(0, 0, 0, 0);
+    let diasHabiles = 0;
+    let fechaActual = new Date(hoy);
+    while (fechaActual < cierre) {
+      fechaActual.setDate(fechaActual.getDate() + 1);
+      const dia = fechaActual.getDay();
+      if (dia !== 0 && dia !== 6) {
+        diasHabiles++;
+      }
+    }
+    if (hoy < cierre) {
+      return diasHabiles;
+    }
+    return -Math.abs(diasHabiles);
   }
 
   getRiesgoTexto(actividad: Actividad): string {
     if (actividad.estado === 'cerrado') {
-      return 'Cerrado';
+      return '✅ Cerrado';
     }
-
-    const dias = this.diasRestantes(actividad);
-
-    if (dias < 0) {
-      return `Vencido hace ${Math.abs(dias)} días`;
+    const diasHabiles = this.diasHabilesRestantes(actividad);
+    if (diasHabiles < 0) {
+      return `❌ Vencido hace ${Math.abs(diasHabiles)} días hábiles`;
     }
-
-    if (dias === 0) {
-      return 'Hoy vence';
+    if (diasHabiles === 0) {
+      return '⚠️ Hoy vence';
     }
-
-    return `${dias} días restantes`;
+    if (diasHabiles === 1) {
+      return `⚠️ ${diasHabiles} día hábil restante`;
+    }
+    return `📅 ${diasHabiles} días hábiles restantes`;
   }
 
   conteoEstado(estado: string): number {
@@ -810,8 +841,13 @@ guardarObservacion(actividadId: string | undefined): void {
 
   conteoVencidas(): number {
     return this.actividadesFiltradas.filter(
-      (a) => a.estado === 'en progreso' && this.diasRestantes(a) < 0
+      (a) => a.estado === 'en progreso' && this.diasHabilesRestantes(a) < 0
     ).length;
+  }
+
+  puedeVerSeguimiento(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
   }
 
   validarFormulario(): boolean {
@@ -843,19 +879,7 @@ guardarObservacion(actividadId: string | undefined): void {
   }
 
   toggleObservaciones(actividadId: string): void {
-    console.log('🔍 [OBS] Click en observaciones, ID:', actividadId);
-    console.log('🔍 [OBS] Estado anterior:', this.expandedObservaciones[actividadId]);
-    
     this.expandedObservaciones[actividadId] = !this.expandedObservaciones[actividadId];
-    
-    console.log('🔍 [OBS] Estado nuevo:', this.expandedObservaciones[actividadId]);
-    
-    // ✅ Fuerza detección de cambios
     this.cdr.detectChanges();
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }

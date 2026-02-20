@@ -6,9 +6,12 @@
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
   <div *ngIf="mensaje" class="alert alert-success">{{ mensaje }}</div>
 
-  <!-- Formulario (Solo Coordinador/Admin) -->
-  <div *ngIf="esAutorizado()" class="form-card">
-    <h3>{{ editandoId ? '✏️ Editar Servicio' : '➕ Nuevo Servicio' }}</h3>
+  <!-- Formulario (Todos pueden crear/sugerir) -->
+  <div class="form-card">
+    <h3>{{ editandoId ? '✏️ Editar Servicio' : '➕ Nuevo Servicio o Sugerencia' }}</h3>
+    <p style="color: #999; font-size: 0.9rem;">
+      {{ esAutorizado() ? '✅ Se creará como oficial' : '💡 Se creará como sugerencia pendiente de aprobación' }}
+    </p>
 
     <div class="form-grid">
       <div class="form-group">
@@ -41,9 +44,31 @@
           placeholder="Días estimados"
         />
       </div>
+
+      <div class="form-group">
+        <label for="horasMinimas">⏱️ Horas Mínimas:</label>
+        <input
+          type="number"
+          id="horasMinimas"
+          [(ngModel)]="formData.horasMinimas"
+          min="0"
+          placeholder="Mínimo de horas"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="horasMaximas">⏱️ Horas Máximas:</label>
+        <input
+          type="number"
+          id="horasMaximas"
+          [(ngModel)]="formData.horasMaximas"
+          min="0"
+          placeholder="Máximo de horas"
+        />
+      </div>
     </div>
 
-    <div style="display: flex; gap: 1rem;">
+    <div class="btn-group">
       <button class="btn-success" (click)="guardar()" [disabled]="loading">
         {{ loading ? '⏳ Guardando...' : (editandoId ? '✅ Actualizar' : '➕ Crear') }}
       </button>
@@ -85,6 +110,8 @@
           <th>Tipificación</th>
           <th>Actividad</th>
           <th>Días Hábiles</th>
+          <th>⏱️ Horas Mín.</th>
+          <th>⏱️ Horas Máx.</th>
           <th *ngIf="activeTab === 'sugerencias'">Sugerido por</th>
           <th *ngIf="activeTab === 'sugerencias'">Fecha</th>
           <th>Acciones</th>
@@ -95,6 +122,8 @@
           <td>{{ item.tipificacion }}</td>
           <td>{{ item.actividad }}</td>
           <td>{{ item.diasHabiles }}</td>
+          <td>{{ item.horasMinimas }}h</td>
+          <td>{{ item.horasMaximas }}h</td>
           <td *ngIf="activeTab === 'sugerencias'">
             {{ item.sugeridoPor }}
             <span style="color: #999; font-size: 0.85rem;">
