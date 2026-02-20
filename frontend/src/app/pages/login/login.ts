@@ -1,219 +1,327 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styles: [`
     .login-container {
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-        'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #F5F5F5 0%, #EEEEEE 100%);
     }
 
-    .login-card {
-      background: white;
+    .login-left {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-brand {
+      text-align: center;
+      max-width: 400px;
+    }
+
+.login-logo-container {
+  width: 180px;
+  height: 120px;
+  margin: 0 auto 2rem;
+  background: #CC0000;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(204, 0, 0, 0.2);
+  padding: 0.5rem;
+}
+
+.login-logo {
+  width: 160px;
+  height: 100px;
+  object-fit: contain;
+}
+
+    .login-title {
+      font-size: 2.5rem;
+      color: #333;
+      margin: 2rem 0 0.5rem 0;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .login-subtitle {
+      font-size: 1rem;
+      color: #999;
+      margin-bottom: 2rem;
+      font-weight: 500;
+    }
+
+    .login-right {
+      flex: 1;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .login-form {
       width: 100%;
       max-width: 400px;
     }
 
-    h1 {
-      text-align: center;
-      color: #333;
-      margin: 0 0 0.5rem 0;
+    .login-form h2 {
+      color: #CC0000;
       font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      font-weight: 800;
     }
 
-    .subtitle {
-      text-align: center;
+    .login-form-subtitle {
       color: #999;
-      margin: 0 0 2rem 0;
-      font-size: 0.95rem;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
     }
 
     .form-group {
-      display: flex;
-      flex-direction: column;
+      margin-bottom: 1.5rem;
     }
 
-    label {
+    .form-group label {
       display: block;
       margin-bottom: 0.5rem;
-      color: #555;
+      color: #333;
       font-weight: 600;
       font-size: 0.95rem;
     }
 
-    input {
+    .form-group input {
       width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      border: 2px solid #E0E0E0;
+      border-radius: 6px;
       font-size: 1rem;
+      transition: all 0.3s ease;
       box-sizing: border-box;
-      transition: border-color 0.3s;
     }
 
-    input:focus {
+    .form-group input:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #CC0000;
+      box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
     }
 
-    button {
-      width: 100%;
-      padding: 0.75rem;
-      background: #667eea;
+    .password-container {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #999;
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+    }
+
+    .login-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .btn-login {
+      flex: 1;
+      padding: 0.85rem;
+      background: #CC0000;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
     }
 
-    button:hover:not(:disabled) {
-      background: #5568d3;
+    .btn-login:hover:not(:disabled) {
+      background: #AA0000;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(204, 0, 0, 0.3);
     }
 
-    button:disabled {
-      background: #ccc;
+    .btn-login:disabled {
+      background: #CCCCCC;
       cursor: not-allowed;
     }
 
-    .error-message {
-      color: #d32f2f;
-      background: #ffebee;
-      padding: 0.75rem;
-      border-radius: 4px;
+    .btn-secondary {
+      flex: 1;
+      padding: 0.85rem;
+      background: #F0F0F0;
+      color: #333;
+      border: 2px solid #E0E0E0;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #E8E8E8;
+      border-color: #CC0000;
+      color: #CC0000;
+    }
+
+    .login-footer {
       text-align: center;
-      font-size: 0.95rem;
-      border-left: 4px solid #d32f2f;
+      color: #999;
+      font-size: 0.9rem;
     }
 
-    .links-container {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid #eee;
-    }
-
-    .link {
-      color: #667eea;
+    .login-footer a {
+      color: #CC0000;
       text-decoration: none;
       font-weight: 600;
-      font-size: 0.9rem;
-      transition: color 0.3s;
+      cursor: pointer;
     }
 
-    .link:hover {
-      color: #5568d3;
+    .login-footer a:hover {
       text-decoration: underline;
     }
 
+    .error-message {
+      background: #FFEBEE;
+      color: #CC0000;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #CC0000;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .success-message {
+      background: #E8F5E9;
+      color: #2E7D32;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #4CAF50;
+    }
+
     @media (max-width: 768px) {
-      .login-card {
-        margin: 1rem;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      .links-container {
+      .login-container {
         flex-direction: column;
-        gap: 0.5rem;
       }
 
-      .link {
-        text-align: center;
+      .login-left {
+        padding: 1rem;
+      }
+
+      .login-right {
+        box-shadow: none;
+        border-top: 3px solid #CC0000;
+        padding: 1.5rem;
+      }
+
+      .login-form {
+        padding-top: 1rem;
+      }
+
+      .login-title {
+        font-size: 2rem;
+      }
+
+      .login-logo-container {
+        width: 150px;
+        height: 100px;
       }
     }
   `]
 })
 export class LoginComponent {
-  email: string = '';
-  password: string = '';
-  loading: boolean = false;
-  error: string = '';
+  email = '';
+  password = '';
+  showPassword = false;
+  cargando = false;
+  error = '';
+  showRecuperarPassword = false;
 
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {
-    if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/actividades']);
-    }
+  ) {}
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 
-  ingresar(): void {
+  ingresar() {
+    console.log('📝 [LOGIN] Iniciando login con:', this.email);
+
     if (!this.email || !this.password) {
-      this.error = 'Por favor completa email y contraseña';
+      this.error = 'Por favor completa todos los campos';
       return;
     }
 
-    this.loading = true;
+    this.cargando = true;
     this.error = '';
 
-    console.log('📝 [LOGIN] Iniciando login con:', this.email);
-
     this.authService.login(this.email, this.password).subscribe({
-      next: (response) => {
-        console.log('✅ [LOGIN] Login exitoso:', response);
-        
-        this.loading = false;
-        const token = this.authService.getToken();
-        const usuario = this.authService.getUsuario();
-
-        console.log('✅ [LOGIN] Token:', !!token);
-        console.log('✅ [LOGIN] Usuario:', usuario);
-        console.log('✅ [LOGIN] primeraVez:', usuario?.primeraVez);
-
-        if (token && usuario) {
-          // ✅ SI ES PRIMERA VEZ, REDIRIGIR A CAMBIAR CONTRASEÑA
-          if (usuario.primeraVez === true) {
-            console.log('🔐 [LOGIN] Primera vez - Redirigiendo a cambiar contraseña');
-            this.router.navigate(['/cambiar-password']);
-          } else {
-            console.log('📊 [LOGIN] Redirigiendo a actividades');
-            this.router.navigate(['/actividades']);
-          }
-        } else {
-          this.error = 'Error: Token o usuario no se guardó correctamente';
-        }
+      next: (response: any) => {
+        console.log('✅ [LOGIN] Login exitoso');
+        this.cargando = false;
+        this.router.navigate(['/actividades']);
       },
       error: (err: any) => {
-        this.loading = false;
-        this.error = 'Credenciales inválidas o error de servidor';
-        console.error('❌ [LOGIN] Error:', err);
+        console.log('❌ [LOGIN] Error:', err);
+        this.cargando = false;
+        this.error = err.error?.error || 'Error al iniciar sesión. Verifica tus credenciales.';
       }
     });
   }
 
-  onKeypress(event: KeyboardEvent): void {
+  onKeypress(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       this.ingresar();
     }
+  }
+
+  toggleRecuperarPassword() {
+    this.showRecuperarPassword = !this.showRecuperarPassword;
+    this.error = '';
+  }
+
+  recuperarPassword(emailRecuperar: string) {
+    if (!emailRecuperar) {
+      this.error = 'Por favor ingresa tu email';
+      return;
+    }
+
+    this.cargando = true;
+    this.authService.recuperarPassword(emailRecuperar).subscribe({
+      next: () => {
+        this.cargando = false;
+        this.error = 'Revisa tu email para las instrucciones de recuperación';
+        this.showRecuperarPassword = false;
+      },
+      error: (err: any) => {
+        this.cargando = false;
+        this.error = 'Error al procesar la solicitud';
+      }
+    });
   }
 }

@@ -197,45 +197,51 @@
             </td>
           </tr>
 
-          <tr *ngIf="expandedObservaciones[actividad._id!]" class="observaciones-row">
-            <td colspan="12">
-              <div class="observaciones-content">
-                <div class="obs-form">
-                  <textarea [(ngModel)]="observacionForm[actividad._id!]"
-                            placeholder="Agregar observación..."
-                            rows="3"></textarea>
-                  <div class="obs-horas-input">
-                    <input type="number" 
-                           [(ngModel)]="horasForm[actividad._id!]"
-                           placeholder="Horas trabajadas (opcional)"
-                           min="0"
-                           step="0.5" />
-                  </div>
-                  <button class="btn-success"
-                          (click)="guardarObservacion(actividad._id)"
-                          [disabled]="loading">
-                    ✅ Guardar
-                  </button>
-                </div>
+         <tr *ngIf="expandedObservaciones[actividad._id!]" class="observaciones-row">
+  <td [attr.colspan]="vistaActual === 'total' || vistaActual === 'seguimiento' ? '12' : '11'">
+    <div class="observaciones-content">
+      <div class="obs-form-container">
+        <div class="obs-form">
+          <textarea [(ngModel)]="observacionForm[actividad._id!]"
+                    placeholder="Agregar observación..."
+                    rows="4"
+                    class="obs-textarea"></textarea>
+          <div class="obs-form-actions">
+            <div class="obs-horas-input">
+              <label>Horas trabajadas (opcional)</label>
+              <input type="number" 
+                     [(ngModel)]="horasForm[actividad._id!]"
+                     placeholder="0"
+                     min="0"
+                     step="0.5" />
+            </div>
+            <button class="btn-success"
+                    (click)="guardarObservacion(actividad._id)"
+                    [disabled]="loading">
+              ✅ Guardar
+            </button>
+          </div>
+        </div>
+      </div>
 
-                <div class="obs-list" *ngIf="actividad.observaciones && actividad.observaciones.length > 0">
-                  <h4>📝 Observaciones</h4>
-                  <div *ngFor="let obs of actividad.observaciones" class="obs-item">
-                    <p class="obs-usuario">{{ obs.usuario }}</p>
-                    <p class="obs-fecha">{{ obs.fecha | date: 'dd/MM/yyyy HH:mm' }}</p>
-                    <p class="obs-comentario">{{ obs.comentario }}</p>
-                    <p class="obs-horas" *ngIf="obs.horas && obs.horas > 0">
-                      ⏱️ <strong>{{ obs.horas }}</strong> horas
-                    </p>
-                  </div>
-                </div>
+      <div class="obs-list" *ngIf="actividad.observaciones && actividad.observaciones.length > 0">
+        <h4>📝 Observaciones</h4>
+        <div *ngFor="let obs of actividad.observaciones" class="obs-item">
+          <p class="obs-usuario">{{ obs.usuario }}</p>
+          <p class="obs-fecha">{{ obs.fecha | date: 'dd/MM/yyyy HH:mm' }}</p>
+          <p class="obs-comentario">{{ obs.comentario }}</p>
+          <p class="obs-horas" *ngIf="obs.horas && obs.horas > 0">
+            ⏱️ <strong>{{ obs.horas }}</strong> horas
+          </p>
+        </div>
+      </div>
 
-                <div *ngIf="!actividad.observaciones || actividad.observaciones.length === 0" class="obs-empty">
-                  Sin observaciones aún
-                </div>
-              </div>
-            </td>
-          </tr>
+      <div *ngIf="!actividad.observaciones || actividad.observaciones.length === 0" class="obs-empty">
+        Sin observaciones aún
+      </div>
+    </div>
+  </td>
+</tr>
         </ng-container>
       </tbody>
     </table>

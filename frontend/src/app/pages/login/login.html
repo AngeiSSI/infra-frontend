@@ -1,206 +1,78 @@
 <div class="login-container">
-  <div class="login-card">
-    <h1>🔐 Gestión de Actividades</h1>
-    <p class="subtitle">Infraestructura</p>
-
-    <form (ngSubmit)="ingresar()">
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          [(ngModel)]="email"
-          name="email"
-          placeholder="tu@email.com"
-          (keypress)="onKeypress($event)"
-          required
-          [disabled]="loading"
-        />
+  <!-- Lado Izquierdo -->
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="login-logo-container">
+        <img src="/claro-logo.png" alt="Claro Logo" class="login-logo">
       </div>
-
-      <div class="form-group">
-        <label for="password">Contraseña:</label>
-        <input
-          type="password"
-          id="password"
-          [(ngModel)]="password"
-          name="password"
-          placeholder="Tu contraseña"
-          (keypress)="onKeypress($event)"
-          required
-          [disabled]="loading"
-        />
-      </div>
-
-      <button type="submit" [disabled]="loading">
-        {{ loading ? '⏳ Iniciando sesión...' : '🔓 Iniciar Sesión' }}
-      </button>
-    </form>
-
-    <div *ngIf="error" class="error-message">
-      {{ error }}
+      <h1 class="login-title">Infraestructura</h1>
+      <p class="login-subtitle">Gestión de Actividades</p>
     </div>
+  </div>
 
-    <!-- ✅ ENLACE DE RECUPERACIÓN DE CONTRASEÑA -->
-    <div class="links-container">
-      <a
-        routerLink="/recuperar-password"
-        class="link"
-        title="Recuperar contraseña"
-      >
-        🔑 ¿Olvidaste tu contraseña?
-      </a>
+  <!-- Lado Derecho -->
+  <div class="login-right">
+    <div class="login-form">
+      <h2>Acceso</h2>
+      <p class="login-form-subtitle">Ingresa con tus credenciales</p>
+
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <div *ngIf="!showRecuperarPassword">
+        <div class="form-group">
+          <label>Email</label>
+          <input 
+            type="email" 
+            [(ngModel)]="email"
+            placeholder="tu@email.com"
+            (keypress)="onKeypress($event)">
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña</label>
+          <div class="password-container">
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              [(ngModel)]="password"
+              placeholder="••••••••"
+              (keypress)="onKeypress($event)">
+            <button class="password-toggle" (click)="togglePassword()">
+              {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="login-actions">
+          <button class="btn-login" (click)="ingresar()" [disabled]="cargando">
+            {{ cargando ? '⏳ Iniciando...' : 'Ingresar' }}
+          </button>
+          <button class="btn-secondary" (click)="toggleRecuperarPassword()">
+            ¿Olvidaste?
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="showRecuperarPassword" class="form-group">
+        <label>Email para recuperación</label>
+        <input 
+          type="email" 
+          placeholder="tu@email.com"
+          #emailRecuperar>
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+          <button class="btn-login" style="flex: 1;" (click)="recuperarPassword(emailRecuperar.value)" [disabled]="cargando">
+            {{ cargando ? '⏳ Enviando...' : 'Enviar' }}
+          </button>
+          <button class="btn-secondary" style="flex: 1;" (click)="toggleRecuperarPassword()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+
+      <div class="login-footer" style="margin-top: 2rem;">
+        <p>¿Necesitas ayuda? Contacta al <a>administrador</a></p>
+      </div>
     </div>
   </div>
 </div>
-
-<style>
-  .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-      'Helvetica Neue', Arial, sans-serif;
-  }
-
-  .login-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 400px;
-  }
-
-  h1 {
-    text-align: center;
-    color: #333;
-    margin: 0 0 0.5rem 0;
-    font-size: 1.8rem;
-  }
-
-  .subtitle {
-    text-align: center;
-    color: #999;
-    margin: 0 0 2rem 0;
-    font-size: 0.95rem;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #555;
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  }
-
-  input:disabled {
-    background: #f5f5f5;
-    cursor: not-allowed;
-  }
-
-  button {
-    width: 100%;
-    padding: 0.75rem;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-
-  button:hover:not(:disabled) {
-    background: #5568d3;
-  }
-
-  button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-
-  .error-message {
-    color: #d32f2f;
-    background: #ffebee;
-    padding: 0.75rem;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 0.95rem;
-    border-left: 4px solid #d32f2f;
-    margin-top: 1rem;
-  }
-
-  /* ✅ ESTILOS PARA RECUPERAR CONTRASEÑA */
-  .links-container {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #eee;
-  }
-
-  .link {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: color 0.3s;
-    cursor: pointer;
-  }
-
-  .link:hover {
-    color: #5568d3;
-    text-decoration: underline;
-  }
-
-  @media (max-width: 768px) {
-    .login-card {
-      margin: 1rem;
-    }
-
-    h1 {
-      font-size: 1.5rem;
-    }
-
-    .links-container {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .link {
-      text-align: center;
-    }
-  }
-</style>

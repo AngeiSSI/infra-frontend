@@ -15,15 +15,16 @@ import { ChangeDetectorRef } from '@angular/core';
     .header {
       background: white;
       padding: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      border-bottom: 1px solid #ddd;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-bottom: 3px solid #CC0000;
       flex-shrink: 0;
     }
 
     .header h1 {
       margin: 0 0 0.5rem 0;
-      color: #333;
+      color: #CC0000;
       font-size: 1.8rem;
+      font-weight: 800;
     }
 
     .header-subtitle {
@@ -36,68 +37,67 @@ import { ChangeDetectorRef } from '@angular/core';
       flex: 1;
       overflow-y: auto;
       padding: 1.5rem;
-      background: #f5f5f5;
+      background: #F5F5F5;
     }
 
     .alert {
       padding: 1rem;
-      border-radius: 4px;
+      border-radius: 6px;
       border-left: 4px solid;
       margin-bottom: 1rem;
     }
 
     .alert-danger {
-      background: #ffebee;
-      color: #d32f2f;
-      border-left-color: #d32f2f;
+      background: #FFEBEE;
+      color: #CC0000;
+      border-left-color: #CC0000;
     }
 
     .stats-section {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
       margin-bottom: 1.5rem;
     }
 
     .stat-card {
       background: white;
-      padding: 1rem;
+      padding: 1.5rem;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      text-align: center;
+      border-top: 4px solid #CC0000;
     }
 
     .stat-label {
       margin: 0 0 0.5rem 0;
       color: #999;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       text-transform: uppercase;
+      font-weight: 600;
     }
 
     .stat-number {
       margin: 0;
-      color: #333;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
-
-    .formulario-section {
-      margin-bottom: 1.5rem;
+      color: #CC0000;
+      font-size: 2rem;
+      font-weight: 800;
     }
 
     .btn-primary {
       padding: 0.75rem 1.5rem;
-      background: #667eea;
+      background: #CC0000;
       color: white;
       border: none;
-      border-radius: 4px;
-      font-weight: 600;
+      border-radius: 6px;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: all 0.3s;
     }
 
     .btn-primary:hover {
-      background: #5568d3;
+      background: #AA0000;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(204, 0, 0, 0.2);
     }
 
     .formulario-card {
@@ -106,6 +106,12 @@ import { ChangeDetectorRef } from '@angular/core';
       border-radius: 8px;
       margin-top: 1rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid #CC0000;
+    }
+
+    .formulario-card h3 {
+      color: #CC0000;
+      margin-top: 0;
     }
 
     .form-grid {
@@ -123,7 +129,7 @@ import { ChangeDetectorRef } from '@angular/core';
     label {
       margin-bottom: 0.5rem;
       font-weight: 600;
-      color: #555;
+      color: #333;
       font-size: 0.95rem;
     }
 
@@ -131,36 +137,39 @@ import { ChangeDetectorRef } from '@angular/core';
     select,
     textarea {
       padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      border: 2px solid #E0E0E0;
+      border-radius: 6px;
       font-size: 1rem;
       font-family: inherit;
+      transition: border-color 0.3s;
     }
 
     input:focus,
     select:focus,
     textarea:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #CC0000;
+      box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1);
     }
 
     .btn-success {
       padding: 0.75rem 1.5rem;
-      background: #4caf50;
+      background: #4CAF50;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
+      transition: all 0.3s;
     }
 
     .btn-success:hover:not(:disabled) {
       background: #45a049;
+      transform: translateY(-2px);
     }
 
     .btn-success:disabled {
-      background: #ccc;
+      background: #CCCCCC;
       cursor: not-allowed;
     }
 
@@ -169,7 +178,7 @@ import { ChangeDetectorRef } from '@angular/core';
       padding: 2rem;
       background: white;
       border-radius: 8px;
-      color: #667eea;
+      color: #CC0000;
       font-weight: 600;
     }
 
@@ -195,25 +204,25 @@ import { ChangeDetectorRef } from '@angular/core';
     }
 
     .tabla thead {
-      background: #f5f5f5;
-      border-bottom: 2px solid #ddd;
+      background: #333333;
+      border-bottom: 2px solid #CC0000;
     }
 
     .tabla th {
       padding: 1rem;
       text-align: left;
-      font-weight: 600;
-      color: #555;
+      font-weight: 700;
+      color: white;
       font-size: 0.9rem;
     }
 
     .tabla td {
       padding: 1rem;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #EEEEEE;
     }
 
     .tabla tbody tr:hover {
-      background: #fafafa;
+      background: #FAFAFA;
     }
 
     .badge {
@@ -225,33 +234,33 @@ import { ChangeDetectorRef } from '@angular/core';
     }
 
     .badge-en\ progreso {
-      background: #e3f2fd;
-      color: #1976d2;
+      background: #E3F2FD;
+      color: #0051BA;
     }
 
     .badge-cerrado {
-      background: #e8f5e9;
-      color: #388e3c;
+      background: #E8F5E9;
+      color: #2E7D32;
     }
 
     .badge-success {
-      background: #e8f5e9;
-      color: #388e3c;
+      background: #E8F5E9;
+      color: #2E7D32;
     }
 
     .badge-danger {
-      background: #ffebee;
-      color: #d32f2f;
+      background: #FFEBEE;
+      color: #CC0000;
     }
 
     .badge-warning {
-      background: #fff3e0;
-      color: #f57c00;
+      background: #FFF3E0;
+      color: #F57C00;
     }
 
     .badge-info {
-      background: #e3f2fd;
-      color: #1976d2;
+      background: #E3F2FD;
+      color: #0051BA;
     }
 
     .acciones {
@@ -268,98 +277,163 @@ import { ChangeDetectorRef } from '@angular/core';
     }
 
     .btn-warning {
-      background: #ff9800;
+      background: #FF9800;
       color: white;
     }
 
     .btn-warning:hover {
-      background: #e68900;
+      background: #E68900;
     }
 
     .btn-info {
-      background: #2196f3;
+      background: #2196F3;
       color: white;
     }
 
     .btn-info:hover {
-      background: #1976d2;
+      background: #1976D2;
     }
 
     .observaciones-row {
-      background: #f9f9f9 !important;
+      background: #F9F9F9 !important;
     }
 
     .observaciones-content {
-      background: #f9f9f9;
-      padding: 1rem;
+      background: #F9F9F9;
+      padding: 1.5rem;
+    }
+
+    .obs-form-container {
+      margin-bottom: 2rem;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid #CC0000;
     }
 
     .obs-form {
-      margin-bottom: 1rem;
       display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      align-items: flex-start;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .obs-form textarea {
-      flex: 1;
-      min-width: 200px;
+    .obs-textarea {
+      width: 100% !important;
+      padding: 1rem !important;
+      border: 2px solid #E0E0E0 !important;
+      border-radius: 6px !important;
+      font-size: 1rem !important;
+      font-family: inherit !important;
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .obs-textarea:focus {
+      outline: none !important;
+      border-color: #CC0000 !important;
+      box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1) !important;
+    }
+
+    .obs-form-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
     }
 
     .obs-horas-input {
       display: flex;
+      flex-direction: column;
       gap: 0.5rem;
+      flex: 0 0 auto;
+    }
+
+    .obs-horas-input label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #555;
+      margin: 0;
     }
 
     .obs-horas-input input {
-      width: 150px;
+      width: 140px !important;
+      padding: 0.75rem !important;
+      border: 2px solid #E0E0E0 !important;
+      border-radius: 6px !important;
+    }
+
+    .obs-horas-input input:focus {
+      outline: none !important;
+      border-color: #CC0000 !important;
+      box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1) !important;
+    }
+
+    .obs-form-actions .btn-success {
+      padding: 0.75rem 2rem;
+      flex-shrink: 0;
+      margin-top: 1.75rem;
     }
 
     .obs-list {
       background: white;
-      padding: 1rem;
-      border-radius: 4px;
-      border-left: 3px solid #667eea;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid #CC0000;
+      margin-bottom: 1rem;
+    }
+
+    .obs-list h4 {
+      margin: 0 0 1rem 0;
+      color: #333;
+      font-size: 1rem;
+      font-weight: 700;
     }
 
     .obs-item {
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #eee;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #EEEEEE;
+    }
+
+    .obs-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
     }
 
     .obs-usuario {
       margin: 0 0 0.5rem 0;
-      font-size: 0.9rem;
-      color: #555;
-      font-weight: 600;
+      font-size: 0.95rem;
+      color: #333;
+      font-weight: 700;
     }
 
     .obs-fecha {
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 0.75rem 0;
       font-size: 0.85rem;
       color: #999;
     }
 
     .obs-comentario {
-      margin: 0 0 0.5rem 0;
-      color: #333;
-      line-height: 1.5;
+      margin: 0 0 0.75rem 0;
+      color: #555;
+      line-height: 1.6;
     }
 
     .obs-horas {
-      margin: 0.5rem 0 0 0;
+      margin: 0.75rem 0 0 0;
       font-size: 0.9rem;
-      color: #667eea;
+      color: #CC0000;
+      font-weight: 600;
     }
 
     .obs-empty {
-      padding: 1rem;
+      padding: 1.5rem;
       background: white;
-      border-radius: 4px;
+      border-radius: 8px;
       color: #999;
       text-align: center;
+      border: 1px dashed #E0E0E0;
     }
 
     .filtros-section {
@@ -368,21 +442,24 @@ import { ChangeDetectorRef } from '@angular/core';
       border-radius: 8px;
       margin-bottom: 1.5rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid #CC0000;
     }
 
     .btn-secondary {
       padding: 0.75rem 1.5rem;
-      background: #757575;
-      color: white;
-      border: none;
-      border-radius: 4px;
+      background: #F0F0F0;
+      color: #333;
+      border: 2px solid #E0E0E0;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
-      transition: background 0.3s;
+      transition: all 0.3s;
     }
 
     .btn-secondary:hover {
-      background: #616161;
+      background: #E8E8E8;
+      border-color: #CC0000;
+      color: #CC0000;
     }
   `]
 })
@@ -397,7 +474,6 @@ export class ActividadesComponent implements OnInit {
   vistaActual: 'mis' | 'grupo' | 'total' | 'seguimiento' = 'mis';
   fechaSeguimientoInicio: Date = new Date();
 
-  // Filtros para seguimiento semanal
   filtroLiderSeguimiento: string = '';
   filtroProyectoSeguimiento: string = '';
   lideresDisponibles: string[] = [];
@@ -437,11 +513,9 @@ export class ActividadesComponent implements OnInit {
       return;
     }
 
-    // Obtener vista de los datos de la ruta
     this.route.data.subscribe((data) => {
       if (data['vista']) {
         this.vistaActual = data['vista'];
-        // Si es seguimiento, calcular fecha inicio (hoy - 7 días)
         if (this.vistaActual === 'seguimiento') {
           const hoy = new Date();
           this.fechaSeguimientoInicio = new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -478,13 +552,10 @@ export class ActividadesComponent implements OnInit {
               return fechaB - fechaA;
             });
           }
-          // Calcular horasMes basado en observaciones del mes actual
           this.calcularHorasMes(actividad);
         });
         
-        // Cargar opciones de filtro
         this.cargarFiltrosSeguimiento();
-        
         this.filtrarActividades();
         this.loadingActividades = false;
         this.cdr.detectChanges();
@@ -496,53 +567,39 @@ export class ActividadesComponent implements OnInit {
     });
   }
 
-calcularHorasMes(actividad: Actividad): void {
-  // Obtener mes y año actual
-  const hoy = new Date();
-  const mesActual = hoy.getMonth();
-  const anioActual = hoy.getFullYear();
+  calcularHorasMes(actividad: Actividad): void {
+    const hoy = new Date();
+    const mesActual = hoy.getMonth();
+    const anioActual = hoy.getFullYear();
 
-  let horasMesTemp = 0;
+    let horasMesTemp = 0;
 
-  console.log(`📊 Calculando horas mes para: ${actividad.actividadCatalogo}`);
+    if (actividad.observaciones && actividad.observaciones.length > 0) {
+      actividad.observaciones.forEach((obs: any) => {
+        const fechaObs = new Date(obs.fecha);
+        const mesObs = fechaObs.getMonth();
+        const anioObs = fechaObs.getFullYear();
+        
+        const horasEnObs = obs.horas || 0;
+        
+        if (mesObs === mesActual && anioObs === anioActual && horasEnObs > 0) {
+          horasMesTemp += horasEnObs;
+        }
+      });
+    }
 
-  // Sumar horas de observaciones del mes actual
-  if (actividad.observaciones && actividad.observaciones.length > 0) {
-    actividad.observaciones.forEach((obs: any) => {
-      const fechaObs = new Date(obs.fecha);
-      const mesObs = fechaObs.getMonth();
-      const anioObs = fechaObs.getFullYear();
-      
-      // FIX: Usar obs.horas si existe, sino intentar obtener del comentario
-      const horasEnObs = obs.horas || 0;
-      
-      console.log(`  📅 Observación: ${obs.fecha}, Horas: ${horasEnObs}, Mes: ${mesObs}, Año: ${anioObs}`);
-      
-      if (mesObs === mesActual && anioObs === anioActual && horasEnObs > 0) {
-        horasMesTemp += horasEnObs;
-        console.log(`    ✅ Agregada, Total: ${horasMesTemp}`);
+    actividad.horasMes = horasMesTemp;
+
+    if (actividad.estado === 'en progreso') {
+      const ultimoDiaDelMes = new Date(anioActual, mesActual + 1, 0).getDate();
+      if (hoy.getDate() === ultimoDiaDelMes) {
+        actividad.horasAcumuladas = (actividad.horasAcumuladas || 0) + horasMesTemp;
+        actividad.horasMes = 0;
       }
-    });
-  }
-
-  console.log(`✅ Horas Mes Final: ${horasMesTemp}`);
-
-  // Actualizar horasMes
-  actividad.horasMes = horasMesTemp;
-
-  // Si la actividad está en progreso y es el último día del mes, mover horasMes a horasAcumuladas
-  if (actividad.estado === 'en progreso') {
-    const ultimoDiaDelMes = new Date(anioActual, mesActual + 1, 0).getDate();
-    if (hoy.getDate() === ultimoDiaDelMes) {
-      console.log(`⚠️ Es el último día del mes, moviendo ${horasMesTemp} a horasAcumuladas`);
-      actividad.horasAcumuladas = (actividad.horasAcumuladas || 0) + horasMesTemp;
-      actividad.horasMes = 0;
     }
   }
-}
 
   cargarFiltrosSeguimiento(): void {
-    // Obtener lista única de líderes y proyectos
     const lideresSet = new Set<string>();
     const proyectosSet = new Set<string>();
     
@@ -564,59 +621,42 @@ calcularHorasMes(actividad: Actividad): void {
         break;
       case 'grupo':
         const grupoUsuario = this.usuario.grupo;
-        console.log('🔍 Grupo del usuario actual:', grupoUsuario);
-        
         this.actividadesFiltradas = this.actividades.filter((actividad) => {
-          const perteneceMismoGrupo = actividad.grupoLider === grupoUsuario;
+          const perteneceAlGrupo = actividad.grupoLider === grupoUsuario;
           const esDelUsuario = actividad.lider === this.usuario.nombre;
-          
-          return perteneceMismoGrupo || esDelUsuario;
+          return perteneceAlGrupo || esDelUsuario;
         });
         break;
       case 'total':
-        // Filtrar todas las actividades
         let filtradoTotal = this.actividades;
-        
-        // Aplicar filtros adicionales
         if (this.filtroLiderSeguimiento) {
           filtradoTotal = filtradoTotal.filter(a => a.lider === this.filtroLiderSeguimiento);
         }
-        
         if (this.filtroProyectoSeguimiento) {
           filtradoTotal = filtradoTotal.filter(a => a.proyecto === this.filtroProyectoSeguimiento);
         }
-        
         this.actividadesFiltradas = filtradoTotal;
         break;
       case 'seguimiento':
-        // Filtrar actividades de la última semana (en progreso y cerradas)
         let filtrado = this.actividades.filter((actividad) => {
-          // Solo actividades en progreso o cerradas
           if (actividad.estado !== 'en progreso' && actividad.estado !== 'cerrado') {
             return false;
           }
-          
-          // Actividades creadas en los últimos 7 días
           if (actividad.fechaCreacion) {
             const fechaCreacion = new Date(actividad.fechaCreacion);
             return fechaCreacion >= this.fechaSeguimientoInicio;
           }
-          
           return false;
         });
         
-        // Aplicar filtros adicionales
         if (this.filtroLiderSeguimiento) {
           filtrado = filtrado.filter(a => a.lider === this.filtroLiderSeguimiento);
         }
-        
         if (this.filtroProyectoSeguimiento) {
           filtrado = filtrado.filter(a => a.proyecto === this.filtroProyectoSeguimiento);
         }
         
         this.actividadesFiltradas = filtrado;
-        
-        // Ordenar por fecha de creación (más recientes primero)
         this.actividadesFiltradas.sort((a, b) => {
           const fechaA = new Date(a.fechaCreacion).getTime();
           const fechaB = new Date(b.fechaCreacion).getTime();
@@ -628,7 +668,6 @@ calcularHorasMes(actividad: Actividad): void {
     }
   }
 
-  // Métodos para los filtros
   aplicarFiltrosSeguimiento(): void {
     this.filtrarActividades();
   }
@@ -742,15 +781,10 @@ calcularHorasMes(actividad: Actividad): void {
     this.loading = true;
     this.error = '';
 
-    // Obtener horas si las hay
     const horas = this.horasForm[actividadId] || 0;
-
-    console.log(`💾 Guardando observación con ${horas} horas`);
 
     this.actividadesService.agregarObservacion(actividadId, this.observacionForm[actividadId], horas).subscribe({
       next: (actividadActualizada) => {
-        console.log(`✅ Observación guardada:`, actividadActualizada);
-        
         if (actividadActualizada.observaciones && actividadActualizada.observaciones.length > 0) {
           actividadActualizada.observaciones.sort((a: any, b: any) => {
             const fechaA = new Date(a.fecha).getTime();
@@ -759,9 +793,7 @@ calcularHorasMes(actividad: Actividad): void {
           });
         }
         
-        // Recalcular horasMes
         this.calcularHorasMes(actividadActualizada);
-        console.log(`📊 HorasMes después de calcular: ${actividadActualizada.horasMes}`);
         
         const indexMain = this.actividades.findIndex(a => a._id === actividadId);
         if (indexMain !== -1) {
