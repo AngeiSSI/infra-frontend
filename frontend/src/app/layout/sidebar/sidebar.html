@@ -1,0 +1,79 @@
+<div class="main-sidebar">
+  <!-- Header -->
+  <div class="sidebar-header">
+    <h2>🚀 Infraestructura</h2>
+  </div>
+
+  <!-- Main Menu -->
+  <div class="sidebar-section">
+    <div class="sidebar-main-item" 
+         [class.active]="activeMenuItem.includes('actividades')"
+         [class.expanded]="submenuOpen"
+         (click)="toggleSubmenu()">
+      <span class="icon">📋</span>
+      Actividades
+      <span class="chevron">›</span>
+    </div>
+
+    <!-- Submenu -->
+    <div class="sidebar-submenu" [class.open]="submenuOpen">
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'mis-actividades'"
+           (click)="setActiveMenu('mis-actividades')">
+        📋 Mis Actividades
+      </div>
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'grupo'"
+           (click)="setActiveMenu('grupo')">
+        👥 Mi Grupo
+      </div>
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'total'"
+           *ngIf="puedeVerTotal()"
+           (click)="setActiveMenu('total')">
+        🌍 Total
+      </div>
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'seguimiento'"
+           *ngIf="puedeVerSeguimiento()"
+           (click)="setActiveMenu('seguimiento')">
+        📊 Seguimiento Semanal
+      </div>
+    </div>
+  </div>
+
+  <!-- Catálogo -->
+  <div class="sidebar-section">
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'catalogo'"
+         (click)="navigateTo('catalogo')">
+      <span class="icon">📚</span>
+      Catálogo
+    </div>
+  </div>
+
+  <!-- Gestión Usuarios (Solo Coordinador/Admin) -->
+  <div class="sidebar-section" *ngIf="puedeVerGestionUsuarios()">
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'gestion-usuarios'"
+         (click)="navigateTo('gestion-usuarios')">
+      <span class="icon">👥</span>
+      Usuarios
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-item">
+      <span>👤</span>
+      <span>{{ usuario?.nombre }}</span>
+    </div>
+    <div class="sidebar-footer-item">
+      <span>🔑</span>
+      <span>{{ usuario?.rol | titlecase }}</span>
+    </div>
+    <button class="logout-btn" (click)="logout()">
+      🚪 Salir
+    </button>
+  </div>
+</div>

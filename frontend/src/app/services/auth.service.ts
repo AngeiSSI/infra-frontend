@@ -7,7 +7,7 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net';
+  private readonly API_URL = 'https://api-infra-actividades-prod-hygpfxfdeudpfsaz.westcentralus-01.azurewebsites.net/';
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USUARIO_KEY = 'auth_usuario';
 

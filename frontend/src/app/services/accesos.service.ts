@@ -23,7 +23,7 @@ export interface Acceso {
   providedIn: 'root'
 })
 export class AccesosService {
-  private readonly API_URL = 'https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net';
+  private readonly API_URL = 'https://api-infra-actividades-prod-hygpfxfdeudpfsaz.westcentralus-01.azurewebsites.net/';
 
   constructor(private http: HttpClient) {}
 

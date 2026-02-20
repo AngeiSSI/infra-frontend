@@ -1,250 +1,228 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
-    <aside class="sidebar" [class.collapsed]="isCollapsed">
-      <!-- Header del Sidebar -->
-      <div class="sidebar-header">
-        <h2 *ngIf="!isCollapsed">📋 Sistema Infra</h2>
-        <button class="btn-toggle" (click)="toggleSidebar()">
-          {{ isCollapsed ? '→' : '←' }}
-        </button>
-      </div>
-
-      <!-- Menú -->
-      <nav class="sidebar-menu">
-        <a 
-          routerLink="/actividades" 
-          routerLinkActive="active"
-          class="menu-item"
-        >
-          <span class="icon">📊</span>
-          <span *ngIf="!isCollapsed" class="label">Actividades</span>
-        </a>
-
-        <!-- Catálogo de Servicios - Todos pueden ver -->
-        <a 
-          routerLink="/catalogo" 
-          routerLinkActive="active"
-          class="menu-item"
-        >
-          <span class="icon">📚</span>
-          <span *ngIf="!isCollapsed" class="label">Catálogo de Servicios</span>
-        </a>
-
-        <!-- Gestión de Usuarios - Solo Coordinador/Admin -->
-        <a 
-          *ngIf="mostrarGestionUsuarios()"
-          routerLink="/gestion-usuarios" 
-          routerLinkActive="active"
-          class="menu-item"
-        >
-          <span class="icon">👥</span>
-          <span *ngIf="!isCollapsed" class="label">Gestión de Usuarios</span>
-        </a>
-      </nav>
-
-      <!-- Footer del Sidebar -->
-      <div class="sidebar-footer">
-        <div *ngIf="!isCollapsed" class="user-info">
-          <p class="user-name">{{ usuario?.nombre }}</p>
-          <p class="user-rol">{{ usuario?.rol }}</p>
-        </div>
-        <button class="btn-logout" (click)="logout()" title="Cerrar sesión">
-          🚪
-        </button>
-      </div>
-    </aside>
-  `,
+  imports: [CommonModule],
+  templateUrl: './sidebar.html',
   styles: [`
-    .sidebar {
-      position: fixed;
-      left: 0;
-      top: 0;
-      height: 100vh;
-      width: 250px;
+    .main-sidebar {
+      width: 180px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      padding: 1.5rem 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      transition: width 0.3s ease;
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
-      z-index: 1000;
-    }
-
-    .sidebar.collapsed {
-      width: 80px;
+      position: sticky;
+      top: 0;
     }
 
     .sidebar-header {
-      padding: 1.5rem 1rem;
+      padding: 0 1.5rem;
+      margin-bottom: 2rem;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      gap: 0.5rem;
     }
 
     .sidebar-header h2 {
       margin: 0;
-      font-size: 1.2rem;
-      white-space: nowrap;
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 700;
     }
 
-    .btn-toggle {
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
+    .sidebar-main-item {
+      padding: 0.75rem 1.5rem;
       color: white;
       cursor: pointer;
-      padding: 0.5rem;
-      border-radius: 4px;
-      font-size: 1rem;
-      transition: background 0.3s;
-    }
-
-    .btn-toggle:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .sidebar-menu {
-      flex: 1;
-      padding: 1rem 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .menu-item {
+      transition: all 0.3s;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.5rem;
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-      transition: all 0.3s;
-      border-left: 4px solid transparent;
+      gap: 0.75rem;
+      border-left: 3px solid transparent;
+      user-select: none;
     }
 
-    .menu-item:hover {
+    .sidebar-main-item:hover {
       background: rgba(255, 255, 255, 0.1);
-      color: white;
+    }
+
+    .sidebar-main-item.active {
+      background: rgba(255, 255, 255, 0.15);
       border-left-color: white;
     }
 
-    .menu-item.active {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border-left-color: white;
+    .sidebar-main-item .icon {
+      font-size: 1.2rem;
     }
 
-    .icon {
-      font-size: 1.3rem;
-      min-width: 1.5rem;
-    }
-
-    .label {
-      white-space: nowrap;
+    .sidebar-submenu {
+      background: rgba(0, 0, 0, 0.2);
+      margin-left: 0;
+      max-height: 0;
       overflow: hidden;
-      text-overflow: ellipsis;
+      transition: max-height 0.3s ease;
+    }
+
+    .sidebar-submenu.open {
+      max-height: 500px;
+    }
+
+    .sidebar-subitem {
+      padding: 0.5rem 1.5rem;
+      padding-left: 2.5rem;
+      color: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-left: 2px solid transparent;
+      user-select: none;
+    }
+
+    .sidebar-subitem:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-subitem.active {
+      color: white;
+      background: rgba(255, 255, 255, 0.15);
+      border-left-color: white;
+      font-weight: 600;
+    }
+
+    .sidebar-section {
+      margin-bottom: 0;
     }
 
     .sidebar-footer {
-      padding: 1rem;
-      border-top: 2px solid rgba(255, 255, 255, 0.2);
+      margin-top: auto;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .sidebar-footer-item {
       display: flex;
-      gap: 1rem;
       align-items: center;
-    }
-
-    .user-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .user-name {
-      margin: 0;
-      font-weight: 600;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-size: 0.9rem;
     }
 
-    .user-rol {
-      margin: 0.25rem 0 0 0;
-      font-size: 0.75rem;
-      opacity: 0.8;
-      text-transform: capitalize;
+    .sidebar-footer-item:last-child {
+      margin-bottom: 0;
     }
 
-    .btn-logout {
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
+    .logout-btn {
+      width: 100%;
+      padding: 0.6rem;
+      background: #d32f2f;
       color: white;
-      cursor: pointer;
-      padding: 0.6rem 0.8rem;
+      border: none;
       border-radius: 4px;
-      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 0.5rem;
       transition: background 0.3s;
-      white-space: nowrap;
     }
 
-    .btn-logout:hover {
-      background: rgba(255, 255, 255, 0.3);
+    .logout-btn:hover {
+      background: #b71c1c;
     }
 
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 80px;
-      }
+    .chevron {
+      margin-left: auto;
+      font-size: 0.8rem;
+      transition: transform 0.3s;
+    }
 
-      .sidebar.collapsed {
-        width: 80px;
-      }
-
-      .label {
-        display: none;
-      }
+    .sidebar-main-item.expanded .chevron {
+      transform: rotate(90deg);
     }
   `]
 })
 export class SidebarComponent implements OnInit {
   usuario: any = null;
-  isCollapsed = false;
+  activeMenuItem: string = 'mis-actividades';
+  submenuOpen: boolean = false;
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-    private cdr: ChangeDetectorRef
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
     console.log('👤 Usuario en Sidebar:', this.usuario);
     console.log('🔑 Rol:', this.usuario?.rol);
+  }
+
+  toggleSubmenu(): void {
+    this.submenuOpen = !this.submenuOpen;
+    console.log('🔓 Submenu abierto:', this.submenuOpen);
+  }
+
+  navigateTo(ruta: string): void {
+    console.log('🔀 Navegando a:', ruta);
+    this.activeMenuItem = ruta;
+    this.submenuOpen = false;
+    this.router.navigate([`/${ruta}`]);
+  }
+
+  setActiveMenu(item: string): void {
+    console.log('📍 Seleccionando item:', item);
+    this.activeMenuItem = item;
+    this.submenuOpen = false;
     
-    if (!this.usuario) {
-      this.router.navigate(['/login']);
-      return;
+    console.log('🎯 Navegando a:', item);
+    
+    if (item === 'mis-actividades') {
+      console.log('➡️ Navegando a /actividades');
+      this.router.navigate(['/actividades']);
+    } else if (item === 'grupo') {
+      console.log('➡️ Navegando a /actividades/grupo');
+      this.router.navigate(['/actividades/grupo']);
+    } else if (item === 'total') {
+      console.log('➡️ Navegando a /actividades/total');
+      this.router.navigate(['/actividades/total']);
+    } else if (item === 'seguimiento') {
+      console.log('➡️ Navegando a /actividades/seguimiento');
+      this.router.navigate(['/actividades/seguimiento']);
     }
-    
-    this.cdr.detectChanges();
   }
 
-  mostrarGestionUsuarios(): boolean {
+  puedeVerTotal(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
-    const mostrar = rol === 'coordinador' || rol === 'administrador';
-    console.log('👥 Mostrar Gestión de Usuarios:', mostrar, 'Rol:', this.usuario?.rol);
-    return mostrar;
+    const puede = rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
+    console.log('✅ Puede ver Total:', puede, 'Rol:', rol);
+    return puede;
   }
 
-  toggleSidebar(): void {
-    this.isCollapsed = !this.isCollapsed;
+  puedeVerSeguimiento(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    const puede = rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
+    console.log('✅ Puede ver Seguimiento:', puede, 'Rol:', rol);
+    return puede;
+  }
+
+  puedeVerGestionUsuarios(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    const puede = rol === 'coordinador' || rol === 'administrador';
+    console.log('��� Puede ver Usuarios:', puede, 'Rol:', rol);
+    return puede;
   }
 
   logout(): void {

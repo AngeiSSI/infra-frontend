@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface Observacion {
   fecha: Date;
   comentario: string;
   usuario?: string;
+  horas?: number;
 }
 
 export interface Actividad {
   _id?: string;
   lider: string;
+  grupoLider?: string;
   proyecto: string;
   tipificacion: string;
   actividadCatalogo: string;
@@ -18,7 +20,8 @@ export interface Actividad {
   estado: string;
   estadoCaso?: string;
   horas: number;
-  horasAcumuladas?: number;
+  horasMes?: number; // Horas acumuladas del mes actual
+  horasAcumuladas?: number; // Horas del mes anterior (cuando finaliza el mes)
   fechaCreacion: Date;
   fechaModificacion: Date;
   fechaCierre?: Date;
@@ -30,13 +33,24 @@ export interface Catalogo {
   tipificacion: string;
   actividad: string;
   diasHabiles: number;
+  horasMinimas: number;
+  horasMaximas: number;
+}
+
+export interface Usuario {
+  _id?: string;
+  nombre: string;
+  email: string;
+  rol: string;
+  grupo?: string;
+  activo?: boolean;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ActividadesService {
-  private readonly API_URL = 'https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net';
+  private readonly API_URL = 'https://api-infra-actividades-prod-hygpfxfdeudpfsaz.westcentralus-01.azurewebsites.net';
 
   constructor(private http: HttpClient) {}
 
@@ -45,19 +59,36 @@ export class ActividadesService {
     return this.http.get<Catalogo[]>(`${this.API_URL}/catalogo`);
   }
 
-  // ACTIVIDADES
+  // ACTIVIDADES - Obtener y mapear con información del grupo del líder
   getActividades(): Observable<Actividad[]> {
-    return this.http.get<Actividad[]>(`${this.API_URL}/actividades`);
+    return this.http.get<Actividad[]>(`${this.API_URL}/actividades`).pipe(
+      map((actividades) => {
+        // Obtener usuarios para mapear grupos
+        this.getUsuarios().subscribe((usuarios) => {
+          actividades.forEach((actividad) => {
+            // Buscar el usuario que es líder de esta actividad
+            const usuarioLider = usuarios.find(
+              (u: Usuario) => u.nombre === actividad.lider
+            );
+            // Asignar el grupo del líder a la actividad
+            if (usuarioLider) {
+              actividad.grupoLider = usuarioLider.grupo;
+            }
+          });
+        });
+        return actividades;
+      })
+    );
   }
 
   crearActividad(actividad: any): Observable<Actividad> {
     return this.http.post<Actividad>(`${this.API_URL}/actividades`, actividad);
   }
 
-  agregarObservacion(actividadId: string, comentario: string): Observable<Actividad> {
+  agregarObservacion(actividadId: string, comentario: string, horas: number = 0): Observable<Actividad> {
     return this.http.post<Actividad>(
       `${this.API_URL}/actividades/${actividadId}/observaciones`,
-      { comentario }
+      { comentario, horas }
     );
   }
 
@@ -85,8 +116,8 @@ export class ActividadesService {
   }
 
   // USUARIOS
-  getUsuarios(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.API_URL}/usuarios`);
+  getUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(`${this.API_URL}/usuarios`);
   }
 
   crearUsuario(usuario: any): Observable<any> {

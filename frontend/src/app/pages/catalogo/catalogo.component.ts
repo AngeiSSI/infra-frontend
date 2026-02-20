@@ -2,23 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { CatalogoService, CatalogoItem } from '../../services/catalogo.service';
 import { ChangeDetectorRef } from '@angular/core';
-
-export interface CatalogoItem {
-  _id?: string;
-  tipificacion: string;
-  actividad: string;
-  diasHabiles: number;
-  estado: 'oficial' | 'pendiente';
-  sugeridoPor?: string;
-  rolSugeridor?: string;
-  fechaSugerencia?: Date;
-  fechaCreacion?: Date;
-  observaciones?: string;
-  activo: boolean;
-}
 
 @Component({
   selector: 'app-catalogo',
@@ -91,7 +77,7 @@ export interface CatalogoItem {
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 1rem;
       margin-bottom: 1rem;
     }
@@ -299,6 +285,11 @@ export interface CatalogoItem {
       border-bottom-color: #667eea;
     }
 
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+    }
+
     @media (max-width: 768px) {
       .catalogo-container {
         padding: 1rem;
@@ -334,7 +325,9 @@ export class CatalogoComponent implements OnInit {
   formData = {
     tipificacion: '',
     actividad: '',
-    diasHabiles: 1
+    diasHabiles: 1,
+    horasMinimas: 0,
+    horasMaximas: 0
   };
 
   editandoId: string | null = null;
@@ -344,10 +337,10 @@ export class CatalogoComponent implements OnInit {
   usuario: any = null;
   activeTab: 'oficial' | 'sugerencias' = 'oficial';
 
-  tipificaciones = ['Infraestructura', 'Soporte', 'Desarrollo', 'Mantenimiento'];
+  tipificaciones = ['Administrativo', 'Diseño', 'Documentación', 'Generación Conectividades', 'Gestión', 'Gestión LI FV', 'Implementación Infraestructura', 'Levantamiento Información', 'Pruebas', 'Publicación Servicios', 'Seguridad de la información', 'Soporte', 'Ventana'];
 
   constructor(
-    private http: HttpClient,
+    private catalogoService: CatalogoService,
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
@@ -370,11 +363,8 @@ export class CatalogoComponent implements OnInit {
 
     const rol = this.usuario.rol?.toLowerCase();
     const esAutorizado = rol === 'coordinador' || rol === 'administrador';
-    const url = esAutorizado 
-      ? '/catalogo/todos' 
-      : '/catalogo';
 
-    this.http.get<CatalogoItem[]>(`https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net${url}`).subscribe({
+    this.catalogoService.getCatalogo(esAutorizado).subscribe({
       next: (data) => {
         this.catalogo = data;
         this.filtrarCatalogo();
@@ -412,18 +402,12 @@ export class CatalogoComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    const url = this.editandoId 
-      ? `/catalogo/${this.editandoId}`
-      : '/catalogo';
+    const llamada = this.editandoId 
+      ? this.catalogoService.actualizarCatalogo(this.editandoId, this.formData)
+      : this.catalogoService.crearCatalogo(this.formData);
 
-    const metodo = this.editandoId ? 'PUT' : 'POST';
-    const baseUrl = 'https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net';
-
-    // ✅ CORREGIDO: Usar opciones con body
-    const opciones: any = { body: this.formData };
-
-    this.http.request(metodo, baseUrl + url, opciones).subscribe({
-      next: (response: any) => {
+    llamada.subscribe({
+      next: () => {
         this.loading = false;
         this.mensaje = this.editandoId 
           ? '✅ Catálogo actualizado correctamente' 
@@ -447,7 +431,9 @@ export class CatalogoComponent implements OnInit {
     this.formData = {
       tipificacion: item.tipificacion,
       actividad: item.actividad,
-      diasHabiles: item.diasHabiles
+      diasHabiles: item.diasHabiles,
+      horasMinimas: item.horasMinimas,
+      horasMaximas: item.horasMaximas
     };
     window.scrollTo(0, 0);
   }
@@ -459,7 +445,7 @@ export class CatalogoComponent implements OnInit {
 
   aprobar(id: string): void {
     if (confirm('¿Aprobar esta sugerencia?')) {
-      this.http.patch(`https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net/catalogo/${id}/aprobar`, {}).subscribe({
+      this.catalogoService.aprobarCatalogo(id).subscribe({
         next: () => {
           this.mensaje = '✅ Sugerencia aprobada';
           this.cargarCatalogo();
@@ -476,7 +462,7 @@ export class CatalogoComponent implements OnInit {
     const observaciones = prompt('¿Por qué rechazar esta sugerencia?');
     
     if (observaciones !== null) {
-      this.http.patch(`https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net/catalogo/${id}/rechazar`, { observaciones }).subscribe({
+      this.catalogoService.rechazarCatalogo(id, observaciones).subscribe({
         next: () => {
           this.mensaje = '❌ Sugerencia rechazada';
           this.cargarCatalogo();
@@ -491,7 +477,7 @@ export class CatalogoComponent implements OnInit {
 
   eliminar(id: string): void {
     if (confirm('¿Eliminar este catálogo?')) {
-      this.http.delete(`https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net/catalogo/${id}`).subscribe({
+      this.catalogoService.eliminarCatalogo(id).subscribe({
         next: () => {
           this.mensaje = '✅ Catálogo eliminado';
           this.cargarCatalogo();
@@ -508,7 +494,10 @@ export class CatalogoComponent implements OnInit {
     return !!(
       this.formData.tipificacion.trim() &&
       this.formData.actividad.trim() &&
-      this.formData.diasHabiles > 0
+      this.formData.diasHabiles > 0 &&
+      this.formData.horasMinimas >= 0 &&
+      this.formData.horasMaximas >= 0 &&
+      this.formData.horasMaximas >= this.formData.horasMinimas
     );
   }
 
@@ -516,7 +505,9 @@ export class CatalogoComponent implements OnInit {
     this.formData = {
       tipificacion: '',
       actividad: '',
-      diasHabiles: 1
+      diasHabiles: 1,
+      horasMinimas: 0,
+      horasMaximas: 0
     };
     this.editandoId = null;
   }
