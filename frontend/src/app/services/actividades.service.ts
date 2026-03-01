@@ -1,12 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, forkJoin } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface Observacion {
   fecha: Date;
   comentario: string;
   usuario?: string;
   horas?: number;
+}
+
+export interface JustificacionCierre {
+  texto: string;
+  usuario: string;
+  fecha: Date;
+  asunto?: string;
+  estado?: 'pendiente' | 'aprobado' | 'rechazado';
+  comentarioCoordinador?: string;
 }
 
 export interface Actividad {
@@ -26,6 +35,7 @@ export interface Actividad {
   fechaModificacion: Date;
   fechaCierre?: Date;
   observaciones?: Observacion[];
+  justificacionCierre?: JustificacionCierre;
 }
 
 export interface Catalogo {
@@ -54,33 +64,25 @@ export class ActividadesService {
 
   constructor(private http: HttpClient) {}
 
-  // CATÁLOGO
+  // ================= CATÁLOGO =================
   getCatalogo(): Observable<Catalogo[]> {
     return this.http.get<Catalogo[]>(`${this.API_URL}/catalogo`);
   }
 
-  // ACTIVIDADES - Obtener y mapear con información del grupo del líder
+  // ================= ACTIVIDADES =================
   getActividades(): Observable<Actividad[]> {
-    return forkJoin({
-      actividades: this.http.get<Actividad[]>(`${this.API_URL}/actividades`),
-      usuarios: this.http.get<Usuario[]>(`${this.API_URL}/usuarios`)
-    }).pipe(
-      map(({ actividades, usuarios }) => {
-        console.log('📊 [SERVICE] Actividades obtenidas:', actividades.length);
-        console.log('👥 [SERVICE] Usuarios obtenidos:', usuarios.length);
-        
-        // Mapear grupo del líder a cada actividad
-        actividades.forEach((actividad) => {
-          const usuarioLider = usuarios.find(
-            (u: Usuario) => u.nombre === actividad.lider
-          );
-          
-          if (usuarioLider) {
-            actividad.grupoLider = usuarioLider.grupo;
-            console.log(`📌 [SERVICE] ${actividad.lider} → Grupo: ${usuarioLider.grupo}`);
-          } else {
-            console.log(`⚠️ [SERVICE] Usuario no encontrado: ${actividad.lider}`);
-          }
+    return this.http.get<Actividad[]>(`${this.API_URL}/actividades`).pipe(
+      map((actividades) => {
+        this.getUsuarios().subscribe((usuarios) => {
+          actividades.forEach((actividad) => {
+            const usuarioLider = usuarios.find(
+              (u: Usuario) => u.nombre === actividad.lider
+            );
+            
+            if (usuarioLider) {
+              actividad.grupoLider = usuarioLider.grupo;
+            }
+          });
         });
         
         return actividades;
@@ -92,6 +94,7 @@ export class ActividadesService {
     return this.http.post<Actividad>(`${this.API_URL}/actividades`, actividad);
   }
 
+  // ================= OBSERVACIONES =================
   agregarObservacion(actividadId: string, comentario: string, horas: number = 0): Observable<Actividad> {
     return this.http.post<Actividad>(
       `${this.API_URL}/actividades/${actividadId}/observaciones`,
@@ -99,6 +102,7 @@ export class ActividadesService {
     );
   }
 
+  // ================= CERRAR ACTIVIDAD =================
   cerrarActividad(actividadId: string): Observable<Actividad> {
     return this.http.post<Actividad>(
       `${this.API_URL}/actividades/${actividadId}/cerrar`,
@@ -106,7 +110,76 @@ export class ActividadesService {
     );
   }
 
-  // PASSWORD RECOVERY
+  // ================= JUSTIFICACIÓN DE VENCIMIENTOS =================
+  enviarAValidacion(actividadId: string, justificacion: JustificacionCierre): Observable<Actividad> {
+    return this.http.post<Actividad>(
+      `${this.API_URL}/actividades/${actividadId}/validar-cierre`,
+      justificacion
+    );
+  }
+
+  aprobarCierre(actividadId: string, comentario: string = ''): Observable<Actividad> {
+    return this.http.post<Actividad>(
+      `${this.API_URL}/actividades/${actividadId}/aprobar-cierre`,
+      { comentario }
+    );
+  }
+
+  rechazarCierre(actividadId: string, comentario: string): Observable<Actividad> {
+    return this.http.post<Actividad>(
+      `${this.API_URL}/actividades/${actividadId}/rechazar-cierre`,
+      { comentario }
+    );
+  }
+
+  // ================= HISTORIAL DE VENCIMIENTOS =================
+  getHistorialVencimientos(filtros?: { lider?: string; proyecto?: string; estado?: string }): Observable<any[]> {
+    let url = `${this.API_URL}/historial-vencimientos`;
+    
+    if (filtros) {
+      const params = new URLSearchParams();
+      if (filtros.lider) params.append('lider', filtros.lider);
+      if (filtros.proyecto) params.append('proyecto', filtros.proyecto);
+      if (filtros.estado) params.append('estado', filtros.estado);
+      
+      if (params.toString()) {
+        url += '?' + params.toString();
+      }
+    }
+    
+    return this.http.get<any[]>(url);
+  }
+
+  getHistorialPorActividad(actividadId: string): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.API_URL}/historial-vencimientos/${actividadId}`
+    );
+  }
+
+  getEstadisticasHistorial(): Observable<any> {
+    return this.http.get<any>(
+      `${this.API_URL}/historial-vencimientos-stats`
+    );
+  }
+
+  // ================= PROYECTOS =================
+  getProyectos(): Observable<string[]> {
+    return this.http.get<any[]>(`${this.API_URL}/asignaciones`).pipe(
+      map((asignaciones) => {
+        const proyectosConAsignacion = asignaciones
+          .filter((a) => a.porcentajeAsignacion > 0)
+          .map((a) => a.proyecto);
+        
+        return [...new Set(proyectosConAsignacion)].sort();
+      })
+    );
+  }
+
+  getAsignaciones(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/asignaciones`);
+  }
+
+  // ================= CONTRASEÑA =================
   recuperarPassword(email: string): Observable<any> {
     return this.http.post(`${this.API_URL}/recuperar-password`, { email });
   }
@@ -122,7 +195,7 @@ export class ActividadesService {
     );
   }
 
-  // USUARIOS
+  // ================= USUARIOS =================
   getUsuarios(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.API_URL}/usuarios`);
   }
@@ -137,5 +210,10 @@ export class ActividadesService {
 
   eliminarUsuario(usuarioId: string): Observable<any> {
     return this.http.delete(`${this.API_URL}/usuarios/${usuarioId}`);
+  }
+
+  // ================= MISCELÁNEO =================
+  obtenerActividades(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/actividades`);
   }
 }

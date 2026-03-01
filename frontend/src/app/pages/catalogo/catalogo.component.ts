@@ -366,7 +366,7 @@ export class CatalogoComponent implements OnInit {
 
     this.catalogoService.getCatalogo(esAutorizado).subscribe({
       next: (data) => {
-        this.catalogo = data;
+        this.catalogo = this.ordenarCatalogo(data);
         this.filtrarCatalogo();
         this.loading = false;
         this.cdr.detectChanges();
@@ -377,6 +377,17 @@ export class CatalogoComponent implements OnInit {
         this.loading = false;
         console.error('Error:', err);
       }
+    });
+  }
+
+  ordenarCatalogo(data: CatalogoItem[]): CatalogoItem[] {
+    return data.sort((a, b) => {
+      // Primero ordenar por tipificación alfabéticamente
+      if (a.tipificacion !== b.tipificacion) {
+        return a.tipificacion.localeCompare(b.tipificacion, 'es', { sensitivity: 'base' });
+      }
+      // Luego ordenar por actividad alfabéticamente dentro de la misma tipificación
+      return a.actividad.localeCompare(b.actividad, 'es', { sensitivity: 'base' });
     });
   }
 

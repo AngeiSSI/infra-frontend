@@ -8,185 +8,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './sidebar.html',
-  styles: [`
-    .main-sidebar {
-      width: 260px;
-      background: #FFFFFF;
-      padding: 0;
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      position: sticky;
-      top: 0;
-      border-right: 3px solid #CC0000;
-    }
-
-    .sidebar-header {
-      padding: 2rem 1.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border-bottom: 2px solid #F0F0F0;
-      background: #FAFAFA;
-    }
-
-.sidebar-logo-container {
-  width: 100%;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  background: #CC0000;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(204, 0, 0, 0.2);
-  padding: 0.5rem;
-}
-
-.sidebar-logo {
-  height: 60px;
-  width: auto;
-  object-fit: contain;
-}
-    .sidebar-header h2 {
-      margin: 0;
-      color: #CC0000;
-      font-size: 1.3rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-align: center;
-    }
-
-    .sidebar-main-item {
-      padding: 1rem 1.5rem;
-      color: #333;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      border-left: 4px solid transparent;
-      user-select: none;
-    }
-
-    .sidebar-main-item:hover {
-      background: #F5F5F5;
-      border-left-color: #CC0000;
-      color: #CC0000;
-    }
-
-    .sidebar-main-item.active {
-      background: #FFF0F0;
-      border-left-color: #CC0000;
-      color: #CC0000;
-      font-weight: 700;
-    }
-
-    .sidebar-main-item .icon {
-      font-size: 1.4rem;
-    }
-
-    .sidebar-submenu {
-      background: #FAFAFA;
-      margin-left: 0;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease;
-      border-bottom: 1px solid #F0F0F0;
-    }
-
-    .sidebar-submenu.open {
-      max-height: 500px;
-      border-bottom: 2px solid #CC0000;
-    }
-
-    .sidebar-subitem {
-      padding: 0.75rem 1.5rem;
-      padding-left: 3rem;
-      color: #555;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 0.95rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      border-left: 3px solid transparent;
-      user-select: none;
-    }
-
-    .sidebar-subitem:hover {
-      color: #CC0000;
-      background: #F5F5F5;
-      border-left-color: #CC0000;
-    }
-
-    .sidebar-subitem.active {
-      color: #CC0000;
-      background: #FFF0F0;
-      border-left-color: #CC0000;
-      font-weight: 700;
-    }
-
-    .sidebar-section {
-      margin-bottom: 0;
-    }
-
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 1.5rem;
-      border-top: 2px solid #F0F0F0;
-      font-size: 0.85rem;
-      color: #666;
-    }
-
-    .sidebar-footer-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .sidebar-footer-item strong {
-      color: #CC0000;
-      font-weight: 700;
-    }
-
-    .logout-btn {
-      width: 100%;
-      padding: 0.75rem;
-      background: #CC0000;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 700;
-      margin-top: 1rem;
-      transition: all 0.3s;
-      font-size: 0.9rem;
-    }
-
-    .logout-btn:hover {
-      background: #AA0000;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(204, 0, 0, 0.2);
-    }
-
-    .chevron {
-      margin-left: auto;
-      font-size: 0.8rem;
-      transition: transform 0.3s;
-    }
-
-    .sidebar-main-item.expanded .chevron {
-      transform: rotate(90deg);
-    }
-  `]
+  styleUrls: ['./sidebar.css']
 })
 export class SidebarComponent implements OnInit {
   usuario: any = null;
@@ -200,49 +22,126 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
+    console.log('👤 Usuario en sidebar:', this.usuario);
+    
+    // Actualizar el menú activo basado en la ruta actual
+    this.actualizarMenuActivo();
+    
+    // Escuchar cambios de ruta para actualizar el menú
+    this.router.events.subscribe(() => {
+      this.actualizarMenuActivo();
+    });
+  }
+
+  /**
+   * Actualiza el menú activo según la ruta actual
+   */
+  actualizarMenuActivo(): void {
+    const url = this.router.url;
+    console.log('📍 Ruta actual:', url);
+
+    if (url.includes('actividades/aprobacion-vencimientos')) {
+      this.activeMenuItem = 'aprobacion';
+      this.submenuOpen = true;
+    } else if (url.includes('actividades/seguimiento')) {
+      this.activeMenuItem = 'seguimiento';
+      this.submenuOpen = true;
+    } else if (url.includes('actividades/total')) {
+      this.activeMenuItem = 'total';
+      this.submenuOpen = true;
+    } else if (url.includes('actividades/grupo')) {
+      this.activeMenuItem = 'grupo';
+      this.submenuOpen = true;
+    } else if (url.includes('actividades') && !url.includes('actividades/')) {
+      this.activeMenuItem = 'mis-actividades';
+      this.submenuOpen = true;
+    } else if (url.includes('reportes')) {
+      this.activeMenuItem = 'reportes';
+      this.submenuOpen = false;
+    } else if (url.includes('catalogo')) {
+      this.activeMenuItem = 'catalogo';
+      this.submenuOpen = false;
+    } else if (url.includes('asignacion')) {
+      this.activeMenuItem = 'asignacion';
+      this.submenuOpen = false;
+    } else if (url.includes('gestion-usuarios')) {
+      this.activeMenuItem = 'gestion-usuarios';
+      this.submenuOpen = false;
+    }
   }
 
   toggleSubmenu(): void {
+    console.log('🔄 Toggling submenu:', !this.submenuOpen);
     this.submenuOpen = !this.submenuOpen;
   }
 
   navigateTo(ruta: string): void {
+    console.log('🔗 Navegando a:', ruta);
+    
+    // Validar permisos para usuarios
+    if (ruta === 'gestion-usuarios' && !this.puedeVerGestionUsuarios()) {
+      console.log('❌ No tienes permisos para acceder a Gestión de Usuarios');
+      return;
+    }
+    
     this.activeMenuItem = ruta;
     this.submenuOpen = false;
+    console.log('➡️ Ruta final:', `/${ruta}`);
     this.router.navigate([`/${ruta}`]);
   }
 
   setActiveMenu(item: string): void {
+    console.log('📌 Estableciendo menú activo:', item);
     this.activeMenuItem = item;
-    this.submenuOpen = false;
     
     if (item === 'mis-actividades') {
+      console.log('➡️ Navegando a /actividades');
       this.router.navigate(['/actividades']);
     } else if (item === 'grupo') {
+      console.log('➡️ Navegando a /actividades/grupo');
       this.router.navigate(['/actividades/grupo']);
     } else if (item === 'total') {
+      console.log('➡️ Navegando a /actividades/total');
       this.router.navigate(['/actividades/total']);
     } else if (item === 'seguimiento') {
+      console.log('➡️ Navegando a /actividades/seguimiento');
       this.router.navigate(['/actividades/seguimiento']);
+    } else if (item === 'aprobacion') {
+      console.log('➡️ Navegando a /actividades/aprobacion-vencimientos');
+      this.router.navigate(['/actividades/aprobacion-vencimientos']);
     }
   }
 
   puedeVerTotal(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
+    const puede = rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
+    console.log('🔐 puedeVerTotal para', rol, ':', puede);
+    return puede;
   }
 
   puedeVerSeguimiento(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
+    const puede = rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
+    console.log('🔐 puedeVerSeguimiento para', rol, ':', puede);
+    return puede;
+  }
+
+  puedeVerAprobacionVencimientos(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    const puede = rol === 'coordinador' || rol === 'administrador';
+    console.log('🔐 puedeVerAprobacionVencimientos para', rol, ':', puede);
+    return puede;
   }
 
   puedeVerGestionUsuarios(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'coordinador' || rol === 'administrador';
+    const puede = rol === 'coordinador' || rol === 'administrador';
+    console.log('🔐 puedeVerGestionUsuarios para', rol, ':', puede);
+    return puede;
   }
 
   logout(): void {
+    console.log('🚪 Cerrando sesión');
     this.authService.logout();
     this.router.navigate(['/login']);
   }

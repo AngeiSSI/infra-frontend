@@ -9,8 +9,9 @@
 
   <!-- Main Menu -->
   <div class="sidebar-section">
+    <!-- Actividades - Expandible -->
     <div class="sidebar-main-item" 
-         [class.active]="activeMenuItem.includes('actividades')"
+         [class.active]="activeMenuItem.includes('actividades') || activeMenuItem.includes('mis') || activeMenuItem.includes('grupo') || activeMenuItem.includes('total') || activeMenuItem.includes('seguimiento') || activeMenuItem.includes('aprobacion')"
          [class.expanded]="submenuOpen"
          (click)="toggleSubmenu()">
       <span class="icon">📋</span>
@@ -18,7 +19,7 @@
       <span class="chevron">›</span>
     </div>
 
-    <!-- Submenu -->
+    <!-- Submenu de Actividades -->
     <div class="sidebar-submenu" [class.open]="submenuOpen">
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'mis-actividades'"
@@ -42,6 +43,22 @@
            (click)="setActiveMenu('seguimiento')">
         📊 Seguimiento
       </div>
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'aprobacion'"
+           *ngIf="puedeVerAprobacionVencimientos()"
+           (click)="setActiveMenu('aprobacion')">
+        ⚠️ Aprobación Vencimientos
+      </div>
+    </div>
+  </div>
+
+  <!-- Reportes -->
+  <div class="sidebar-section">
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'reportes'"
+         (click)="navigateTo('reportes')">
+      <span class="icon">📈</span>
+      <span>Reportes</span>
     </div>
   </div>
 
@@ -52,6 +69,16 @@
          (click)="navigateTo('catalogo')">
       <span class="icon">📚</span>
       <span>Catálogo</span>
+    </div>
+  </div>
+
+  <!-- Asignación -->
+  <div class="sidebar-section">
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'asignacion'"
+         (click)="navigateTo('asignacion')">
+      <span class="icon">📦</span>
+      <span>Asignación</span>
     </div>
   </div>
 
@@ -74,7 +101,7 @@
       🔑 {{ usuario?.rol | titlecase }}
     </div>
     <button class="logout-btn" (click)="logout()">
-      Cerrar Sesi��n
+      🚪 Cerrar Sesión
     </button>
   </div>
 </div>
