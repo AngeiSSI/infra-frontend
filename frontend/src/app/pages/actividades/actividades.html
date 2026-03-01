@@ -85,21 +85,26 @@
       
       <div class="form-grid">
         <div class="form-group">
-          <label>Proyecto:</label>
-          <input type="text" [(ngModel)]="formData.proyecto" placeholder="Nombre del proyecto" />
+          <label>Proyecto *</label>
+          <select [(ngModel)]="formData.proyecto" required>
+            <option value="">Selecciona un proyecto</option>
+            <option *ngFor="let proyecto of proyectosAsignacionFiltrados" [value]="proyecto">
+              {{ proyecto }}
+            </option>
+          </select>
         </div>
 
         <div class="form-group">
-          <label>Tipificación:</label>
-          <select [(ngModel)]="formData.tipificacion" (change)="cargarActividadesCatalogo()">
+          <label>Tipificación *</label>
+          <select [(ngModel)]="formData.tipificacion" (change)="cargarActividadesCatalogo()" required>
             <option value="">Selecciona tipificación</option>
             <option *ngFor="let tip of tipificaciones" [value]="tip">{{ tip }}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Actividad:</label>
-          <select [(ngModel)]="formData.actividadCatalogo">
+          <label>Actividad *</label>
+          <select [(ngModel)]="formData.actividadCatalogo" required>
             <option value="">Selecciona actividad</option>
             <option *ngFor="let act of actividadesCatalogo" [value]="act.actividad">
               {{ act.actividad }}
@@ -108,14 +113,14 @@
         </div>
 
         <div class="form-group">
-          <label>Horas Estimadas:</label>
-          <input type="number" [(ngModel)]="formData.horas" min="1" placeholder="Horas" />
+          <label>Horas Estimadas *</label>
+          <input type="number" [(ngModel)]="formData.horas" min="1" placeholder="Horas" required />
         </div>
       </div>
 
       <div class="form-group">
-        <label>Descripción:</label>
-        <textarea [(ngModel)]="formData.descripcion" placeholder="Descripción de la actividad" rows="4"></textarea>
+        <label>Descripción *</label>
+        <textarea [(ngModel)]="formData.descripcion" placeholder="Descripción de la actividad" rows="4" required></textarea>
       </div>
 
       <button class="btn-success" (click)="crearActividad()" [disabled]="loading">
@@ -149,8 +154,8 @@
           <th>Líder</th>
           <th>Estado</th>
           <th>Horas Mes</th>
-          <th *ngIf="vistaActual === 'total' || vistaActual === 'seguimiento'">Horas Acumuladas</th>
-          <th *ngIf="vistaActual !== 'seguimiento'">Riesgo</th>
+          <th *ngIf="vistaActual === 'total' || vistaActual === 'grupo' || vistaActual === 'mis'">Horas Acumuladas</th>
+          <th>Riesgo</th>
           <th *ngIf="vistaActual === 'seguimiento'">Creada</th>
           <th>Modificación</th>
           <th>Acciones</th>
@@ -172,10 +177,10 @@
             <td>
               <strong>{{ actividad.horasMes || 0 }}</strong>
             </td>
-            <td *ngIf="vistaActual === 'total' || vistaActual === 'seguimiento'">
+            <td *ngIf="vistaActual === 'total' || vistaActual === 'grupo' || vistaActual === 'mis'">
               <strong>{{ actividad.horasAcumuladas || 0 }}</strong>
             </td>
-            <td *ngIf="vistaActual !== 'seguimiento'">
+            <td>
               <span class="badge" [ngClass]="'badge-' + calcularRiesgo(actividad)">
                 {{ getRiesgoTexto(actividad) }}
               </span>
@@ -190,58 +195,107 @@
                 💬 Obs
               </button>
               <button class="btn-small btn-warning"
-                      *ngIf="actividad.estado === 'en progreso' && vistaActual !== 'seguimiento'"
+                      *ngIf="actividad.estado === 'en progreso' && vistaActual !== 'seguimiento' && !esVencida(actividad)"
                       (click)="cerrarActividad(actividad._id)">
                 🔒 Cerrar
+              </button>
+              <button class="btn-small btn-danger"
+                      *ngIf="esVencida(actividad) && actividad.estado === 'en progreso' && vistaActual !== 'seguimiento'"
+                      (click)="toggleJustificacion(actividad._id!)">
+                📋 Justificar
               </button>
             </td>
           </tr>
 
-         <tr *ngIf="expandedObservaciones[actividad._id!]" class="observaciones-row">
-  <td [attr.colspan]="vistaActual === 'total' || vistaActual === 'seguimiento' ? '12' : '11'">
-    <div class="observaciones-content">
-      <div class="obs-form-container">
-        <div class="obs-form">
-          <textarea [(ngModel)]="observacionForm[actividad._id!]"
-                    placeholder="Agregar observación..."
-                    rows="4"
-                    class="obs-textarea"></textarea>
-          <div class="obs-form-actions">
-            <div class="obs-horas-input">
-              <label>Horas trabajadas (opcional)</label>
-              <input type="number" 
-                     [(ngModel)]="horasForm[actividad._id!]"
-                     placeholder="0"
-                     min="0"
-                     step="0.5" />
-            </div>
-            <button class="btn-success"
-                    (click)="guardarObservacion(actividad._id)"
-                    [disabled]="loading">
-              ✅ Guardar
-            </button>
-          </div>
-        </div>
-      </div>
+          <!-- Fila de Justificación para Tareas Vencidas -->
+          <tr *ngIf="esVencida(actividad) && actividad.estado === 'en progreso' && showJustificacion[actividad._id!]">
+            <td [attr.colspan]="vistaActual === 'seguimiento' ? '13' : '12'">
+              <div class="justificacion-container">
+                <h4>⚠️ Justificación de Tarea Vencida</h4>
+                
+                <div class="justificacion-info">
+                  <strong>Instrucciones:</strong><br>
+                  1. Adjunta las evidencias por correo electrónico al coordinador<br>
+                  2. Indica en esta justificación el <strong>asunto del correo</strong> enviado<br>
+                  3. Explica brevemente por qué se venció la tarea<br>
+                  4. Una vez enviado, el coordinador aprobará o rechazará el cierre
+                </div>
 
-      <div class="obs-list" *ngIf="actividad.observaciones && actividad.observaciones.length > 0">
-        <h4>📝 Observaciones</h4>
-        <div *ngFor="let obs of actividad.observaciones" class="obs-item">
-          <p class="obs-usuario">{{ obs.usuario }}</p>
-          <p class="obs-fecha">{{ obs.fecha | date: 'dd/MM/yyyy HH:mm' }}</p>
-          <p class="obs-comentario">{{ obs.comentario }}</p>
-          <p class="obs-horas" *ngIf="obs.horas && obs.horas > 0">
-            ⏱️ <strong>{{ obs.horas }}</strong> horas
-          </p>
-        </div>
-      </div>
+                <div class="justificacion-form">
+                  <textarea [(ngModel)]="justificacionForm[actividad._id!]"
+                            placeholder="Asunto del correo enviado: [...]\n\nJustificación de la demora:\n..."
+                            class="justificacion-textarea"></textarea>
+                  
+                  <div class="justificacion-actions">
+                    <button class="btn-success"
+                            (click)="enviarAValidacion(actividad._id)"
+                            [disabled]="loading">
+                      ✅ {{ loading ? 'Enviando...' : 'Enviar a Validación' }}
+                    </button>
+                    <button class="btn-secondary"
+                            (click)="toggleJustificacion(actividad._id!)">
+                      ❌ Cancelar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
 
-      <div *ngIf="!actividad.observaciones || actividad.observaciones.length === 0" class="obs-empty">
-        Sin observaciones aún
-      </div>
-    </div>
-  </td>
-</tr>
+          <!-- Fila de Observaciones -->
+          <tr *ngIf="expandedObservaciones[actividad._id!]" class="observaciones-row">
+            <td [attr.colspan]="vistaActual === 'seguimiento' ? '13' : '12'">
+              <div class="observaciones-content">
+                <div class="obs-form-container" *ngIf="actividad.estado !== 'pendiente validacion' && actividad.estado !== 'cerrado'">
+                  <div class="obs-form">
+                    <textarea [(ngModel)]="observacionForm[actividad._id!]"
+                              placeholder="Agregar observación..."
+                              rows="4"
+                              class="obs-textarea"></textarea>
+                    <div class="obs-form-actions">
+                      <div class="obs-horas-input">
+                        <label>Horas trabajadas (opcional)</label>
+                        <input type="number" 
+                               [(ngModel)]="horasForm[actividad._id!]"
+                               placeholder="0"
+                               min="0"
+                               step="0.5" />
+                      </div>
+                      <button class="btn-success"
+                              (click)="guardarObservacion(actividad._id)"
+                              [disabled]="loading">
+                        ✅ Guardar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="obs-list" *ngIf="actividad.observaciones && actividad.observaciones.length > 0">
+                  <h4>📝 Observaciones</h4>
+                  <div *ngFor="let obs of actividad.observaciones" class="obs-item">
+                    <p class="obs-usuario">{{ obs.usuario }}</p>
+                    <p class="obs-fecha">{{ obs.fecha | date: 'dd/MM/yyyy HH:mm' }}</p>
+                    <p class="obs-comentario">{{ obs.comentario }}</p>
+                    <p class="obs-horas" *ngIf="obs.horas && obs.horas > 0">
+                      ⏱️ <strong>{{ obs.horas }}</strong> horas
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Estado Pendiente Validación -->
+                <div *ngIf="actividad.estado === 'pendiente validacion'" style="background: #FFF3E0; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #F57C00;">
+                  <div class="estado-badge-pendiente">⏳ Pendiente de aprobación por el coordinador</div>
+                  <p style="margin: 1rem 0 0 0; color: #555; font-size: 0.9rem;">
+                    {{ actividad.justificacionCierre?.texto || 'Sin justificación registrada' }}
+                  </p>
+                </div>
+
+                <div *ngIf="!actividad.observaciones || actividad.observaciones.length === 0" class="obs-empty">
+                  Sin observaciones aún
+                </div>
+              </div>
+            </td>
+          </tr>
         </ng-container>
       </tbody>
     </table>

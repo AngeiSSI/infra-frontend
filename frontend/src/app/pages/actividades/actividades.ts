@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ActividadesService, Catalogo, Actividad } from '../../services/actividades.service';
+import { ActividadesService, Catalogo, Actividad, JustificacionCierre } from '../../services/actividades.service';
 import { AuthService } from '../../services/auth.service';
 import { ChangeDetectorRef } from '@angular/core';
 
@@ -51,6 +51,12 @@ import { ChangeDetectorRef } from '@angular/core';
       background: #FFEBEE;
       color: #CC0000;
       border-left-color: #CC0000;
+    }
+
+    .alert-warning {
+      background: #FFF3E0;
+      color: #F57C00;
+      border-left-color: #F57C00;
     }
 
     .stats-section {
@@ -214,6 +220,7 @@ import { ChangeDetectorRef } from '@angular/core';
       font-weight: 700;
       color: white;
       font-size: 0.9rem;
+      white-space: nowrap;
     }
 
     .tabla td {
@@ -243,6 +250,21 @@ import { ChangeDetectorRef } from '@angular/core';
       color: #2E7D32;
     }
 
+    .badge-pendiente\ validacion {
+      background: #FFF3E0;
+      color: #F57C00;
+    }
+
+    .badge-vencida {
+      background: #FFEBEE;
+      color: #CC0000;
+    }
+
+    .badge-proxima {
+      background: #FFF3E0;
+      color: #F57C00;
+    }
+
     .badge-success {
       background: #E8F5E9;
       color: #2E7D32;
@@ -266,6 +288,7 @@ import { ChangeDetectorRef } from '@angular/core';
     .acciones {
       display: flex;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .btn-small {
@@ -292,6 +315,15 @@ import { ChangeDetectorRef } from '@angular/core';
 
     .btn-info:hover {
       background: #1976D2;
+    }
+
+    .btn-danger {
+      background: #CC0000;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #AA0000;
     }
 
     .observaciones-row {
@@ -461,6 +493,70 @@ import { ChangeDetectorRef } from '@angular/core';
       border-color: #CC0000;
       color: #CC0000;
     }
+
+    /* Estilos para justificación de vencidas */
+    .justificacion-container {
+      background: #FFEBEE;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      border-left: 4px solid #CC0000;
+    }
+
+    .justificacion-container h4 {
+      color: #CC0000;
+      margin-top: 0;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .justificacion-info {
+      background: white;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .justificacion-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .justificacion-textarea {
+      width: 100% !important;
+      padding: 1rem !important;
+      border: 2px solid #E0E0E0 !important;
+      border-radius: 6px !important;
+      font-size: 1rem !important;
+      font-family: inherit !important;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .justificacion-textarea:focus {
+      outline: none !important;
+      border-color: #CC0000 !important;
+      box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1) !important;
+    }
+
+    .justificacion-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .estado-badge-pendiente {
+      background: #FFF3E0;
+      color: #F57C00;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
   `]
 })
 export class ActividadesComponent implements OnInit {
@@ -478,6 +574,8 @@ export class ActividadesComponent implements OnInit {
   filtroProyectoSeguimiento: string = '';
   lideresDisponibles: string[] = [];
   proyectosDisponibles: string[] = [];
+  proyectosAsignacion: string[] = [];
+  proyectosAsignacionFiltrados: string[] = [];
 
   formData = {
     proyecto: '',
@@ -489,6 +587,8 @@ export class ActividadesComponent implements OnInit {
 
   observacionForm: { [key: string]: string } = {};
   horasForm: { [key: string]: number } = {};
+  justificacionForm: { [key: string]: string } = {};
+  showJustificacion: { [key: string]: boolean } = {};
 
   loading = false;
   loadingActividades = false;
@@ -524,6 +624,7 @@ export class ActividadesComponent implements OnInit {
     });
     
     this.cargarCatalogo();
+    this.cargarProyectos();
     this.cargarActividades();
   }
 
@@ -531,10 +632,42 @@ export class ActividadesComponent implements OnInit {
     this.actividadesService.getCatalogo().subscribe({
       next: (data) => {
         this.catalogo = data;
-        this.tipificaciones = [...new Set(data.map((c) => c.tipificacion))];
+        this.tipificaciones = [...new Set(data.map((c) => c.tipificacion))].sort();
       },
-      error: (err) => {
+      error: (err: any) => {
         this.error = 'Error al cargar catálogo: ' + (err.error?.message || err.statusText);
+      }
+    });
+  }
+
+  cargarProyectos(): void {
+    this.actividadesService.getProyectos().subscribe({
+      next: (data) => {
+        this.proyectosAsignacion = data;
+        console.log('📊 Proyectos disponibles de asignaciones:', data);
+        this.filtrarProyectosPorLider();
+      },
+      error: (err: any) => {
+        console.error('Error al cargar proyectos:', err);
+        this.proyectosAsignacion = [];
+      }
+    });
+  }
+
+  filtrarProyectosPorLider(): void {
+    this.actividadesService.getAsignaciones().subscribe({
+      next: (asignaciones: any[]) => {
+        const proyectosFiltrados = asignaciones
+          .filter(a => a.liderAsignado === this.usuario.nombre && a.porcentajeAsignacion > 0)
+          .map(a => a.proyecto);
+        
+        this.proyectosAsignacionFiltrados = [...new Set(proyectosFiltrados)].sort();
+        console.log('📋 Proyectos filtrados para ' + this.usuario.nombre + ':', this.proyectosAsignacionFiltrados);
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error al filtrar proyectos por líder:', err);
+        this.proyectosAsignacionFiltrados = [];
       }
     });
   }
@@ -560,7 +693,7 @@ export class ActividadesComponent implements OnInit {
         this.loadingActividades = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: (err: any) => {
         this.error = 'Error al cargar actividades: ' + (err.error?.message || err.statusText);
         this.loadingActividades = false;
       }
@@ -619,14 +752,33 @@ export class ActividadesComponent implements OnInit {
           (a) => a.lider === this.usuario.nombre
         );
         break;
+
       case 'grupo':
         const grupoUsuario = this.usuario.grupo;
-        this.actividadesFiltradas = this.actividades.filter((actividad) => {
-          const perteneceAlGrupo = actividad.grupoLider === grupoUsuario;
-          const esDelUsuario = actividad.lider === this.usuario.nombre;
-          return perteneceAlGrupo || esDelUsuario;
+        console.log('👥 Filtrando por grupo:', grupoUsuario);
+        
+        this.actividadesService.getUsuarios().subscribe({
+          next: (usuarios: any[]) => {
+            const lideresDelGrupo = usuarios
+              .filter(u => u.grupo === grupoUsuario)
+              .map(u => u.nombre);
+            
+            console.log('👥 Líderes del grupo ' + grupoUsuario + ':', lideresDelGrupo);
+            
+            this.actividadesFiltradas = this.actividades.filter((actividad) => {
+              return lideresDelGrupo.includes(actividad.lider);
+            });
+            
+            console.log('📊 Actividades filtradas por grupo:', this.actividadesFiltradas.length);
+            this.cdr.detectChanges();
+          },
+          error: (err: any) => {
+            console.error('❌ Error al cargar usuarios:', err);
+            this.actividadesFiltradas = [];
+          }
         });
         break;
+  
       case 'total':
         let filtradoTotal = this.actividades;
         if (this.filtroLiderSeguimiento) {
@@ -637,6 +789,7 @@ export class ActividadesComponent implements OnInit {
         }
         this.actividadesFiltradas = filtradoTotal;
         break;
+
       case 'seguimiento':
         let filtrado = this.actividades.filter((actividad) => {
           if (actividad.estado !== 'en progreso' && actividad.estado !== 'cerrado') {
@@ -663,6 +816,7 @@ export class ActividadesComponent implements OnInit {
           return fechaB - fechaA;
         });
         break;
+
       default:
         this.actividadesFiltradas = [];
     }
@@ -692,9 +846,9 @@ export class ActividadesComponent implements OnInit {
 
   cargarActividadesCatalogo(): void {
     if (this.formData.tipificacion) {
-      this.actividadesCatalogo = this.catalogo.filter(
-        (c) => c.tipificacion === this.formData.tipificacion
-      );
+      this.actividadesCatalogo = this.catalogo
+        .filter((c) => c.tipificacion === this.formData.tipificacion)
+        .sort((a, b) => a.actividad.localeCompare(b.actividad));
     } else {
       this.actividadesCatalogo = [];
     }
@@ -712,12 +866,15 @@ export class ActividadesComponent implements OnInit {
 
     const nuevaActividad = {
       lider: this.usuario.nombre,
+      grupoLider: this.usuario.grupo,
       proyecto: this.formData.proyecto,
       tipificacion: this.formData.tipificacion,
       actividadCatalogo: this.formData.actividadCatalogo,
       descripcion: this.formData.descripcion,
       horas: this.formData.horas
     };
+
+    console.log('📝 Creando actividad con grupoLider:', nuevaActividad.grupoLider);
 
     this.actividadesService.crearActividad(nuevaActividad).subscribe({
       next: () => {
@@ -726,7 +883,7 @@ export class ActividadesComponent implements OnInit {
         this.showFormulario = false;
         this.cargarActividades();
       },
-      error: (err) => {
+      error: (err: any) => {
         this.loading = false;
         this.error = 'Error al crear actividad: ' + (err.error?.message || err.statusText);
       }
@@ -765,11 +922,67 @@ export class ActividadesComponent implements OnInit {
           }
           this.cdr.detectChanges();
         },
-        error: (err) => {
+        error: (err: any) => {
           this.error = 'Error al cerrar actividad: ' + (err.error?.message || err.statusText);
         }
       });
     }
+  }
+
+  enviarAValidacion(actividadId: string | undefined): void {
+    if (!actividadId) {
+      this.error = 'ID de actividad no válido';
+      return;
+    }
+
+    const actividad = this.actividades.find(a => a._id === actividadId);
+    if (!actividad) {
+      this.error = 'Actividad no encontrada';
+      return;
+    }
+
+    if (!this.justificacionForm[actividadId]?.trim()) {
+      this.error = 'La justificación no puede estar vacía';
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+
+    const justificacion: JustificacionCierre = {
+      texto: this.justificacionForm[actividadId],
+      usuario: this.usuario.nombre,
+      fecha: new Date(),
+      estado: 'pendiente'
+    };
+
+    console.log('📤 Enviando justificación:', {
+      actividadId,
+      justificacion
+    });
+
+    this.actividadesService.enviarAValidacion(actividadId, justificacion).subscribe({
+      next: (actividadActualizada: Actividad) => {
+        console.log('✅ Justificación enviada exitosamente:', actividadActualizada);
+        const indexMain = this.actividades.findIndex(a => a._id === actividadId);
+        if (indexMain !== -1) {
+          this.actividades[indexMain] = actividadActualizada;
+        }
+        const indexFiltered = this.actividadesFiltradas.findIndex(a => a._id === actividadId);
+        if (indexFiltered !== -1) {
+          this.actividadesFiltradas[indexFiltered] = actividadActualizada;
+        }
+        this.justificacionForm[actividadId] = '';
+        this.showJustificacion[actividadId] = false;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('❌ Error al enviar justificación:', err);
+        this.loading = false;
+        this.error = 'Error al enviar a validación: ' + (err.error?.message || err.statusText);
+      }
+    });
   }
 
   guardarObservacion(actividadId: string | undefined): void {
@@ -808,49 +1021,96 @@ export class ActividadesComponent implements OnInit {
         this.loading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: (err: any) => {
         this.loading = false;
         this.error = 'Error al agregar observación: ' + (err.error?.message || err.statusText);
       }
     });
   }
 
-  calcularRiesgo(actividad: Actividad): string {
-    if (actividad.estado === 'cerrado') {
-      return 'success';
+  calcularDiasHabiles(fechaInicio: Date, fechaFin: Date): number {
+    let diasHabiles = 0;
+    let fechaActual = new Date(fechaInicio);
+    
+    fechaActual.setHours(0, 0, 0, 0);
+    const fechaFinNormalizada = new Date(fechaFin);
+    fechaFinNormalizada.setHours(0, 0, 0, 0);
+
+    if (fechaFinNormalizada < fechaActual) {
+      return -Math.abs(this.calcularDiasHabilesPositivos(fechaFinNormalizada, fechaActual));
     }
-    const diasHabiles = this.diasHabilesRestantes(actividad);
-    if (diasHabiles < 0) {
+
+    return this.calcularDiasHabilesPositivos(fechaActual, fechaFinNormalizada);
+  }
+
+  private calcularDiasHabilesPositivos(fechaInicio: Date, fechaFin: Date): number {
+    let diasHabiles = 0;
+    let fechaActual = new Date(fechaInicio);
+
+    while (fechaActual < fechaFin) {
+      const dia = fechaActual.getDay();
+      if (dia !== 0 && dia !== 6) {
+        diasHabiles++;
+      }
+      fechaActual.setDate(fechaActual.getDate() + 1);
+    }
+
+    return diasHabiles;
+  }
+
+  esVencida(actividad: Actividad): boolean {
+    if (actividad.estado === 'cerrado') return false;
+    if (actividad.estado === 'pendiente validacion') return false;
+    if (!actividad.fechaCierre) return false;
+    
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    
+    const fechaCierre = new Date(actividad.fechaCierre);
+    fechaCierre.setHours(0, 0, 0, 0);
+    
+    return fechaCierre < hoy;
+  }
+
+  esProxima(actividad: Actividad): boolean {
+    if (actividad.estado === 'cerrado') return false;
+    if (!actividad.fechaCierre) return false;
+    
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    
+    const fechaCierre = new Date(actividad.fechaCierre);
+    fechaCierre.setHours(0, 0, 0, 0);
+    
+    const diasRestantes = this.calcularDiasHabiles(hoy, fechaCierre);
+    return diasRestantes > 0 && diasRestantes <= 2;
+  }
+
+  calcularRiesgo(actividad: Actividad): string {
+    if (this.esVencida(actividad)) {
       return 'danger';
     }
-    if (diasHabiles <= 2) {
+    if (this.esProxima(actividad)) {
       return 'warning';
+    }
+    if (actividad.estado === 'pendiente validacion') {
+      return 'warning';
+    }
+    if (actividad.estado === 'cerrado') {
+      return 'success';
     }
     return 'info';
   }
 
   diasHabilesRestantes(actividad: Actividad): number {
     if (!actividad.fechaCierre) return 0;
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    const cierre = new Date(actividad.fechaCierre);
-    cierre.setHours(0, 0, 0, 0);
-    let diasHabiles = 0;
-    let fechaActual = new Date(hoy);
-    while (fechaActual < cierre) {
-      fechaActual.setDate(fechaActual.getDate() + 1);
-      const dia = fechaActual.getDay();
-      if (dia !== 0 && dia !== 6) {
-        diasHabiles++;
-      }
-    }
-    if (hoy < cierre) {
-      return diasHabiles;
-    }
-    return -Math.abs(diasHabiles);
+    return this.calcularDiasHabiles(new Date(), new Date(actividad.fechaCierre));
   }
 
   getRiesgoTexto(actividad: Actividad): string {
+    if (actividad.estado === 'pendiente validacion') {
+      return '⏳ Pendiente validación';
+    }
     if (actividad.estado === 'cerrado') {
       return '✅ Cerrado';
     }
@@ -873,13 +1133,28 @@ export class ActividadesComponent implements OnInit {
 
   conteoVencidas(): number {
     return this.actividadesFiltradas.filter(
-      (a) => a.estado === 'en progreso' && this.diasHabilesRestantes(a) < 0
+      (a) => (a.estado === 'en progreso' || a.estado === 'pendiente validacion') && this.esVencida(a)
     ).length;
+  }
+
+  puedeVerTotal(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
   }
 
   puedeVerSeguimiento(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
     return rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
+  }
+
+  puedeVerGestionUsuarios(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'coordinador' || rol === 'administrador';
+  }
+
+  esCoordinador(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'coordinador' || rol === 'administrador';
   }
 
   validarFormulario(): boolean {
@@ -912,6 +1187,11 @@ export class ActividadesComponent implements OnInit {
 
   toggleObservaciones(actividadId: string): void {
     this.expandedObservaciones[actividadId] = !this.expandedObservaciones[actividadId];
+    this.cdr.detectChanges();
+  }
+
+  toggleJustificacion(actividadId: string): void {
+    this.showJustificacion[actividadId] = !this.showJustificacion[actividadId];
     this.cdr.detectChanges();
   }
 }

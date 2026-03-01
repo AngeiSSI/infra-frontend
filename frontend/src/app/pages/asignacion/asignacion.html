@@ -1,0 +1,281 @@
+<div style="display: flex; flex-direction: column; height: 100vh;">
+  <!-- Header -->
+  <div class="header">
+    <h1>Asignación de Recursos</h1>
+    <p class="header-subtitle">Gestión de asignaciones de proyectos y roles</p>
+  </div>
+
+  <!-- Content -->
+  <div class="content-area">
+    <!-- Mensajes -->
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+    <div *ngIf="exito" class="alert alert-success">
+      {{ exito }}
+    </div>
+
+    <!-- Botón para agregar -->
+    <div style="margin-bottom: 1.5rem;">
+      <button class="btn-primary" (click)="toggleFormulario()" *ngIf="puedoEditar()">
+        {{ showFormulario ? '✖️ Cancelar' : '➕ Nueva Asignación' }}
+      </button>
+    </div>
+
+    <!-- Formulario -->
+    <div *ngIf="showFormulario && puedoEditar()" class="formulario-card">
+      <h3>{{ editandoId ? 'Editar Asignación' : 'Nueva Asignación' }}</h3>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Líder Asignado *</label>
+          <select [(ngModel)]="formData.liderAsignado">
+            <option value="">Selecciona un líder</option>
+            <option *ngFor="let u of usuarios" [value]="u.nombre">{{ u.nombre }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Proyecto *</label>
+          <input type="text" [(ngModel)]="formData.proyecto" placeholder="Nombre del proyecto">
+        </div>
+
+        <div class="form-group">
+          <label>ID Feature *</label>
+          <input type="text" [(ngModel)]="formData.idFeature" placeholder="ID del feature">
+        </div>
+
+        <div class="form-group">
+          <label>Tipología *</label>
+          <input type="text" [(ngModel)]="formData.tipologia" placeholder="Ej: Desarrollo, QA, etc">
+        </div>
+
+<div class="form-group">
+  <label>% Asignación</label>
+  <input type="number" [(ngModel)]="formData.porcentajeAsignacion" min="0" max="100" placeholder="0-100">
+</div>
+
+        <div class="form-group">
+          <label>LI Senior</label>
+          <input type="text" [(ngModel)]="formData.liSenior" placeholder="Nombre o vacío">
+        </div>
+
+        <div class="form-group">
+          <label>Líder Técnico</label>
+          <input type="text" [(ngModel)]="formData.liderTecnico" placeholder="Nombre o vacío">
+        </div>
+
+        <div class="form-group">
+          <label>Scrum</label>
+          <input type="text" [(ngModel)]="formData.scrum" placeholder="Nombre o vacío">
+        </div>
+
+        <div class="form-group">
+          <label>PO</label>
+          <input type="text" [(ngModel)]="formData.po" placeholder="Nombre o vacío">
+        </div>
+
+        <div class="form-group">
+          <label>Líder Técnico FV</label>
+          <input type="text" [(ngModel)]="formData.liderTecnicoFV" placeholder="Nombre o vacío">
+        </div>
+
+        <div class="form-group">
+          <label>Gerente</label>
+          <input type="text" [(ngModel)]="formData.gerente" placeholder="Nombre o vacío">
+        </div>
+
+        <div class="form-group">
+          <label>Flujo de Valor</label>
+          <input type="text" [(ngModel)]="formData.flujoValor" placeholder="Nombre o vacío">
+        </div>
+
+        <div class="form-group">
+          <label>Célula</label>
+          <input type="text" [(ngModel)]="formData.celula" placeholder="Nombre o vacío">
+        </div>
+
+        <div class="form-group">
+          <label>PEP</label>
+          <input type="text" [(ngModel)]="formData.pep" placeholder="Nombre o vacío">
+        </div>
+
+        <div class="form-group">
+          <label>Fecha de Asignación *</label>
+          <input type="date" [(ngModel)]="formData.fechaAsignacion">
+        </div>
+
+        <div class="form-group">
+          <label>Fecha Fin Asignación</label>
+          <input type="date" [(ngModel)]="formData.fechaFinAsignacion">
+        </div>
+      </div>
+
+      <button class="btn-success" (click)="guardarAsignacion()" [disabled]="loading">
+        {{ loading ? '⏳ Guardando...' : '✅ Guardar' }}
+      </button>
+    </div>
+
+    <!-- Tabla de asignaciones -->
+    <div *ngIf="!loading && asignaciones.length > 0" class="tabla-wrapper">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Líder Asignado</th>
+            <th>Proyecto</th>
+            <th>ID Feature</th>
+            <th>Tipología</th>
+            <th>% Asignación</th>
+            <th>Fecha Asignación</th>
+            <th>Fecha Fin</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let asignacion of asignaciones">
+            <td>{{ asignacion.liderAsignado }}</td>
+            <td>{{ asignacion.proyecto }}</td>
+            <td>{{ asignacion.idFeature }}</td>
+            <td>{{ asignacion.tipologia }}</td>
+            <td>
+              <span class="badge" [class.badge-activo]="asignacion.porcentajeAsignacion > 0" [class.badge-inactivo]="asignacion.porcentajeAsignacion === 0">
+                {{ asignacion.porcentajeAsignacion }}%
+              </span>
+            </td>
+            <td>{{ asignacion.fechaAsignacion | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ asignacion.fechaFinAsignacion ? (asignacion.fechaFinAsignacion | date: 'dd/MM/yyyy') : '-' }}</td>
+            <td class="acciones">
+              <button class="btn-small btn-edit" (click)="verDetalles(asignacion)" title="Ver detalles">👁️ Ver</button>
+              <button class="btn-small btn-edit" (click)="editarAsignacion(asignacion)" *ngIf="puedoEditar()" title="Editar">✏️ Editar</button>
+              <button class="btn-small btn-delete" (click)="eliminarAsignacion(asignacion._id)" *ngIf="puedoEditar()" title="Eliminar">🗑️ Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="!loading && asignaciones.length === 0" class="empty-state">
+      <p>No hay asignaciones registradas aún</p>
+      <button class="btn-primary" (click)="toggleFormulario()" *ngIf="puedoEditar()">
+        ➕ Crear primera asignación
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading">
+      ⏳ Cargando asignaciones...
+    </div>
+  </div>
+
+  <!-- Modal de detalles -->
+  <div class="modal" [class.show]="showModalEditar">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Detalles de Asignación</h2>
+        <button class="modal-close" (click)="cerrarModal()">✖️</button>
+      </div>
+
+      <div class="detalles-section">
+        <h4>Información Principal</h4>
+        <div class="detalles-grid">
+          <div class="detalle-item">
+            <div class="detalle-label">Líder Asignado</div>
+            <div class="detalle-valor">{{ formData.liderAsignado }}</div>
+          </div>
+          <div class="detalle-item">
+            <div class="detalle-label">Proyecto</div>
+            <div class="detalle-valor">{{ formData.proyecto }}</div>
+          </div>
+          <div class="detalle-item">
+            <div class="detalle-label">ID Feature</div>
+            <div class="detalle-valor">{{ formData.idFeature }}</div>
+          </div>
+          <div class="detalle-item">
+            <div class="detalle-label">Tipología</div>
+            <div class="detalle-valor">{{ formData.tipologia }}</div>
+          </div>
+          <div class="detalle-item">
+            <div class="detalle-label">% Asignación</div>
+            <div class="detalle-valor">
+              <span class="badge" [class.badge-activo]="formData.porcentajeAsignacion > 0" [class.badge-inactivo]="formData.porcentajeAsignacion === 0">
+                {{ formData.porcentajeAsignacion }}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detalles-section">
+        <h4>Roles Asignados</h4>
+        <div class="detalles-grid">
+          <div class="detalle-item" *ngIf="formData.liSenior">
+            <div class="detalle-label">LI Senior</div>
+            <div class="detalle-valor">{{ formData.liSenior }}</div>
+          </div>
+          <div class="detalle-item" *ngIf="formData.liderTecnico">
+            <div class="detalle-label">Líder Técnico</div>
+            <div class="detalle-valor">{{ formData.liderTecnico }}</div>
+          </div>
+          <div class="detalle-item" *ngIf="formData.scrum">
+            <div class="detalle-label">Scrum</div>
+            <div class="detalle-valor">{{ formData.scrum }}</div>
+          </div>
+          <div class="detalle-item" *ngIf="formData.po">
+            <div class="detalle-label">PO</div>
+            <div class="detalle-valor">{{ formData.po }}</div>
+          </div>
+          <div class="detalle-item" *ngIf="formData.liderTecnicoFV">
+            <div class="detalle-label">Líder Técnico FV</div>
+            <div class="detalle-valor">{{ formData.liderTecnicoFV }}</div>
+          </div>
+          <div class="detalle-item" *ngIf="formData.gerente">
+            <div class="detalle-label">Gerente</div>
+            <div class="detalle-valor">{{ formData.gerente }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detalles-section">
+        <h4>Estructura Organizacional</h4>
+        <div class="detalles-grid">
+          <div class="detalle-item" *ngIf="formData.flujoValor">
+            <div class="detalle-label">Flujo de Valor</div>
+            <div class="detalle-valor">{{ formData.flujoValor }}</div>
+          </div>
+          <div class="detalle-item" *ngIf="formData.celula">
+            <div class="detalle-label">Célula</div>
+            <div class="detalle-valor">{{ formData.celula }}</div>
+          </div>
+          <div class="detalle-item" *ngIf="formData.pep">
+            <div class="detalle-label">PEP</div>
+            <div class="detalle-valor">{{ formData.pep }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detalles-section">
+        <h4>Fechas</h4>
+        <div class="detalles-grid">
+          <div class="detalle-item">
+            <div class="detalle-label">Fecha de Asignación</div>
+            <div class="detalle-valor">{{ formData.fechaAsignacion | date: 'dd/MM/yyyy' }}</div>
+          </div>
+          <div class="detalle-item" *ngIf="formData.fechaFinAsignacion">
+            <div class="detalle-label">Fecha Fin Asignación</div>
+            <div class="detalle-valor">{{ formData.fechaFinAsignacion | date: 'dd/MM/yyyy' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button class="btn-primary" (click)="prepararEdicion()" *ngIf="puedoEditar()" style="flex: 1;">
+          ✏️ Editar
+        </button>
+        <button class="btn-secondary" (click)="cerrarModal()" style="flex: 1;">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

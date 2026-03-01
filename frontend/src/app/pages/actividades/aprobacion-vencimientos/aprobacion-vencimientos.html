@@ -1,0 +1,177 @@
+<!-- Header -->
+<div class="header">
+  <h1>⚠️ Aprobación de Vencimientos</h1>
+  <p class="header-subtitle">Gestión de tareas vencidas pendientes de aprobación</p>
+</div>
+
+<!-- Content Area -->
+<div class="content-area">
+  <!-- Alertas -->
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <!-- Stats -->
+  <div class="stats-section">
+    <div class="stat-card">
+      <p class="stat-label">⏳ Pendientes</p>
+      <p class="stat-number">{{ contarPendientes() }}</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">✅ Aprobadas</p>
+      <p class="stat-number">{{ contarAprobadas() }}</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">❌ Rechazadas</p>
+      <p class="stat-number">{{ contarRechazadas() }}</p>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtro-section">
+    <div class="filtro-grid">
+      <div class="filtro-item">
+        <label>Filtrar por Líder:</label>
+        <select [(ngModel)]="filtroLider" (change)="aplicarFiltros()">
+          <option value="">Todos los líderes</option>
+          <option *ngFor="let lider of lideresDisponibles" [value]="lider">
+            {{ lider }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filtro-item">
+        <label>Filtrar por Proyecto:</label>
+        <select [(ngModel)]="filtroProyecto" (change)="aplicarFiltros()">
+          <option value="">Todos los proyectos</option>
+          <option *ngFor="let proyecto of proyectosDisponibles" [value]="proyecto">
+            {{ proyecto }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filtro-item">
+        <label>&nbsp;</label>
+        <button class="btn btn-secondary" (click)="limpiarFiltros()">
+          🔄 Limpiar Filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn" 
+            [class.active]="tabActivo === 'pendientes'"
+            (click)="cambiarTab('pendientes')">
+      ⏳ Pendientes ({{ contarPendientes() }})
+    </button>
+    <button class="tab-btn" 
+            [class.active]="tabActivo === 'aprobadas'"
+            (click)="cambiarTab('aprobadas')">
+      ✅ Aprobadas ({{ contarAprobadas() }})
+    </button>
+    <button class="tab-btn" 
+            [class.active]="tabActivo === 'rechazadas'"
+            (click)="cambiarTab('rechazadas')">
+      ❌ Rechazadas ({{ contarRechazadas() }})
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <p>⏳ Procesando...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && obtenerActividadesAMostrar().length === 0" class="empty-state">
+    <p *ngIf="tabActivo === 'pendientes'">📭 No hay tareas pendientes de aprobación</p>
+    <p *ngIf="tabActivo === 'aprobadas'">📭 No hay tareas aprobadas</p>
+    <p *ngIf="tabActivo === 'rechazadas'">📭 No hay tareas rechazadas</p>
+  </div>
+
+  <!-- Tarjetas de Actividades -->
+  <div *ngIf="!loading && obtenerActividadesAMostrar().length > 0">
+    <div *ngFor="let actividad of obtenerActividadesAMostrar()" class="tarjeta-vencimiento">
+      <!-- Header -->
+      <div class="tarjeta-header">
+        <div>
+          <p class="tarjeta-titulo">{{ actividad.actividadCatalogo }}</p>
+          <span class="estado-badge" [ngClass]="'badge-' + (actividad.justificacionCierre?.estado || 'pendiente')">
+            {{ (actividad.justificacionCierre?.estado || 'pendiente') | uppercase }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Información de la Actividad -->
+      <div class="tarjeta-info">
+        <div class="info-item">
+          <div class="info-label">Proyecto</div>
+          <div class="info-value">{{ actividad.proyecto }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Líder</div>
+          <div class="info-value">{{ actividad.lider }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Tipificación</div>
+          <div class="info-value">{{ actividad.tipificacion }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Fecha de Cierre</div>
+          <div class="info-value">{{ actividad.fechaCierre | date: 'dd/MM/yyyy' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Descripción</div>
+          <div class="info-value">{{ actividad.descripcion }}</div>
+        </div>
+      </div>
+
+      <!-- Justificación -->
+      <div class="justificacion-box" *ngIf="actividad.justificacionCierre">
+        <h4>📋 Justificación del Líder</h4>
+        <div class="justificacion-texto">
+          {{ actividad.justificacionCierre.texto }}
+        </div>
+        <div class="justificacion-meta">
+          <strong>{{ actividad.justificacionCierre.usuario }}</strong> - 
+          {{ actividad.justificacionCierre.fecha | date: 'dd/MM/yyyy HH:mm' }}
+        </div>
+      </div>
+
+      <!-- Acciones (solo si está pendiente) -->
+      <div *ngIf="!actividad.justificacionCierre || !actividad.justificacionCierre.estado || actividad.justificacionCierre.estado === 'pendiente'" class="acciones-box">
+        <p class="acciones-titulo">Decisión del Coordinador</p>
+        
+        <div class="comentario-form">
+          <label>Comentario:</label>
+          <textarea [(ngModel)]="comentarioForm[actividad._id!]"
+                    placeholder="Explica tu decisión (aprobación o motivo de rechazo)..."></textarea>
+        </div>
+
+        <div class="botones-accion">
+          <button class="btn btn-success" 
+                  (click)="aprobarCierre(actividad._id)"
+                  [disabled]="loading">
+            ✅ {{ loading ? 'Procesando...' : 'Aprobar Cierre' }}
+          </button>
+          <button class="btn btn-danger" 
+                  (click)="rechazarCierre(actividad._id)"
+                  [disabled]="loading">
+            ❌ Rechazar
+          </button>
+        </div>
+      </div>
+
+      <!-- Respuesta del Coordinador (si ya fue aprobada/rechazada) -->
+      <div *ngIf="actividad.justificacionCierre && actividad.justificacionCierre.estado && actividad.justificacionCierre.estado !== 'pendiente'" 
+           style="background: #F5F5F5; padding: 1rem; border-radius: 6px; margin-top: 1rem;">
+        <h4 style="margin: 0 0 0.5rem 0; color: #333; font-size: 0.9rem;">
+          💬 Decisión del Coordinador
+        </h4>
+        <p style="margin: 0 0 0.5rem 0; color: #555; line-height: 1.6;">
+          {{ actividad.justificacionCierre.comentarioCoordinador || 'Sin comentario' }}
+        </p>
+        <p style="margin: 0; font-size: 0.8rem; color: #999;">
+          Fecha: {{ actividad.justificacionCierre.fecha | date: 'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
+</div>

@@ -9,18 +9,14 @@ import { filter, takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, SidebarComponent],
+  imports: [CommonModule, SidebarComponent, RouterOutlet],  /* ← AGREGÁ CommonModule */
   templateUrl: './app.component.html',
-  styles: [`
-    :host {
-      display: block;
-      height: 100%;
-    }
-  `]
+  styleUrls: ['./app.css']
 })
+
 export class AppComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  isAuthenticated = false;
+  isAuthenticated = true;
   isLoginPage = false;
   usuario: any = null;
 

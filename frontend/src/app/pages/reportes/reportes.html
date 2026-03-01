@@ -1,0 +1,317 @@
+<div class="reportes-container">
+  <!-- HEADER -->
+  <div class="reportes-header">
+    <h1>📊 Reportes y Dashboards</h1>
+    <p>Visualización completa de todas tus actividades y métricas</p>
+  </div>
+
+  <!-- TABS DE NAVEGACIÓN -->
+  <div class="tabs-navigation">
+    <button 
+      class="tab-btn" 
+      [class.active]="actividad === 'general'"
+      (click)="cambiarActividad('general')">
+      📈 Dashboard General
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="actividad === 'usuarios'"
+      (click)="cambiarActividad('usuarios')">
+      👥 Por Usuario
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="actividad === 'proyectos'"
+      (click)="cambiarActividad('proyectos')">
+      📁 Por Proyecto
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="actividad === 'horas'"
+      (click)="cambiarActividad('horas')">
+      ⏱️ Horas
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="actividad === 'lista'"
+      (click)="cambiarActividad('lista')">
+      📋 Lista Completa
+    </button>
+  </div>
+
+  <!-- DASHBOARD GENERAL -->
+  <div *ngIf="actividad === 'general'" class="tab-content">
+    <!-- TARJETAS DE RESUMEN -->
+    <div class="resumen-grid">
+      <div class="tarjeta tarjeta-total">
+        <div class="tarjeta-icon">📊</div>
+        <div class="tarjeta-contenido">
+          <h3>Total</h3>
+          <div class="tarjeta-numero">{{ totalActividades }}</div>
+          <p>Actividades en sistema</p>
+        </div>
+      </div>
+
+      <div class="tarjeta tarjeta-activas">
+        <div class="tarjeta-icon">🔄</div>
+        <div class="tarjeta-contenido">
+          <h3>En Progreso</h3>
+          <div class="tarjeta-numero">{{ actividadesActivas }}</div>
+          <p>{{ ((actividadesActivas / totalActividades) * 100 | number:'1.0-0') }}% del total</p>
+        </div>
+      </div>
+
+      <div class="tarjeta tarjeta-vencidas">
+        <div class="tarjeta-icon">⚠️</div>
+        <div class="tarjeta-contenido">
+          <h3>Vencidas</h3>
+          <div class="tarjeta-numero">{{ actividadesVencidas }}</div>
+          <p>{{ obtenerPorcentajeVencidas() }}% de activas</p>
+        </div>
+      </div>
+
+      <div class="tarjeta tarjeta-proximas">
+        <div class="tarjeta-icon">🔔</div>
+        <div class="tarjeta-contenido">
+          <h3>Por Vencer</h3>
+          <div class="tarjeta-numero">{{ actividadesProximas }}</div>
+          <p>En los próximos 2 días</p>
+        </div>
+      </div>
+
+      <div class="tarjeta tarjeta-cerradas">
+        <div class="tarjeta-icon">✅</div>
+        <div class="tarjeta-contenido">
+          <h3>Cerradas</h3>
+          <div class="tarjeta-numero">{{ actividadesCerradas }}</div>
+          <p>{{ obtenerPorcentajeCerradas() }}% completadas</p>
+        </div>
+      </div>
+
+      <div class="tarjeta tarjeta-salud">
+        <div class="tarjeta-icon">💚</div>
+        <div class="tarjeta-contenido">
+          <h3>Salud General</h3>
+          <div class="salud-indicador" [style.backgroundColor]="obtenerColorSalud()"></div>
+          <p [style.color]="obtenerColorSalud()">
+            {{ obtenerPorcentajeVencidas() > 0 ? 'En riesgo' : 'Saludable' }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRÁFICO DE PROGRESO -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>📈 Distribución de Estado</h3>
+        <div class="progress-bar">
+          <div class="progress-segment activas" [style.width.%]="(actividadesActivas / totalActividades) * 100" 
+               [title]="actividadesActivas + ' activas'"></div>
+          <div class="progress-segment cerradas" [style.width.%]="(actividadesCerradas / totalActividades) * 100" 
+               [title]="actividadesCerradas + ' cerradas'"></div>
+        </div>
+        <div class="progress-legend">
+          <span><strong>{{ actividadesActivas }}</strong> En progreso</span>
+          <span><strong>{{ actividadesCerradas }}</strong> Cerradas</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>⚠️ Riesgo de Tareas</h3>
+        <div class="progress-bar">
+          <div class="progress-segment vencidas" [style.width.%]="(actividadesVencidas / (actividadesActivas || 1)) * 100" 
+               [title]="actividadesVencidas + ' vencidas'"></div>
+          <div class="progress-segment proximas" [style.width.%]="(actividadesProximas / (actividadesActivas || 1)) * 100" 
+               [title]="actividadesProximas + ' próximas'"></div>
+          <div class="progress-segment saludables" [style.width.%]="((actividadesActivas - actividadesVencidas - actividadesProximas) / (actividadesActivas || 1)) * 100" 
+               [title]="(actividadesActivas - actividadesVencidas - actividadesProximas) + ' saludables'"></div>
+        </div>
+        <div class="progress-legend">
+          <span><strong>{{ actividadesVencidas }}</strong> Vencidas</span>
+          <span><strong>{{ actividadesProximas }}</strong> Por vencer</span>
+          <span><strong>{{ actividadesActivas - actividadesVencidas - actividadesProximas }}</strong> Saludables</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD POR USUARIOS -->
+  <div *ngIf="actividad === 'usuarios'" class="tab-content">
+    <div class="tabla-wrapper">
+      <table class="tabla-reportes">
+        <thead>
+          <tr>
+            <th>👤 Usuario</th>
+            <th>🔄 Activas</th>
+            <th>⚠️ Vencidas</th>
+            <th>✅ Cerradas</th>
+            <th>⏱️ Horas</th>
+            <th>Salud</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let usuario of usuariosResumen" [class.con-vencidas]="usuario.vencidas > 0">
+            <td><strong>{{ usuario.nombre }}</strong></td>
+            <td>{{ usuario.activas }}</td>
+            <td class="vencidas-cell">{{ usuario.vencidas }}</td>
+            <td class="cerradas-cell">{{ usuario.cerradas }}</td>
+            <td>{{ usuario.horas }}h</td>
+            <td>
+              <div class="salud-badge" [style.backgroundColor]="usuario.vencidas > 0 ? '#FF5252' : '#4CAF50'">
+                {{ usuario.vencidas > 0 ? '⚠️ En riesgo' : '✅ OK' }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DASHBOARD POR PROYECTOS -->
+  <div *ngIf="actividad === 'proyectos'" class="tab-content">
+    <div class="tabla-wrapper">
+      <table class="tabla-reportes">
+        <thead>
+          <tr>
+            <th>📁 Proyecto</th>
+            <th>📊 Total</th>
+            <th>⚠️ Vencidas</th>
+            <th>✅ Cerradas</th>
+            <th>⏱️ Horas</th>
+            <th>Progreso</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let proyecto of proyectosResumen" [class.con-vencidas]="proyecto.vencidas > 0">
+            <td><strong>{{ proyecto.nombre }}</strong></td>
+            <td>{{ proyecto.total }}</td>
+            <td class="vencidas-cell">{{ proyecto.vencidas }}</td>
+            <td class="cerradas-cell">{{ proyecto.cerradas }}</td>
+            <td>{{ proyecto.horas }}h</td>
+            <td>
+              <div class="progreso-bar">
+                <div class="progreso-fill" [style.width.%]="(proyecto.cerradas / proyecto.total) * 100"></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DASHBOARD DE HORAS -->
+  <div *ngIf="actividad === 'horas'" class="tab-content">
+    <div class="horas-grid">
+      <div class="tarjeta tarjeta-horas">
+        <div class="tarjeta-icon">⏱️</div>
+        <div class="tarjeta-contenido">
+          <h3>Total Estimado</h3>
+          <div class="tarjeta-numero">{{ totalHoras }}h</div>
+          <p>Horas estimadas en todas las tareas</p>
+        </div>
+      </div>
+
+      <div class="tarjeta tarjeta-horas-acumuladas">
+        <div class="tarjeta-icon">✅</div>
+        <div class="tarjeta-contenido">
+          <h3>Acumuladas</h3>
+          <div class="tarjeta-numero">{{ horasAcumuladas }}h</div>
+          <p>{{ ((horasAcumuladas / totalHoras) * 100 | number:'1.0-0') }}% completadas</p>
+        </div>
+      </div>
+
+      <div class="tarjeta tarjeta-horas-pendientes">
+        <div class="tarjeta-icon">⏳</div>
+        <div class="tarjeta-contenido">
+          <h3>Pendientes</h3>
+          <div class="tarjeta-numero">{{ horasPendientes }}h</div>
+          <p>Falta por registrar</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRÁFICO DE HORAS -->
+    <div class="chart-card full-width">
+      <h3>📊 Progreso de Horas</h3>
+      <div class="progress-bar large">
+        <div class="progress-segment acumuladas" [style.width.%]="(horasAcumuladas / totalHoras) * 100" 
+             [title]="horasAcumuladas + 'h acumuladas'"></div>
+        <div class="progress-segment pendientes" [style.width.%]="(horasPendientes / totalHoras) * 100" 
+             [title]="horasPendientes + 'h pendientes'"></div>
+      </div>
+      <div class="progress-legend">
+        <span><strong>{{ horasAcumuladas }}h</strong> Registradas</span>
+        <span><strong>{{ horasPendientes }}h</strong> Pendientes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTA COMPLETA -->
+  <div *ngIf="actividad === 'lista'" class="tab-content">
+    <!-- FILTROS -->
+    <div class="filtros-container">
+      <div class="filtro-group">
+        <label>Estado:</label>
+        <select [(ngModel)]="filtroEstado" (change)="procesarDatos()">
+          <option value="todos">Todos</option>
+          <option value="activas">En Progreso</option>
+          <option value="vencidas">Vencidas</option>
+          <option value="proximas">Próximas a Vencer</option>
+          <option value="cerradas">Cerradas</option>
+        </select>
+      </div>
+
+      <div class="filtro-group">
+        <label>Buscar:</label>
+        <input 
+          type="text" 
+          [(ngModel)]="filtroBusqueda"
+          placeholder="Actividad, usuario, proyecto...">
+      </div>
+
+      <button class="btn-export" (click)="exportarCSV()">
+        📥 Exportar CSV
+      </button>
+    </div>
+
+    <!-- TABLA DE ACTIVIDADES -->
+    <div class="tabla-wrapper">
+      <table class="tabla-actividades">
+        <thead>
+          <tr>
+            <th>Actividad</th>
+            <th>Líder</th>
+            <th>Proyecto</th>
+            <th>Estado</th>
+            <th>Horas</th>
+            <th>Fecha Cierre</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let act of actividadesFiltradas" 
+              [class.vencida]="esVencida(act)"
+              [class.proxima]="esProxima(act)"
+              [class.cerrada]="act.estado === 'cerrado'">
+            <td><strong>{{ act.actividadCatalogo }}</strong></td>
+            <td>{{ act.lider }}</td>
+            <td>{{ act.proyecto }}</td>
+            <td>
+              <span class="badge" 
+                    [class.badge-vencida]="esVencida(act)"
+                    [class.badge-proxima]="esProxima(act)"
+                    [class.badge-cerrada]="act.estado === 'cerrado'">
+                {{ esVencida(act) ? '⚠️ VENCIDA' : esProxima(act) ? '🔔 POR VENCER' : act.estado === 'cerrado' ? '✅ CERRADA' : '🔄 EN PROGRESO' }}
+              </span>
+            </td>
+            <td>{{ act.horasAcumuladas }}/{{ act.horas }}h</td>
+            <td>{{ act.fechaCierre | date:'dd/MM/yyyy' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="actividadesFiltradas.length === 0" class="sin-resultados">
+        <p>No hay actividades que coincidan con los filtros</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,471 @@
+.reportes-container {
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+  min-height: 100vh;
+}
+
+.reportes-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.reportes-header h1 {
+  color: #CC0000;
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.reportes-header p {
+  color: #999;
+  font-size: 1.1rem;
+}
+
+/* TABS */
+.tabs-navigation {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.tab-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #E0E0E0;
+  background: white;
+  color: #333;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.tab-btn:hover {
+  border-color: #CC0000;
+  color: #CC0000;
+}
+
+.tab-btn.active {
+  background: #CC0000;
+  color: white;
+  border-color: #CC0000;
+}
+
+.tab-content {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* TARJETAS DE RESUMEN */
+.resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.tarjeta {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  transition: all 0.3s;
+  border-left: 4px solid;
+}
+
+.tarjeta:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.tarjeta-icon {
+  font-size: 2.5rem;
+}
+
+.tarjeta-contenido {
+  flex: 1;
+}
+
+.tarjeta-contenido h3 {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.tarjeta-numero {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #333;
+  margin: 0.5rem 0;
+}
+
+.tarjeta-contenido p {
+  margin: 0;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.tarjeta-total {
+  border-left-color: #2196F3;
+}
+
+.tarjeta-activas {
+  border-left-color: #4CAF50;
+}
+
+.tarjeta-vencidas {
+  border-left-color: #FF5252;
+}
+
+.tarjeta-proximas {
+  border-left-color: #FF9800;
+}
+
+.tarjeta-cerradas {
+  border-left-color: #9C27B0;
+}
+
+.tarjeta-salud {
+  border-left-color: #00BCD4;
+}
+
+.tarjeta-horas {
+  border-left-color: #FF9800;
+}
+
+.tarjeta-horas-acumuladas {
+  border-left-color: #4CAF50;
+}
+
+.tarjeta-horas-pendientes {
+  border-left-color: #FF5252;
+}
+
+.salud-indicador {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  margin: 0.5rem 0;
+}
+
+/* CHARTS */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.chart-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.chart-card h3 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 2px solid #F0F0F0;
+  padding-bottom: 1rem;
+}
+
+.progress-bar {
+  display: flex;
+  height: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #F0F0F0;
+  margin: 1rem 0;
+}
+
+.progress-bar.large {
+  height: 40px;
+}
+
+.progress-segment {
+  transition: all 0.3s;
+  min-width: 2px;
+}
+
+.progress-segment.activas {
+  background: #4CAF50;
+}
+
+.progress-segment.cerradas {
+  background: #9C27B0;
+}
+
+.progress-segment.vencidas {
+  background: #FF5252;
+}
+
+.progress-segment.proximas {
+  background: #FF9800;
+}
+
+.progress-segment.saludables {
+  background: #4CAF50;
+}
+
+.progress-segment.acumuladas {
+  background: #4CAF50;
+}
+
+.progress-segment.pendientes {
+  background: #FF9800;
+}
+
+.progress-legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.progress-legend span {
+  color: #666;
+}
+
+.progress-legend strong {
+  color: #333;
+}
+
+/* TABLAS */
+.tabla-wrapper {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow-x: auto;
+}
+
+.tabla-reportes,
+.tabla-actividades {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-reportes thead,
+.tabla-actividades thead {
+  background: #333;
+  color: white;
+}
+
+.tabla-reportes th,
+.tabla-actividades th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.tabla-reportes td,
+.tabla-actividades td {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tabla-reportes tbody tr,
+.tabla-actividades tbody tr {
+  transition: all 0.3s;
+}
+
+.tabla-reportes tbody tr:hover,
+.tabla-actividades tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.tabla-reportes tr.con-vencidas {
+  background: #FFEBEE;
+}
+
+.tabla-actividades tr.vencida {
+  background: #FFEBEE;
+  border-left: 4px solid #FF5252;
+}
+
+.tabla-actividades tr.proxima {
+  background: #FFF3E0;
+  border-left: 4px solid #FF9800;
+}
+
+.tabla-actividades tr.cerrada {
+  background: #E8F5E9;
+  border-left: 4px solid #4CAF50;
+}
+
+.vencidas-cell {
+  color: #FF5252;
+  font-weight: 600;
+}
+
+.cerradas-cell {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.salud-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.progreso-bar {
+  width: 100%;
+  height: 8px;
+  background: #F0F0F0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progreso-fill {
+  height: 100%;
+  background: #4CAF50;
+  transition: width 0.3s;
+}
+
+/* FILTROS */
+.filtros-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  flex-wrap: wrap;
+}
+
+.filtro-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filtro-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.filtro-group select,
+.filtro-group input {
+  padding: 0.75rem;
+  border: 2px solid #E0E0E0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border 0.3s;
+}
+
+.filtro-group select:focus,
+.filtro-group input:focus {
+  outline: none;
+  border-color: #CC0000;
+}
+
+.btn-export {
+  padding: 0.75rem 1.5rem;
+  background: #CC0000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-export:hover {
+  background: #AA0000;
+  transform: translateY(-2px);
+}
+
+/* SIN RESULTADOS */
+.sin-resultados {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #999;
+}
+
+.sin-resultados p {
+  font-size: 1.1rem;
+}
+
+.horas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .reportes-container {
+    padding: 1rem;
+  }
+
+  .reportes-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .tabs-navigation {
+    flex-direction: column;
+  }
+
+  .tab-btn {
+    width: 100%;
+  }
+
+  .resumen-grid,
+  .charts-grid,
+  .horas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filtros-container {
+    flex-direction: column;
+  }
+
+  .filtro-group {
+    width: 100%;
+  }
+
+  .tabla-reportes,
+  .tabla-actividades {
+    font-size: 0.9rem;
+  }
+
+  .tabla-reportes th,
+  .tabla-actividades th,
+  .tabla-reportes td,
+  .tabla-actividades td {
+    padding: 0.75rem 0.5rem;
+  }
+}
