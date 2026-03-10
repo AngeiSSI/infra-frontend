@@ -3,8 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { CatalogoService, CatalogoItem, HistoricoItem } from '../../services/catalogo.service';
+import { CatalogoService, CatalogoItem } from '../../services/catalogo.service';
 import { ChangeDetectorRef } from '@angular/core';
+
+interface HistoricoItem extends CatalogoItem {
+  estadoHistorico?: 'aprobado' | 'rechazado';
+  esHistorico?: boolean;
+}
 
 @Component({
   selector: 'app-catalogo',
@@ -457,8 +462,22 @@ export class CatalogoComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
+    console.log('📊 Iniciando carga de histórico...');
+
     this.catalogoService.getHistorico().subscribe({
-      next: (data) => {
+      next: (data: any) => {
+        console.log('📊 Datos recibidos del servidor:', data.length, 'registros');
+        
+        // Debug: mostrar estructura de datos
+        if (data.length > 0) {
+          console.log('📋 Estructura de primer registro:');
+          console.log('   - _id:', data[0]._id);
+          console.log('   - actividad:', data[0].actividad);
+          console.log('   - estado:', data[0].estado);
+          console.log('   - estadoHistorico:', data[0].estadoHistorico);
+          console.log('   - esHistorico:', data[0].esHistorico);
+        }
+
         this.historico = data;
         this.cargarSugridoresDisponibles();
         this.aplicarFiltrosHistorico();
@@ -466,6 +485,7 @@ export class CatalogoComponent implements OnInit {
         // Cargar estadísticas
         this.catalogoService.getEstadisticasHistorico().subscribe({
           next: (stats) => {
+            console.log('📊 Estadísticas recibidas:', stats);
             this.estadisticas = stats;
             this.cdr.detectChanges();
           },
@@ -476,12 +496,12 @@ export class CatalogoComponent implements OnInit {
 
         this.loading = false;
         this.cdr.detectChanges();
-        console.log('📊 Histórico cargado:', this.historico.length, 'items');
+        console.log('✅ Histórico cargado completamente');
       },
       error: (err) => {
         this.error = 'Error al cargar histórico: ' + (err.error?.message || err.statusText);
         this.loading = false;
-        console.error('Error:', err);
+        console.error('❌ Error en getHistorico:', err);
       }
     });
   }
@@ -514,35 +534,58 @@ export class CatalogoComponent implements OnInit {
   }
 
   aplicarFiltrosHistorico(): void {
-    let filtrado = this.historico;
+    console.log('\n🔍 ========== APLICANDO FILTROS ==========');
+    console.log('  Total registros en historico:', this.historico.length);
+    console.log('  Estado seleccionado:', this.filtroHistoricoEstado);
+    console.log('  Sugeridor seleccionado:', this.filtroHistoricoSugeridor);
 
-    console.log('🔍 Filtrando con estado:', this.filtroHistoricoEstado);
-    console.log('🔍 Filtrando con sugeridor:', this.filtroHistoricoSugeridor);
-    console.log('🔍 Total de registros:', this.historico.length);
+    let filtrado = [...this.historico];
+    console.log('  Registros iniciales:', filtrado.length);
 
-    if (this.filtroHistoricoEstado !== 'todos') {
-      console.log('📊 Aplicando filtro de estado:', this.filtroHistoricoEstado);
+    // FILTRO 1: Por estado
+    if (this.filtroHistoricoEstado && this.filtroHistoricoEstado !== 'todos') {
+      console.log('\n  📊 Aplicando filtro de ESTADO:', this.filtroHistoricoEstado);
+      
+      const antes = filtrado.length;
       filtrado = filtrado.filter(item => {
-        const match = item.estado === this.filtroHistoricoEstado;
-        console.log('  Comparando:', item.estado, '===', this.filtroHistoricoEstado, '?', match);
+        const match = item.estadoHistorico === this.filtroHistoricoEstado;
+        if (match) {
+          console.log(`    ✅ "${item.actividad}" tiene estadoHistorico="${item.estadoHistorico}"`);
+        } else {
+          console.log(`    ❌ "${item.actividad}" tiene estadoHistorico="${item.estadoHistorico}" (buscando "${this.filtroHistoricoEstado}")`);
+        }
         return match;
       });
-      console.log('📊 Después de filtro estado:', filtrado.length);
+      
+      console.log(`  Registros después de filtro estado: ${antes} → ${filtrado.length}`);
     }
 
-    if (this.filtroHistoricoSugeridor) {
-      console.log('📊 Aplicando filtro de sugeridor:', this.filtroHistoricoSugeridor);
-      filtrado = filtrado.filter(item => item.sugeridoPor === this.filtroHistoricoSugeridor);
-      console.log('📊 Después de filtro sugeridor:', filtrado.length);
+    // FILTRO 2: Por sugeridor
+    if (this.filtroHistoricoSugeridor && this.filtroHistoricoSugeridor !== '') {
+      console.log('\n  👤 Aplicando filtro de SUGERIDOR:', this.filtroHistoricoSugeridor);
+      
+      const antes = filtrado.length;
+      filtrado = filtrado.filter(item => {
+        const match = item.sugeridoPor === this.filtroHistoricoSugeridor;
+        if (match) {
+          console.log(`    ✅ "${item.actividad}" sugerido por "${item.sugeridoPor}"`);
+        }
+        return match;
+      });
+      
+      console.log(`  Registros después de filtro sugeridor: ${antes} → ${filtrado.length}`);
     }
 
+    // ORDENAR - Con validación de fechas
     this.historicoFiltrado = filtrado.sort((a, b) => {
-      const fechaA = new Date(a.fechaSugerencia).getTime();
-      const fechaB = new Date(b.fechaSugerencia).getTime();
+      const fechaA = a.fechaSugerencia ? new Date(a.fechaSugerencia).getTime() : 0;
+      const fechaB = b.fechaSugerencia ? new Date(b.fechaSugerencia).getTime() : 0;
       return fechaB - fechaA;
     });
 
-    console.log('✅ Registros después de filtrar:', this.historicoFiltrado.length);
+    console.log('\n✅ ========== RESULTADO FINAL ==========');
+    console.log('  Registros en historicoFiltrado:', this.historicoFiltrado.length);
+    console.log('==========================================\n');
   }
 
   limpiarFiltrosHistorico(): void {
@@ -552,9 +595,11 @@ export class CatalogoComponent implements OnInit {
   }
 
   cambiarTab(tab: 'oficial' | 'sugerencias' | 'historico'): void {
+    console.log('🔄 Cambiando a pestaña:', tab);
     this.activeTab = tab;
     
     if (tab === 'historico') {
+      console.log('📊 Cargando histórico...');
       this.cargarHistorico();
     } else {
       this.filtrarCatalogo();

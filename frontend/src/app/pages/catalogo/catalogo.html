@@ -309,9 +309,9 @@
               </span>
             </td>
             <td>{{ item.fechaSugerencia | date: 'dd/MM/yyyy HH:mm' }}</td>
-            <td>
-              <span class="badge" [ngClass]="'badge-' + item.estado">
-                {{ item.estado === 'aprobado' ? '✅ APROBADO' : '❌ RECHAZADO' }}
+                        <td>
+              <span class="badge" [ngClass]="'badge-' + item.estadoHistorico">
+                {{ item.estadoHistorico === 'aprobado' ? '✅ APROBADO' : '❌ RECHAZADO' }}
               </span>
             </td>
             <td style="max-width: 200px; word-wrap: break-word;">
