@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { CatalogoService, CatalogoItem } from '../../services/catalogo.service';
+import { CatalogoService, CatalogoItem, HistoricoItem } from '../../services/catalogo.service';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
@@ -202,6 +202,16 @@ import { ChangeDetectorRef } from '@angular/core';
       color: #f57c00;
     }
 
+    .badge-aprobado {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .badge-rechazado {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+
     .acciones {
       display: flex;
       gap: 0.5rem;
@@ -267,6 +277,7 @@ import { ChangeDetectorRef } from '@angular/core';
       gap: 1rem;
       margin-bottom: 1.5rem;
       border-bottom: 2px solid #ddd;
+      flex-wrap: wrap;
     }
 
     .tab {
@@ -287,6 +298,50 @@ import { ChangeDetectorRef } from '@angular/core';
 
     .btn-group {
       display: flex;
+      gap: 1rem;
+    }
+
+    .stats-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      border-top: 3px solid #667eea;
+    }
+
+    .stat-label {
+      color: #999;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .stat-number {
+      color: #667eea;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .filter-section {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
     }
 
@@ -315,27 +370,45 @@ import { ChangeDetectorRef } from '@angular/core';
       .tabla td {
         padding: 0.75rem;
       }
+
+      .tabs {
+        gap: 0.5rem;
+      }
+
+      .tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
     }
   `]
 })
 export class CatalogoComponent implements OnInit {
   catalogo: CatalogoItem[] = [];
   catalogoFiltrado: CatalogoItem[] = [];
+  historico: HistoricoItem[] = [];
+  historicoFiltrado: HistoricoItem[] = [];
+  estadisticas: any = null;
 
   formData = {
     tipificacion: '',
     actividad: '',
     diasHabiles: 1,
     horasMinimas: 0,
-    horasMaximas: 0
+    horasMaximas: 0,
+    observaciones: ''
   };
+
+  // Filtros para histórico
+  filtroHistoricoEstado: 'todos' | 'aprobado' | 'rechazado' = 'todos';
+  filtroHistoricoSugeridor: string = '';
+  sugridoresDisponibles: string[] = [];
 
   editandoId: string | null = null;
   loading = false;
   error = '';
   mensaje = '';
   usuario: any = null;
-  activeTab: 'oficial' | 'sugerencias' = 'oficial';
+  activeTab: 'oficial' | 'sugerencias' | 'historico' = 'oficial';
 
   tipificaciones = ['Administrativo', 'Diseño', 'Documentación', 'Generación Conectividades', 'Gestión', 'Gestión LI FV', 'Implementación Infraestructura', 'Levantamiento Información', 'Pruebas', 'Publicación Servicios', 'Seguridad de la información', 'Soporte', 'Ventana'];
 
@@ -380,13 +453,44 @@ export class CatalogoComponent implements OnInit {
     });
   }
 
+  cargarHistorico(): void {
+    this.loading = true;
+    this.error = '';
+
+    this.catalogoService.getHistorico().subscribe({
+      next: (data) => {
+        this.historico = data;
+        this.cargarSugridoresDisponibles();
+        this.aplicarFiltrosHistorico();
+        
+        // Cargar estadísticas
+        this.catalogoService.getEstadisticasHistorico().subscribe({
+          next: (stats) => {
+            this.estadisticas = stats;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error al cargar estadísticas:', err);
+          }
+        });
+
+        this.loading = false;
+        this.cdr.detectChanges();
+        console.log('📊 Histórico cargado:', this.historico.length, 'items');
+      },
+      error: (err) => {
+        this.error = 'Error al cargar histórico: ' + (err.error?.message || err.statusText);
+        this.loading = false;
+        console.error('Error:', err);
+      }
+    });
+  }
+
   ordenarCatalogo(data: CatalogoItem[]): CatalogoItem[] {
     return data.sort((a, b) => {
-      // Primero ordenar por tipificación alfabéticamente
       if (a.tipificacion !== b.tipificacion) {
         return a.tipificacion.localeCompare(b.tipificacion, 'es', { sensitivity: 'base' });
       }
-      // Luego ordenar por actividad alfabéticamente dentro de la misma tipificación
       return a.actividad.localeCompare(b.actividad, 'es', { sensitivity: 'base' });
     });
   }
@@ -394,14 +498,67 @@ export class CatalogoComponent implements OnInit {
   filtrarCatalogo(): void {
     if (this.activeTab === 'oficial') {
       this.catalogoFiltrado = this.catalogo.filter(item => item.estado === 'oficial');
-    } else {
+    } else if (this.activeTab === 'sugerencias') {
       this.catalogoFiltrado = this.catalogo.filter(item => item.estado === 'pendiente');
     }
   }
 
-  cambiarTab(tab: 'oficial' | 'sugerencias'): void {
+  cargarSugridoresDisponibles(): void {
+    const sugridores = new Set<string>();
+    this.historico.forEach(item => {
+      if (item.sugeridoPor) {
+        sugridores.add(item.sugeridoPor);
+      }
+    });
+    this.sugridoresDisponibles = Array.from(sugridores).sort();
+  }
+
+  aplicarFiltrosHistorico(): void {
+    let filtrado = this.historico;
+
+    console.log('🔍 Filtrando con estado:', this.filtroHistoricoEstado);
+    console.log('🔍 Filtrando con sugeridor:', this.filtroHistoricoSugeridor);
+    console.log('🔍 Total de registros:', this.historico.length);
+
+    if (this.filtroHistoricoEstado !== 'todos') {
+      console.log('📊 Aplicando filtro de estado:', this.filtroHistoricoEstado);
+      filtrado = filtrado.filter(item => {
+        const match = item.estado === this.filtroHistoricoEstado;
+        console.log('  Comparando:', item.estado, '===', this.filtroHistoricoEstado, '?', match);
+        return match;
+      });
+      console.log('📊 Después de filtro estado:', filtrado.length);
+    }
+
+    if (this.filtroHistoricoSugeridor) {
+      console.log('📊 Aplicando filtro de sugeridor:', this.filtroHistoricoSugeridor);
+      filtrado = filtrado.filter(item => item.sugeridoPor === this.filtroHistoricoSugeridor);
+      console.log('📊 Después de filtro sugeridor:', filtrado.length);
+    }
+
+    this.historicoFiltrado = filtrado.sort((a, b) => {
+      const fechaA = new Date(a.fechaSugerencia).getTime();
+      const fechaB = new Date(b.fechaSugerencia).getTime();
+      return fechaB - fechaA;
+    });
+
+    console.log('✅ Registros después de filtrar:', this.historicoFiltrado.length);
+  }
+
+  limpiarFiltrosHistorico(): void {
+    this.filtroHistoricoEstado = 'todos';
+    this.filtroHistoricoSugeridor = '';
+    this.aplicarFiltrosHistorico();
+  }
+
+  cambiarTab(tab: 'oficial' | 'sugerencias' | 'historico'): void {
     this.activeTab = tab;
-    this.filtrarCatalogo();
+    
+    if (tab === 'historico') {
+      this.cargarHistorico();
+    } else {
+      this.filtrarCatalogo();
+    }
   }
 
   guardar(): void {
@@ -444,7 +601,8 @@ export class CatalogoComponent implements OnInit {
       actividad: item.actividad,
       diasHabiles: item.diasHabiles,
       horasMinimas: item.horasMinimas,
-      horasMaximas: item.horasMaximas
+      horasMaximas: item.horasMaximas,
+      observaciones: item.observaciones || ''
     };
     window.scrollTo(0, 0);
   }
@@ -518,7 +676,8 @@ export class CatalogoComponent implements OnInit {
       actividad: '',
       diasHabiles: 1,
       horasMinimas: 0,
-      horasMaximas: 0
+      horasMaximas: 0,
+      observaciones: ''
     };
     this.editandoId = null;
   }
