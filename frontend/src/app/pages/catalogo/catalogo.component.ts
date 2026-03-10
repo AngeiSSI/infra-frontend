@@ -6,6 +6,11 @@ import { AuthService } from '../../services/auth.service';
 import { CatalogoService, CatalogoItem } from '../../services/catalogo.service';
 import { ChangeDetectorRef } from '@angular/core';
 
+interface HistoricoItem extends CatalogoItem {
+  estadoHistorico?: 'aprobado' | 'rechazado';
+  esHistorico?: boolean;
+}
+
 @Component({
   selector: 'app-catalogo',
   standalone: true,
@@ -202,6 +207,16 @@ import { ChangeDetectorRef } from '@angular/core';
       color: #f57c00;
     }
 
+    .badge-aprobado {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .badge-rechazado {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+
     .acciones {
       display: flex;
       gap: 0.5rem;
@@ -267,6 +282,7 @@ import { ChangeDetectorRef } from '@angular/core';
       gap: 1rem;
       margin-bottom: 1.5rem;
       border-bottom: 2px solid #ddd;
+      flex-wrap: wrap;
     }
 
     .tab {
@@ -287,6 +303,50 @@ import { ChangeDetectorRef } from '@angular/core';
 
     .btn-group {
       display: flex;
+      gap: 1rem;
+    }
+
+    .stats-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      border-top: 3px solid #667eea;
+    }
+
+    .stat-label {
+      color: #999;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .stat-number {
+      color: #667eea;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .filter-section {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
     }
 
@@ -315,27 +375,45 @@ import { ChangeDetectorRef } from '@angular/core';
       .tabla td {
         padding: 0.75rem;
       }
+
+      .tabs {
+        gap: 0.5rem;
+      }
+
+      .tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
     }
   `]
 })
 export class CatalogoComponent implements OnInit {
   catalogo: CatalogoItem[] = [];
   catalogoFiltrado: CatalogoItem[] = [];
+  historico: HistoricoItem[] = [];
+  historicoFiltrado: HistoricoItem[] = [];
+  estadisticas: any = null;
 
   formData = {
     tipificacion: '',
     actividad: '',
     diasHabiles: 1,
     horasMinimas: 0,
-    horasMaximas: 0
+    horasMaximas: 0,
+    observaciones: ''
   };
+
+  // Filtros para histórico
+  filtroHistoricoEstado: 'todos' | 'aprobado' | 'rechazado' = 'todos';
+  filtroHistoricoSugeridor: string = '';
+  sugridoresDisponibles: string[] = [];
 
   editandoId: string | null = null;
   loading = false;
   error = '';
   mensaje = '';
   usuario: any = null;
-  activeTab: 'oficial' | 'sugerencias' = 'oficial';
+  activeTab: 'oficial' | 'sugerencias' | 'historico' = 'oficial';
 
   tipificaciones = ['Administrativo', 'Diseño', 'Documentación', 'Generación Conectividades', 'Gestión', 'Gestión LI FV', 'Implementación Infraestructura', 'Levantamiento Información', 'Pruebas', 'Publicación Servicios', 'Seguridad de la información', 'Soporte', 'Ventana'];
 
@@ -380,13 +458,59 @@ export class CatalogoComponent implements OnInit {
     });
   }
 
+  cargarHistorico(): void {
+    this.loading = true;
+    this.error = '';
+
+    console.log('📊 Iniciando carga de histórico...');
+
+    this.catalogoService.getHistorico().subscribe({
+      next: (data: any) => {
+        console.log('📊 Datos recibidos del servidor:', data.length, 'registros');
+        
+        // Debug: mostrar estructura de datos
+        if (data.length > 0) {
+          console.log('📋 Estructura de primer registro:');
+          console.log('   - _id:', data[0]._id);
+          console.log('   - actividad:', data[0].actividad);
+          console.log('   - estado:', data[0].estado);
+          console.log('   - estadoHistorico:', data[0].estadoHistorico);
+          console.log('   - esHistorico:', data[0].esHistorico);
+        }
+
+        this.historico = data;
+        this.cargarSugridoresDisponibles();
+        this.aplicarFiltrosHistorico();
+        
+        // Cargar estadísticas
+        this.catalogoService.getEstadisticasHistorico().subscribe({
+          next: (stats) => {
+            console.log('📊 Estadísticas recibidas:', stats);
+            this.estadisticas = stats;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error al cargar estadísticas:', err);
+          }
+        });
+
+        this.loading = false;
+        this.cdr.detectChanges();
+        console.log('✅ Histórico cargado completamente');
+      },
+      error: (err) => {
+        this.error = 'Error al cargar histórico: ' + (err.error?.message || err.statusText);
+        this.loading = false;
+        console.error('❌ Error en getHistorico:', err);
+      }
+    });
+  }
+
   ordenarCatalogo(data: CatalogoItem[]): CatalogoItem[] {
     return data.sort((a, b) => {
-      // Primero ordenar por tipificación alfabéticamente
       if (a.tipificacion !== b.tipificacion) {
         return a.tipificacion.localeCompare(b.tipificacion, 'es', { sensitivity: 'base' });
       }
-      // Luego ordenar por actividad alfabéticamente dentro de la misma tipificación
       return a.actividad.localeCompare(b.actividad, 'es', { sensitivity: 'base' });
     });
   }
@@ -394,14 +518,92 @@ export class CatalogoComponent implements OnInit {
   filtrarCatalogo(): void {
     if (this.activeTab === 'oficial') {
       this.catalogoFiltrado = this.catalogo.filter(item => item.estado === 'oficial');
-    } else {
+    } else if (this.activeTab === 'sugerencias') {
       this.catalogoFiltrado = this.catalogo.filter(item => item.estado === 'pendiente');
     }
   }
 
-  cambiarTab(tab: 'oficial' | 'sugerencias'): void {
+  cargarSugridoresDisponibles(): void {
+    const sugridores = new Set<string>();
+    this.historico.forEach(item => {
+      if (item.sugeridoPor) {
+        sugridores.add(item.sugeridoPor);
+      }
+    });
+    this.sugridoresDisponibles = Array.from(sugridores).sort();
+  }
+
+  aplicarFiltrosHistorico(): void {
+    console.log('\n🔍 ========== APLICANDO FILTROS ==========');
+    console.log('  Total registros en historico:', this.historico.length);
+    console.log('  Estado seleccionado:', this.filtroHistoricoEstado);
+    console.log('  Sugeridor seleccionado:', this.filtroHistoricoSugeridor);
+
+    let filtrado = [...this.historico];
+    console.log('  Registros iniciales:', filtrado.length);
+
+    // FILTRO 1: Por estado
+    if (this.filtroHistoricoEstado && this.filtroHistoricoEstado !== 'todos') {
+      console.log('\n  📊 Aplicando filtro de ESTADO:', this.filtroHistoricoEstado);
+      
+      const antes = filtrado.length;
+      filtrado = filtrado.filter(item => {
+        const match = item.estadoHistorico === this.filtroHistoricoEstado;
+        if (match) {
+          console.log(`    ✅ "${item.actividad}" tiene estadoHistorico="${item.estadoHistorico}"`);
+        } else {
+          console.log(`    ❌ "${item.actividad}" tiene estadoHistorico="${item.estadoHistorico}" (buscando "${this.filtroHistoricoEstado}")`);
+        }
+        return match;
+      });
+      
+      console.log(`  Registros después de filtro estado: ${antes} → ${filtrado.length}`);
+    }
+
+    // FILTRO 2: Por sugeridor
+    if (this.filtroHistoricoSugeridor && this.filtroHistoricoSugeridor !== '') {
+      console.log('\n  👤 Aplicando filtro de SUGERIDOR:', this.filtroHistoricoSugeridor);
+      
+      const antes = filtrado.length;
+      filtrado = filtrado.filter(item => {
+        const match = item.sugeridoPor === this.filtroHistoricoSugeridor;
+        if (match) {
+          console.log(`    ✅ "${item.actividad}" sugerido por "${item.sugeridoPor}"`);
+        }
+        return match;
+      });
+      
+      console.log(`  Registros después de filtro sugeridor: ${antes} → ${filtrado.length}`);
+    }
+
+    // ORDENAR - Con validación de fechas
+    this.historicoFiltrado = filtrado.sort((a, b) => {
+      const fechaA = a.fechaSugerencia ? new Date(a.fechaSugerencia).getTime() : 0;
+      const fechaB = b.fechaSugerencia ? new Date(b.fechaSugerencia).getTime() : 0;
+      return fechaB - fechaA;
+    });
+
+    console.log('\n✅ ========== RESULTADO FINAL ==========');
+    console.log('  Registros en historicoFiltrado:', this.historicoFiltrado.length);
+    console.log('==========================================\n');
+  }
+
+  limpiarFiltrosHistorico(): void {
+    this.filtroHistoricoEstado = 'todos';
+    this.filtroHistoricoSugeridor = '';
+    this.aplicarFiltrosHistorico();
+  }
+
+  cambiarTab(tab: 'oficial' | 'sugerencias' | 'historico'): void {
+    console.log('🔄 Cambiando a pestaña:', tab);
     this.activeTab = tab;
-    this.filtrarCatalogo();
+    
+    if (tab === 'historico') {
+      console.log('📊 Cargando histórico...');
+      this.cargarHistorico();
+    } else {
+      this.filtrarCatalogo();
+    }
   }
 
   guardar(): void {
@@ -444,7 +646,8 @@ export class CatalogoComponent implements OnInit {
       actividad: item.actividad,
       diasHabiles: item.diasHabiles,
       horasMinimas: item.horasMinimas,
-      horasMaximas: item.horasMaximas
+      horasMaximas: item.horasMaximas,
+      observaciones: item.observaciones || ''
     };
     window.scrollTo(0, 0);
   }
@@ -518,7 +721,8 @@ export class CatalogoComponent implements OnInit {
       actividad: '',
       diasHabiles: 1,
       horasMinimas: 0,
-      horasMaximas: 0
+      horasMaximas: 0,
+      observaciones: ''
     };
     this.editandoId = null;
   }
