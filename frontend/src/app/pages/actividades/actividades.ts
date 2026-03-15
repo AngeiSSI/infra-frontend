@@ -1087,46 +1087,47 @@ export class ActividadesComponent implements OnInit {
     return diasRestantes > 0 && diasRestantes <= 2;
   }
 
-  calcularRiesgo(actividad: Actividad): string {
-    if (this.esVencida(actividad)) {
-      return 'danger';
-    }
-    if (this.esProxima(actividad)) {
-      return 'warning';
-    }
-    if (actividad.estado === 'pendiente validacion') {
-      return 'warning';
-    }
-    if (actividad.estado === 'cerrado') {
-      return 'success';
-    }
-    return 'info';
+calcularRiesgo(actividad: Actividad): string {
+  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') {
+    return 'success';
   }
+  if (actividad.estado === 'pendiente validacion') {
+    return 'warning';
+  }
+  if (this.esVencida(actividad)) {
+    return 'danger';
+  }
+  if (this.esProxima(actividad)) {
+    return 'warning';
+  }
+  return 'info';
+}
 
   diasHabilesRestantes(actividad: Actividad): number {
     if (!actividad.fechaCierre) return 0;
     return this.calcularDiasHabiles(new Date(), new Date(actividad.fechaCierre));
   }
 
-  getRiesgoTexto(actividad: Actividad): string {
-    if (actividad.estado === 'pendiente validacion') {
-      return '⏳ Pendiente validación';
-    }
-    if (actividad.estado === 'cerrado') {
-      return '✅ Cerrado';
-    }
-    const diasHabiles = this.diasHabilesRestantes(actividad);
-    if (diasHabiles < 0) {
-      return `❌ Vencido hace ${Math.abs(diasHabiles)} días hábiles`;
-    }
-    if (diasHabiles === 0) {
-      return '⚠️ Hoy vence';
-    }
-    if (diasHabiles === 1) {
-      return `⚠️ ${diasHabiles} día hábil restante`;
-    }
-    return `📅 ${diasHabiles} días hábiles restantes`;
+getRiesgoTexto(actividad: Actividad): string {
+  if (actividad.estado === 'pendiente validacion') {
+    return '⏳ Pendiente validación';
   }
+  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') {
+    return '✅ Cerrado';
+  }
+
+  const diasHabiles = this.diasHabilesRestantes(actividad);
+  if (diasHabiles < 0) {
+    return `❌ Vencido hace ${Math.abs(diasHabiles)} días hábiles`;
+  }
+  if (diasHabiles === 0) {
+    return '⚠️ Hoy vence';
+  }
+  if (diasHabiles === 1) {
+    return `⚠️ ${diasHabiles} día hábil restante`;
+  }
+  return `📅 ${diasHabiles} días hábiles restantes`;
+}
 
   conteoEstado(estado: string): number {
   if (estado === 'cerrado') {
