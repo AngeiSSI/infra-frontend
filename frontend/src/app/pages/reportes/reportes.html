@@ -288,23 +288,32 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let act of actividadesFiltradas" 
-              [class.vencida]="esVencida(act)"
-              [class.proxima]="esProxima(act)"
-              [class.cerrada]="act.estado === 'cerrado'">
-            <td><strong>{{ act.actividadCatalogo }}</strong></td>
-            <td>{{ act.lider }}</td>
-            <td>{{ act.proyecto }}</td>
-            <td>
-              <span class="badge" 
-      [class.badge-vencida]="esVencida(act)"
-      [class.badge-proxima]="esProxima(act)"
-      [class.badge-cerrada]="act.estado === 'cerrado'"
-      [class.badge-cerrada-vencida]="act.estado === 'cerrada_vencida'">
-            </td>
-            <td>{{ act.horasAcumuladas }}/{{ act.horas }}h</td>
-            <td>{{ act.fechaCierre | date:'dd/MM/yyyy' }}</td>
-          </tr>
+          <tr *ngFor="let act of actividadesFiltradas"
+    [class.vencida]="esVencida(act)"
+    [class.proxima]="esProxima(act)"
+    [class.cerrada]="act.estado === 'cerrado' || act.estado === 'cerrada_vencida'">
+
+  <td><strong>{{ act.actividadCatalogo }}</strong></td>
+  <td>{{ act.lider }}</td>
+  <td>{{ act.proyecto }}</td>
+<td>
+  <span class="badge"
+        [class.badge-vencida]="esVencida(act)"
+        [class.badge-proxima]="esProxima(act)"
+        [class.badge-cerrada]="act.estado === 'cerrado' || act.estado === 'cerrada_vencida'"
+        [class.badge-cerrada-vencida]="act.estado === 'cerrada_vencida'">
+    {{
+      esVencida(act) ? '⚠️ VENCIDA' :
+      esProxima(act) ? '🔔 POR VENCER' :
+      act.estado === 'cerrada_vencida' ? '⛔ CERRADA VENCIDA' :
+      act.estado === 'cerrado' ? '✅ CERRADA' :
+      '🔄 EN PROGRESO'
+    }}
+  </span>
+</td>
+  <td>{{ act.horasAcumuladas }}/{{ act.horas }}h</td>
+  <td>{{ act.fechaCierre | date:'dd/MM/yyyy' }}</td>
+</tr>
         </tbody>
       </table>
 

@@ -1059,9 +1059,9 @@ export class ActividadesComponent implements OnInit {
   }
 
   esVencida(actividad: Actividad): boolean {
-    if (actividad.estado === 'cerrado') return false;
-    if (actividad.estado === 'pendiente validacion') return false;
-    if (!actividad.fechaCierre) return false;
+  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
+  if (actividad.estado === 'pendiente validacion') return false;
+  if (!actividad.fechaCierre) return false;
     
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
@@ -1072,12 +1072,10 @@ export class ActividadesComponent implements OnInit {
     return fechaCierre < hoy;
   }
 
-  private esCerrada(estado?: string): boolean {
-  return estado === 'cerrado' || estado === 'cerrada_vencida';
-}
+  
   esProxima(actividad: Actividad): boolean {
-    if (actividad.estado === 'cerrado') return false;
-    if (!actividad.fechaCierre) return false;
+  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
+  if (!actividad.fechaCierre) return false;
     
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
@@ -1131,8 +1129,13 @@ export class ActividadesComponent implements OnInit {
   }
 
   conteoEstado(estado: string): number {
-    return this.actividadesFiltradas.filter((a) => a.estado === estado).length;
+  if (estado === 'cerrado') {
+    return this.actividadesFiltradas.filter(
+      (a) => a.estado === 'cerrado' || a.estado === 'cerrada_vencida'
+    ).length;
   }
+  return this.actividadesFiltradas.filter((a) => a.estado === estado).length;
+}
 
   conteoVencidas(): number {
     return this.actividadesFiltradas.filter(
