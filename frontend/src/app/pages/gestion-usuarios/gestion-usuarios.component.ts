@@ -426,7 +426,7 @@ export class GestionUsuariosComponent implements OnInit {
     email: '',
     grupo: '',
     perfil: '',
-    password: 'Infra2024!',
+    password: 'Infra2026!',
     activo: true
   };
 
@@ -497,7 +497,7 @@ export class GestionUsuariosComponent implements OnInit {
       email: '',
       grupo: '',
       perfil: '',
-      password: 'Infra2024!',
+      password: 'Infra2026!',
       activo: true
     };
     this.error = '';
