@@ -297,11 +297,10 @@
             <td>{{ act.proyecto }}</td>
             <td>
               <span class="badge" 
-                    [class.badge-vencida]="esVencida(act)"
-                    [class.badge-proxima]="esProxima(act)"
-                    [class.badge-cerrada]="act.estado === 'cerrado'">
-                {{ esVencida(act) ? '⚠️ VENCIDA' : esProxima(act) ? '🔔 POR VENCER' : act.estado === 'cerrado' ? '✅ CERRADA' : '🔄 EN PROGRESO' }}
-              </span>
+      [class.badge-vencida]="esVencida(act)"
+      [class.badge-proxima]="esProxima(act)"
+      [class.badge-cerrada]="act.estado === 'cerrado'"
+      [class.badge-cerrada-vencida]="act.estado === 'cerrada_vencida'">
             </td>
             <td>{{ act.horasAcumuladas }}/{{ act.horas }}h</td>
             <td>{{ act.fechaCierre | date:'dd/MM/yyyy' }}</td>

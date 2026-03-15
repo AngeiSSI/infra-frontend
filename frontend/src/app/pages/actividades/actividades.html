@@ -246,7 +246,7 @@
           <tr *ngIf="expandedObservaciones[actividad._id!]" class="observaciones-row">
             <td [attr.colspan]="vistaActual === 'seguimiento' ? '13' : '12'">
               <div class="observaciones-content">
-                <div class="obs-form-container" *ngIf="actividad.estado !== 'pendiente validacion' && actividad.estado !== 'cerrado'">
+                <div class="obs-form-container" *ngIf="actividad.estado !== 'pendiente validacion' && actividad.estado !== 'cerrado' && actividad.estado !== 'cerrada_vencida'">
                   <div class="obs-form">
                     <textarea [(ngModel)]="observacionForm[actividad._id!]"
                               placeholder="Agregar observación..."

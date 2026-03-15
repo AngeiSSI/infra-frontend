@@ -189,7 +189,7 @@ private calcularDiasHabilesPositivos(fechaInicio: Date, fechaFin: Date): number 
         (this.filtroEstado === 'vencidas' && this.esVencida(act)) ||
         (this.filtroEstado === 'proximas' && this.esProxima(act)) ||
         (this.filtroEstado === 'activas' && act.estado === 'en progreso') ||
-        (this.filtroEstado === 'cerradas' && act.estado === 'cerrado');
+        (this.filtroEstado === 'cerradas' && this.esCerrada(act.estado));
 
       const cumpleBusqueda = 
         act.actividadCatalogo.toLowerCase().includes(this.filtroBusqueda.toLowerCase()) ||
@@ -211,6 +211,10 @@ private calcularDiasHabilesPositivos(fechaInicio: Date, fechaFin: Date): number 
   fechaCierre.setHours(0, 0, 0, 0);
   
   return fechaCierre < hoy; // Si la fecha de cierre ya pasó
+}
+
+private esCerrada(estado?: string): boolean {
+  return estado === 'cerrado' || estado === 'cerrada_vencida';
 }
 
 esProxima(act: any): boolean {

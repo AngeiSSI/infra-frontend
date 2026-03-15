@@ -1072,6 +1072,9 @@ export class ActividadesComponent implements OnInit {
     return fechaCierre < hoy;
   }
 
+  private esCerrada(estado?: string): boolean {
+  return estado === 'cerrado' || estado === 'cerrada_vencida';
+}
   esProxima(actividad: Actividad): boolean {
     if (actividad.estado === 'cerrado') return false;
     if (!actividad.fechaCierre) return false;
