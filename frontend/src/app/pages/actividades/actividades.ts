@@ -557,6 +557,12 @@ import { ChangeDetectorRef } from '@angular/core';
       font-weight: 600;
       font-size: 0.9rem;
     }
+
+    .badge-cerrada_vencida {
+  background: #FFEBEE;
+  color: #CC0000;
+}
+
   `]
 })
 export class ActividadesComponent implements OnInit {
