@@ -1,0 +1,78 @@
+<div class="login-container">
+  <!-- Lado Izquierdo -->
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="login-logo-container">
+        <img src="/claro-logo.png" alt="Claro Logo" class="login-logo">
+      </div>
+      <h1 class="login-title">Infraestructura</h1>
+      <p class="login-subtitle">Gestión de Actividades</p>
+    </div>
+  </div>
+
+  <!-- Lado Derecho -->
+  <div class="login-right">
+    <div class="login-form">
+      <h2>Acceso</h2>
+      <p class="login-form-subtitle">Ingresa con tus credenciales</p>
+
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <div *ngIf="!showRecuperarPassword">
+        <div class="form-group">
+          <label>Email</label>
+          <input 
+            type="email" 
+            [(ngModel)]="email"
+            placeholder="tu@email.com"
+            (keypress)="onKeypress($event)">
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña</label>
+          <div class="password-container">
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              [(ngModel)]="password"
+              placeholder="••••••••"
+              (keypress)="onKeypress($event)">
+            <button class="password-toggle" (click)="togglePassword()">
+              {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="login-actions">
+          <button class="btn-login" (click)="ingresar()" [disabled]="cargando">
+            {{ cargando ? '⏳ Iniciando...' : 'Ingresar' }}
+          </button>
+          <button class="btn-secondary" (click)="toggleRecuperarPassword()">
+            ¿Olvidaste?
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="showRecuperarPassword" class="form-group">
+        <label>Email para recuperación</label>
+        <input 
+          type="email" 
+          placeholder="tu@email.com"
+          #emailRecuperar>
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+          <button class="btn-login" style="flex: 1;" (click)="recuperarPassword(emailRecuperar.value)" [disabled]="cargando">
+            {{ cargando ? '⏳ Enviando...' : 'Enviar' }}
+          </button>
+          <button class="btn-secondary" style="flex: 1;" (click)="toggleRecuperarPassword()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+
+      <div class="login-footer" style="margin-top: 2rem;">
+        <p>¿Necesitas ayuda? Contacta al <a>administrador</a></p>
+      </div>
+    </div>
+  </div>
+</div>

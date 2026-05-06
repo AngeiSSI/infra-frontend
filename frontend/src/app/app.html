@@ -1,0 +1,19 @@
+<div class="layout">
+
+  <header class="topbar">
+    <img src="/claro-logo.png" class="logo">
+    <div class="user-info">
+      {{usuario?.nombre}} ({{usuario?.rol}})
+      <button (click)="logout()">Salir</button>
+    </div>
+  </header>
+
+  <main class="contenido">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer>
+    Creado por Angei Rojas Romero y Camilo Muñoz Bulla
+  </footer>
+
+</div>

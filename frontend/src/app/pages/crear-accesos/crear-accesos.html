@@ -1,0 +1,107 @@
+<div class="crear-accesos-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>🔐 Crear Accesos</h1>
+  </div>
+
+  <!-- Alertas -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  <div *ngIf="mensaje" class="alert alert-success">
+    {{ mensaje }}
+  </div>
+
+  <!-- Contenido -->
+  <div *ngIf="loading && usuarios.length === 0" class="loading">
+    <p>⏳ Cargando usuarios...</p>
+  </div>
+
+  <div *ngIf="!loading && esCoordinador" class="content-wrapper">
+    <!-- Selección de Módulo -->
+    <div class="form-section">
+      <h2>1️⃣ Selecciona un Módulo</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="modulo">Módulo *</label>
+          <select id="modulo" [(ngModel)]="moduloSeleccionado">
+            <option value="">-- Selecciona un módulo --</option>
+            <option *ngFor="let m of modulos" [value]="m.valor">
+              {{ m.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selección de Permisos -->
+    <div class="form-section" *ngIf="moduloSeleccionado">
+      <h2>2️⃣ Selecciona los Permisos</h2>
+      <div class="alert alert-info">
+        ℹ️ Selecciona los permisos que deseas asignar a los usuarios
+      </div>
+      <div class="permisos-grid">
+        <div *ngFor="let permiso of permisos" class="permiso-card">
+          <input 
+            type="checkbox" 
+            [id]="'permiso-' + permiso.valor"
+            [checked]="tienePermiso(permiso.valor)"
+            (change)="togglePermiso(permiso.valor)"
+          />
+          <label [for]="'permiso-' + permiso.valor">
+            {{ permiso.label }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selección de Usuarios -->
+    <div class="form-section" *ngIf="moduloSeleccionado && permisosSeleccionados.size > 0">
+      <h2>3️⃣ Selecciona los Usuarios</h2>
+      <div class="alert alert-info">
+        ℹ️ Selecciona los usuarios que recibirán estos permisos
+      </div>
+      <div class="usuarios-grid">
+        <div 
+          *ngFor="let u of usuarios" 
+          [class.selected]="estaSeleccionado(u._id)"
+          class="usuario-card"
+          (click)="toggleUsuario(u._id)"
+        >
+          <input 
+            type="checkbox" 
+            [checked]="estaSeleccionado(u._id)"
+            (click)="$event.stopPropagation()"
+            (change)="toggleUsuario(u._id)"
+          />
+          <p class="usuario-nombre">{{ u.nombre }}</p>
+          <p class="usuario-email">{{ u.email }}</p>
+          <span class="usuario-rol">{{ u.rol }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="btn-group" *ngIf="moduloSeleccionado && permisosSeleccionados.size > 0">
+      <button 
+        class="btn btn-secondary" 
+        (click)="usuariosSeleccionados.clear(); permisosSeleccionados.clear(); moduloSeleccionado = ''"
+      >
+        🔄 Limpiar
+      </button>
+      <button 
+        class="btn btn-success" 
+        (click)="crearAccesos()" 
+        [disabled]="loading || usuariosSeleccionados.size === 0"
+      >
+        {{ loading ? '⏳ Creando...' : '✅ Crear Accesos' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje sin permisos -->
+  <div *ngIf="!esCoordinador" class="no-permiso">
+    <h2>❌ Acceso Denegado</h2>
+    <p>Solo el Coordinador puede crear accesos</p>
+  </div>
+</div>
