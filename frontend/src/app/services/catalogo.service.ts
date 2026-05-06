@@ -29,7 +29,10 @@ export interface HistoricoItem {
   rolSugeridor: string;
   fechaSugerencia: Date;
   estado: 'aprobado' | 'rechazado';
+<<<<<<< HEAD
   estadoHistorico?: 'aprobado' | 'rechazado';
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   observaciones?: string;
   fechaAprobacion?: Date;
   aprobadoPor?: string;
@@ -39,10 +42,18 @@ export interface HistoricoItem {
   providedIn: 'root'
 })
 export class CatalogoService {
+<<<<<<< HEAD
   private apiUrl = 'https://api-infra-actividades-g0dve6hncubtf8au.westcentralus-01.azurewebsites.net/';
 
   constructor(private http: HttpClient) {}
 
+=======
+  private apiUrl = 'https://api-infra-actividades-prod-hygpfxfdeudpfsaz.westcentralus-01.azurewebsites.net/';
+
+  constructor(private http: HttpClient) {}
+
+  // ================= CATÁLOGO OFICIAL Y SUGERENCIAS =================
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   getCatalogo(esAutorizado: boolean): Observable<CatalogoItem[]> {
     const url = esAutorizado ? '/catalogo/todos' : '/catalogo';
     return this.http.get<CatalogoItem[]>(`${this.apiUrl}${url}`);
@@ -68,12 +79,20 @@ export class CatalogoService {
     return this.http.delete(`${this.apiUrl}/catalogo/${id}`);
   }
 
+<<<<<<< HEAD
+=======
+  // ================= HISTÓRICO DE APROBACIONES Y RECHAZOS =================
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   getHistorico(filtros?: { estado?: string; sugeridoPor?: string }): Observable<HistoricoItem[]> {
     let url = `${this.apiUrl}/catalogo/historico`;
     
     if (filtros) {
       const params = new URLSearchParams();
       
+<<<<<<< HEAD
+=======
+      // Usar "aprobado" o "rechazado" como valores
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       if (filtros.estado && filtros.estado !== 'todos') {
         params.append('estado', filtros.estado);
       }

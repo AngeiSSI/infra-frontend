@@ -90,7 +90,11 @@
 
   <!-- Tarjetas de Actividades -->
   <div *ngIf="!loading && obtenerActividadesAMostrar().length > 0">
+<<<<<<< HEAD
     <div *ngFor="let actividad of obtenerActividadesAMostrar(); let i = index" class="tarjeta-vencimiento">
+=======
+    <div *ngFor="let actividad of obtenerActividadesAMostrar()" class="tarjeta-vencimiento">
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       <!-- Header -->
       <div class="tarjeta-header">
         <div>
@@ -141,6 +145,7 @@
       <div *ngIf="!actividad.justificacionCierre || !actividad.justificacionCierre.estado || actividad.justificacionCierre.estado === 'pendiente'" class="acciones-box">
         <p class="acciones-titulo">Decisión del Coordinador</p>
         
+<<<<<<< HEAD
         <!-- Checkboxes de Decisión -->
         <div class="decision-section">
           <div class="checkbox-group">
@@ -182,6 +187,25 @@
         <div *ngIf="!tieneDecisionSeleccionada(actividad._id!) && error === ''" 
              style="color: #F57C00; font-size: 0.85rem; margin-top: 0.5rem;">
           ⚠️ Selecciona una decisión (Aprobar o Rechazar)
+=======
+        <div class="comentario-form">
+          <label>Comentario:</label>
+          <textarea [(ngModel)]="comentarioForm[actividad._id!]"
+                    placeholder="Explica tu decisión (aprobación o motivo de rechazo)..."></textarea>
+        </div>
+
+        <div class="botones-accion">
+          <button class="btn btn-success" 
+                  (click)="aprobarCierre(actividad._id)"
+                  [disabled]="loading">
+            ✅ {{ loading ? 'Procesando...' : 'Aprobar Cierre' }}
+          </button>
+          <button class="btn btn-danger" 
+                  (click)="rechazarCierre(actividad._id)"
+                  [disabled]="loading">
+            ❌ Rechazar
+          </button>
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         </div>
       </div>
 
@@ -198,6 +222,9 @@
           Fecha: {{ actividad.justificacionCierre.fecha | date: 'dd/MM/yyyy HH:mm' }}
         </p>
       </div>
+<<<<<<< HEAD
     </div>
   </div>
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 </div>

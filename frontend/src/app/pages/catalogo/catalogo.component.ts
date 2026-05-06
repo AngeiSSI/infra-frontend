@@ -3,9 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+<<<<<<< HEAD
 import { CatalogoService, CatalogoItem, HistoricoItem } from '../../services/catalogo.service';
 import { ChangeDetectorRef } from '@angular/core';
 
+=======
+import { CatalogoService, CatalogoItem } from '../../services/catalogo.service';
+import { ChangeDetectorRef } from '@angular/core';
+
+interface HistoricoItem extends CatalogoItem {
+  estadoHistorico?: 'aprobado' | 'rechazado';
+  esHistorico?: boolean;
+}
+
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 @Component({
   selector: 'app-catalogo',
   standalone: true,
@@ -113,20 +124,28 @@ import { ChangeDetectorRef } from '@angular/core';
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
+<<<<<<< HEAD
     .btn-group {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
 
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .btn-success {
       padding: 0.75rem 1.5rem;
       background: #4caf50;
       color: white;
       border: none;
       border-radius: 4px;
+<<<<<<< HEAD
       font-weight: 600;
       cursor: pointer;
+=======
+      cursor: pointer;
+      font-weight: 600;
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       transition: background 0.3s;
     }
 
@@ -141,6 +160,7 @@ import { ChangeDetectorRef } from '@angular/core';
 
     .btn-secondary {
       padding: 0.75rem 1.5rem;
+<<<<<<< HEAD
       background: #f0f0f0;
       color: #333;
       border: 1px solid #ddd;
@@ -193,6 +213,19 @@ import { ChangeDetectorRef } from '@angular/core';
 
     .tab:hover {
       color: #667eea;
+=======
+      background: #757575;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: #616161;
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     }
 
     .tabla-wrapper {
@@ -271,7 +304,20 @@ import { ChangeDetectorRef } from '@angular/core';
       border: none;
       border-radius: 4px;
       cursor: pointer;
+<<<<<<< HEAD
       transition: all 0.3s;
+=======
+      transition: background 0.3s;
+    }
+
+    .btn-warning {
+      background: #ff9800;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #e68900;
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     }
 
     .btn-info {
@@ -283,6 +329,7 @@ import { ChangeDetectorRef } from '@angular/core';
       background: #1976d2;
     }
 
+<<<<<<< HEAD
     .btn-success-small {
       background: #4caf50;
       color: white;
@@ -294,16 +341,105 @@ import { ChangeDetectorRef } from '@angular/core';
 
     .btn-danger {
       background: #f44336;
+=======
+    .btn-danger {
+      background: #d32f2f;
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       color: white;
     }
 
     .btn-danger:hover {
+<<<<<<< HEAD
       background: #da190b;
+=======
+      background: #b71c1c;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      background: white;
+      border-radius: 8px;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: white;
+      border-radius: 8px;
+      color: #999;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #ddd;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      color: #999;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .stats-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      border-top: 3px solid #667eea;
+    }
+
+    .stat-label {
+      color: #999;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .stat-number {
+      color: #667eea;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0;
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     }
 
     .filter-section {
       background: white;
+<<<<<<< HEAD
       padding: 1.5rem;
+=======
+      padding: 1rem;
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       border-radius: 8px;
       margin-bottom: 1.5rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -315,6 +451,7 @@ import { ChangeDetectorRef } from '@angular/core';
       gap: 1rem;
     }
 
+<<<<<<< HEAD
     .stats-section {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -345,6 +482,8 @@ import { ChangeDetectorRef } from '@angular/core';
       margin: 0;
     }
 
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     @media (max-width: 768px) {
       .catalogo-container {
         padding: 1rem;
@@ -398,6 +537,10 @@ export class CatalogoComponent implements OnInit {
     observaciones: ''
   };
 
+<<<<<<< HEAD
+=======
+  // Filtros para histórico
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   filtroHistoricoEstado: 'todos' | 'aprobado' | 'rechazado' = 'todos';
   filtroHistoricoSugeridor: string = '';
   sugridoresDisponibles: string[] = [];
@@ -436,6 +579,7 @@ export class CatalogoComponent implements OnInit {
     const rol = this.usuario.rol?.toLowerCase();
     const esAutorizado = rol === 'coordinador' || rol === 'administrador';
 
+<<<<<<< HEAD
     console.log('📖 Iniciando carga de catálogo...');
     console.log('  Usuario:', this.usuario.nombre);
     console.log('  Rol:', rol);
@@ -460,6 +604,20 @@ export class CatalogoComponent implements OnInit {
         this.error = 'Error al cargar catálogo: ' + (err.error?.message || err.statusText);
         this.loading = false;
         console.error('❌ Error:', err);
+=======
+    this.catalogoService.getCatalogo(esAutorizado).subscribe({
+      next: (data) => {
+        this.catalogo = this.ordenarCatalogo(data);
+        this.filtrarCatalogo();
+        this.loading = false;
+        this.cdr.detectChanges();
+        console.log('📖 Catálogo cargado:', this.catalogo.length, 'items');
+      },
+      error: (err) => {
+        this.error = 'Error al cargar catálogo: ' + (err.error?.message || err.statusText);
+        this.loading = false;
+        console.error('Error:', err);
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       }
     });
   }
@@ -474,25 +632,41 @@ export class CatalogoComponent implements OnInit {
       next: (data: any) => {
         console.log('📊 Datos recibidos del servidor:', data.length, 'registros');
         
+<<<<<<< HEAD
+=======
+        // Debug: mostrar estructura de datos
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         if (data.length > 0) {
           console.log('📋 Estructura de primer registro:');
           console.log('   - _id:', data[0]._id);
           console.log('   - actividad:', data[0].actividad);
           console.log('   - estado:', data[0].estado);
           console.log('   - estadoHistorico:', data[0].estadoHistorico);
+<<<<<<< HEAD
+=======
+          console.log('   - esHistorico:', data[0].esHistorico);
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         }
 
         this.historico = data;
         this.cargarSugridoresDisponibles();
         this.aplicarFiltrosHistorico();
         
+<<<<<<< HEAD
+=======
+        // Cargar estadísticas
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.catalogoService.getEstadisticasHistorico().subscribe({
           next: (stats) => {
             console.log('📊 Estadísticas recibidas:', stats);
             this.estadisticas = stats;
             this.cdr.detectChanges();
           },
+<<<<<<< HEAD
           error: (err: any) => {
+=======
+          error: (err) => {
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
             console.error('Error al cargar estadísticas:', err);
           }
         });
@@ -501,7 +675,11 @@ export class CatalogoComponent implements OnInit {
         this.cdr.detectChanges();
         console.log('✅ Histórico cargado completamente');
       },
+<<<<<<< HEAD
       error: (err: any) => {
+=======
+      error: (err) => {
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.error = 'Error al cargar histórico: ' + (err.error?.message || err.statusText);
         this.loading = false;
         console.error('❌ Error en getHistorico:', err);
@@ -519,6 +697,7 @@ export class CatalogoComponent implements OnInit {
   }
 
   filtrarCatalogo(): void {
+<<<<<<< HEAD
     console.log('🔍 Filtrando catálogo...');
     console.log('  activeTab:', this.activeTab);
     console.log('  catalogo.length:', this.catalogo.length);
@@ -537,6 +716,13 @@ export class CatalogoComponent implements OnInit {
     }
 
     this.cdr.detectChanges();
+=======
+    if (this.activeTab === 'oficial') {
+      this.catalogoFiltrado = this.catalogo.filter(item => item.estado === 'oficial');
+    } else if (this.activeTab === 'sugerencias') {
+      this.catalogoFiltrado = this.catalogo.filter(item => item.estado === 'pendiente');
+    }
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   cargarSugridoresDisponibles(): void {
@@ -558,6 +744,10 @@ export class CatalogoComponent implements OnInit {
     let filtrado = [...this.historico];
     console.log('  Registros iniciales:', filtrado.length);
 
+<<<<<<< HEAD
+=======
+    // FILTRO 1: Por estado
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     if (this.filtroHistoricoEstado && this.filtroHistoricoEstado !== 'todos') {
       console.log('\n  📊 Aplicando filtro de ESTADO:', this.filtroHistoricoEstado);
       
@@ -575,6 +765,10 @@ export class CatalogoComponent implements OnInit {
       console.log(`  Registros después de filtro estado: ${antes} → ${filtrado.length}`);
     }
 
+<<<<<<< HEAD
+=======
+    // FILTRO 2: Por sugeridor
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     if (this.filtroHistoricoSugeridor && this.filtroHistoricoSugeridor !== '') {
       console.log('\n  👤 Aplicando filtro de SUGERIDOR:', this.filtroHistoricoSugeridor);
       
@@ -590,6 +784,10 @@ export class CatalogoComponent implements OnInit {
       console.log(`  Registros después de filtro sugeridor: ${antes} → ${filtrado.length}`);
     }
 
+<<<<<<< HEAD
+=======
+    // ORDENAR - Con validación de fechas
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     this.historicoFiltrado = filtrado.sort((a, b) => {
       const fechaA = a.fechaSugerencia ? new Date(a.fechaSugerencia).getTime() : 0;
       const fechaB = b.fechaSugerencia ? new Date(b.fechaSugerencia).getTime() : 0;
@@ -621,6 +819,7 @@ export class CatalogoComponent implements OnInit {
 
   guardar(): void {
     if (!this.validarFormulario()) {
+<<<<<<< HEAD
       return;
     }
 
@@ -638,6 +837,9 @@ export class CatalogoComponent implements OnInit {
 
     if (existeDuplicado) {
       this.error = `⚠️ Ya existe una actividad llamada "${this.formData.actividad}" en la tipificación "${tipificacionSeleccionada}". Por favor usa un nombre diferente.`;
+=======
+      this.error = 'Por favor completa todos los campos';
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       return;
     }
 
@@ -660,7 +862,11 @@ export class CatalogoComponent implements OnInit {
 
         setTimeout(() => this.mensaje = '', 3000);
       },
+<<<<<<< HEAD
       error: (err: any) => {
+=======
+      error: (err) => {
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.loading = false;
         this.error = 'Error: ' + (err.error?.message || err.statusText);
         console.error('Error:', err);
@@ -694,7 +900,11 @@ export class CatalogoComponent implements OnInit {
           this.cargarCatalogo();
           setTimeout(() => this.mensaje = '', 3000);
         },
+<<<<<<< HEAD
         error: (err: any) => {
+=======
+        error: (err) => {
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
           this.error = 'Error: ' + (err.error?.message || err.statusText);
         }
       });
@@ -711,7 +921,11 @@ export class CatalogoComponent implements OnInit {
           this.cargarCatalogo();
           setTimeout(() => this.mensaje = '', 3000);
         },
+<<<<<<< HEAD
         error: (err: any) => {
+=======
+        error: (err) => {
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
           this.error = 'Error: ' + (err.error?.message || err.statusText);
         }
       });
@@ -726,7 +940,11 @@ export class CatalogoComponent implements OnInit {
           this.cargarCatalogo();
           setTimeout(() => this.mensaje = '', 3000);
         },
+<<<<<<< HEAD
         error: (err: any) => {
+=======
+        error: (err) => {
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
           this.error = 'Error: ' + (err.error?.message || err.statusText);
         }
       });
@@ -734,6 +952,7 @@ export class CatalogoComponent implements OnInit {
   }
 
   validarFormulario(): boolean {
+<<<<<<< HEAD
     this.error = '';
 
     if (!this.formData.tipificacion?.trim()) {
@@ -771,6 +990,16 @@ export class CatalogoComponent implements OnInit {
     }
 
     return true;
+=======
+    return !!(
+      this.formData.tipificacion.trim() &&
+      this.formData.actividad.trim() &&
+      this.formData.diasHabiles > 0 &&
+      this.formData.horasMinimas >= 0 &&
+      this.formData.horasMaximas >= 0 &&
+      this.formData.horasMaximas >= this.formData.horasMinimas
+    );
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   resetFormulario(): void {
@@ -783,7 +1012,10 @@ export class CatalogoComponent implements OnInit {
       observaciones: ''
     };
     this.editandoId = null;
+<<<<<<< HEAD
     this.error = '';
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   esAutorizado(): boolean {

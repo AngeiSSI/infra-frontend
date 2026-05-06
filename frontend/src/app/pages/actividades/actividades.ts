@@ -59,12 +59,15 @@ import { ChangeDetectorRef } from '@angular/core';
       border-left-color: #F57C00;
     }
 
+<<<<<<< HEAD
     .alert-success {
       background: #E8F5E9;
       color: #2E7D32;
       border-left-color: #2E7D32;
     }
 
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .stats-section {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -291,11 +294,14 @@ import { ChangeDetectorRef } from '@angular/core';
       color: #0051BA;
     }
 
+<<<<<<< HEAD
     .badge-cerrada_vencida {
       background: #FFEBEE;
       color: #CC0000;
     }
 
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .acciones {
       display: flex;
       gap: 0.5rem;
@@ -337,6 +343,7 @@ import { ChangeDetectorRef } from '@angular/core';
       background: #AA0000;
     }
 
+<<<<<<< HEAD
     .btn-secondary {
       padding: 0.4rem 0.8rem;
       background: #F0F0F0;
@@ -354,6 +361,8 @@ import { ChangeDetectorRef } from '@angular/core';
       color: #CC0000;
     }
 
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .observaciones-row {
       background: #F9F9F9 !important;
     }
@@ -505,6 +514,27 @@ import { ChangeDetectorRef } from '@angular/core';
       border-left: 4px solid #CC0000;
     }
 
+<<<<<<< HEAD
+=======
+    .btn-secondary {
+      padding: 0.75rem 1.5rem;
+      background: #F0F0F0;
+      color: #333;
+      border: 2px solid #E0E0E0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: #E8E8E8;
+      border-color: #CC0000;
+      color: #CC0000;
+    }
+
+    /* Estilos para justificación de vencidas */
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .justificacion-container {
       background: #FFEBEE;
       padding: 1.5rem;
@@ -568,6 +598,7 @@ import { ChangeDetectorRef } from '@angular/core';
       font-size: 0.9rem;
     }
 
+<<<<<<< HEAD
     .fecha-cierre-cell {
       display: flex;
       align-items: center;
@@ -595,6 +626,13 @@ import { ChangeDetectorRef } from '@angular/core';
       border-radius: 4px !important;
       font-size: 0.9rem !important;
     }
+=======
+    .badge-cerrada_vencida {
+  background: #FFEBEE;
+  color: #CC0000;
+}
+
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   `]
 })
 export class ActividadesComponent implements OnInit {
@@ -628,6 +666,7 @@ export class ActividadesComponent implements OnInit {
   justificacionForm: { [key: string]: string } = {};
   showJustificacion: { [key: string]: boolean } = {};
 
+<<<<<<< HEAD
   editandoFechaId: string | null = null;
   formFecha: string = '';
 
@@ -635,6 +674,11 @@ export class ActividadesComponent implements OnInit {
   loadingActividades = false;
   error = '';
   mensaje = '';
+=======
+  loading = false;
+  loadingActividades = false;
+  error = '';
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   usuario: any = null;
   showFormulario = false;
   expandedObservaciones: { [key: string]: boolean } = {};
@@ -649,7 +693,10 @@ export class ActividadesComponent implements OnInit {
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
+<<<<<<< HEAD
     console.log('👤 Usuario actual:', this.usuario);
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     
     if (!this.usuario) {
       this.router.navigate(['/login']);
@@ -789,6 +836,7 @@ export class ActividadesComponent implements OnInit {
   }
 
   filtrarActividades(): void {
+<<<<<<< HEAD
     const rol = this.usuario?.rol?.toLowerCase();
     
     // Super Admin ve TODAS las actividades siempre
@@ -798,6 +846,8 @@ export class ActividadesComponent implements OnInit {
       return;
     }
 
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     switch (this.vistaActual) {
       case 'mis':
         this.actividadesFiltradas = this.actividades.filter(
@@ -1080,6 +1130,7 @@ export class ActividadesComponent implements OnInit {
     });
   }
 
+<<<<<<< HEAD
   toggleEditarFecha(id: string | null): void {
     if (id) {
       const actividad = this.actividadesFiltradas.find(a => a._id === id);
@@ -1157,6 +1208,8 @@ export class ActividadesComponent implements OnInit {
     });
   }
 
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   calcularDiasHabiles(fechaInicio: Date, fechaFin: Date): number {
     let diasHabiles = 0;
     let fechaActual = new Date(fechaInicio);
@@ -1188,9 +1241,15 @@ export class ActividadesComponent implements OnInit {
   }
 
   esVencida(actividad: Actividad): boolean {
+<<<<<<< HEAD
     if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
     if (actividad.estado === 'pendiente validacion') return false;
     if (!actividad.fechaCierre) return false;
+=======
+  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
+  if (actividad.estado === 'pendiente validacion') return false;
+  if (!actividad.fechaCierre) return false;
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
@@ -1201,9 +1260,16 @@ export class ActividadesComponent implements OnInit {
     return fechaCierre < hoy;
   }
 
+<<<<<<< HEAD
   esProxima(actividad: Actividad): boolean {
     if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
     if (!actividad.fechaCierre) return false;
+=======
+  
+  esProxima(actividad: Actividad): boolean {
+  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
+  if (!actividad.fechaCierre) return false;
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
@@ -1215,6 +1281,7 @@ export class ActividadesComponent implements OnInit {
     return diasRestantes > 0 && diasRestantes <= 2;
   }
 
+<<<<<<< HEAD
   calcularRiesgo(actividad: Actividad): string {
     if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') {
       return 'success';
@@ -1230,12 +1297,30 @@ export class ActividadesComponent implements OnInit {
     }
     return 'info';
   }
+=======
+calcularRiesgo(actividad: Actividad): string {
+  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') {
+    return 'success';
+  }
+  if (actividad.estado === 'pendiente validacion') {
+    return 'warning';
+  }
+  if (this.esVencida(actividad)) {
+    return 'danger';
+  }
+  if (this.esProxima(actividad)) {
+    return 'warning';
+  }
+  return 'info';
+}
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
   diasHabilesRestantes(actividad: Actividad): number {
     if (!actividad.fechaCierre) return 0;
     return this.calcularDiasHabiles(new Date(), new Date(actividad.fechaCierre));
   }
 
+<<<<<<< HEAD
   getRiesgoTexto(actividad: Actividad): string {
     if (actividad.estado === 'pendiente validacion') {
       return '⏳ Pendiente validación';
@@ -1265,6 +1350,37 @@ export class ActividadesComponent implements OnInit {
     }
     return this.actividadesFiltradas.filter((a) => a.estado === estado).length;
   }
+=======
+getRiesgoTexto(actividad: Actividad): string {
+  if (actividad.estado === 'pendiente validacion') {
+    return '⏳ Pendiente validación';
+  }
+  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') {
+    return '✅ Cerrado';
+  }
+
+  const diasHabiles = this.diasHabilesRestantes(actividad);
+  if (diasHabiles < 0) {
+    return `❌ Vencido hace ${Math.abs(diasHabiles)} días hábiles`;
+  }
+  if (diasHabiles === 0) {
+    return '⚠️ Hoy vence';
+  }
+  if (diasHabiles === 1) {
+    return `⚠️ ${diasHabiles} día hábil restante`;
+  }
+  return `📅 ${diasHabiles} días hábiles restantes`;
+}
+
+  conteoEstado(estado: string): number {
+  if (estado === 'cerrado') {
+    return this.actividadesFiltradas.filter(
+      (a) => a.estado === 'cerrado' || a.estado === 'cerrada_vencida'
+    ).length;
+  }
+  return this.actividadesFiltradas.filter((a) => a.estado === estado).length;
+}
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
   conteoVencidas(): number {
     return this.actividadesFiltradas.filter(
@@ -1272,24 +1388,35 @@ export class ActividadesComponent implements OnInit {
     ).length;
   }
 
+<<<<<<< HEAD
   // ✅ MÉTODOS DE PERMISOS - SUPER ADMIN VE TODO
   puedeVerTotal(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
     return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+=======
+  puedeVerTotal(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   puedeVerSeguimiento(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
+<<<<<<< HEAD
     return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
   }
 
   puedeVerAprobacionVencimientos(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
     return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+=======
+    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   puedeVerGestionUsuarios(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
+<<<<<<< HEAD
     return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
   }
 
@@ -1306,10 +1433,14 @@ export class ActividadesComponent implements OnInit {
   puedeVerAsignacion(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
     return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+=======
+    return rol === 'coordinador' || rol === 'administrador';
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   esCoordinador(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
+<<<<<<< HEAD
     return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
   }
 
@@ -1321,6 +1452,9 @@ export class ActividadesComponent implements OnInit {
   esSuperAdmin(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
     return rol === 'super_admin';
+=======
+    return rol === 'coordinador' || rol === 'administrador';
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   validarFormulario(): boolean {

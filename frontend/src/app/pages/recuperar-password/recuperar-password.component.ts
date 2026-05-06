@@ -354,7 +354,11 @@ export class RecuperarPasswordComponent {
     this.error = '';
 
     this.http.post(
+<<<<<<< HEAD
       'https://api-infra-actividades-g0dve6hncubtf8au.westcentralus-01.azurewebsites.net/recuperar-password',
+=======
+      'https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net/recuperar-password',
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       { email: this.email }
     ).subscribe({
       next: (response: any) => {
@@ -410,7 +414,11 @@ export class RecuperarPasswordComponent {
     console.log('📤 Enviando solicitud de reset...');
 
     this.http.post(
+<<<<<<< HEAD
       'https://api-infra-actividades-g0dve6hncubtf8au.westcentralus-01.azurewebsites.net/resetear-password',
+=======
+      'https://api-infra-actividades-prod-aqcuagc5bje7ddfu.westcentralus-01.azurewebsites.net/resetear-password',
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       { token: this.token, nueva_password: this.nueva_password }
     ).subscribe({
       next: (response: any) => {

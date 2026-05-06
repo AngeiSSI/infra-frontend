@@ -2,8 +2,13 @@
   <!-- Sidebar solo si está autenticado -->
   <app-sidebar *ngIf="isAuthenticated && !isLoginPage"></app-sidebar>
   
+<<<<<<< HEAD
   <!-- Contenido principal con margen izquierdo -->
   <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; margin-left: 250px;" [style.margin-left]="(isAuthenticated && !isLoginPage) ? '250px' : '0'">
+=======
+  <!-- Contenido principal -->
+  <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; width: 100%;">
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     <router-outlet></router-outlet>
   </div>
 </div>

@@ -9,7 +9,11 @@ import { filter, takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-root',
   standalone: true,
+<<<<<<< HEAD
   imports: [CommonModule, SidebarComponent, RouterOutlet],
+=======
+  imports: [CommonModule, SidebarComponent, RouterOutlet],  /* ← AGREGÁ CommonModule */
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   templateUrl: './app.component.html',
   styleUrls: ['./app.css']
 })

@@ -13,7 +13,10 @@
 <div class="content-area">
   <!-- Alertas -->
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+<<<<<<< HEAD
   <div *ngIf="mensaje" class="alert alert-success">{{ mensaje }}</div>
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
   <!-- Información de seguimiento semanal -->
   <div *ngIf="vistaActual === 'seguimiento'" class="alert" style="background: #e3f2fd; color: #1976d2; border-left-color: #1976d2;">
@@ -154,7 +157,10 @@
           <th>Descripción</th>
           <th>Líder</th>
           <th>Estado</th>
+<<<<<<< HEAD
           <th>Fecha Cierre</th>
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
           <th>Horas Mes</th>
           <th *ngIf="vistaActual === 'total' || vistaActual === 'grupo' || vistaActual === 'mis'">Horas Acumuladas</th>
           <th>Riesgo</th>
@@ -176,6 +182,7 @@
                 {{ actividad.estado | uppercase }}
               </span>
             </td>
+<<<<<<< HEAD
             <!-- Celda de Fecha de Cierre con botón de edición solo para Super Admin -->
             <td class="fecha-cierre-cell">
               <div>
@@ -204,6 +211,8 @@
                 </button>
               </div>
             </td>
+=======
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
             <td>
               <strong>{{ actividad.horasMes || 0 }}</strong>
             </td>
@@ -239,7 +248,11 @@
 
           <!-- Fila de Justificación para Tareas Vencidas -->
           <tr *ngIf="esVencida(actividad) && actividad.estado === 'en progreso' && showJustificacion[actividad._id!]">
+<<<<<<< HEAD
             <td [attr.colspan]="vistaActual === 'seguimiento' ? '14' : '13'">
+=======
+            <td [attr.colspan]="vistaActual === 'seguimiento' ? '13' : '12'">
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
               <div class="justificacion-container">
                 <h4>⚠️ Justificación de Tarea Vencida</h4>
                 
@@ -274,7 +287,11 @@
 
           <!-- Fila de Observaciones -->
           <tr *ngIf="expandedObservaciones[actividad._id!]" class="observaciones-row">
+<<<<<<< HEAD
             <td [attr.colspan]="vistaActual === 'seguimiento' ? '14' : '13'">
+=======
+            <td [attr.colspan]="vistaActual === 'seguimiento' ? '13' : '12'">
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
               <div class="observaciones-content">
                 <div class="obs-form-container" *ngIf="actividad.estado !== 'pendiente validacion' && actividad.estado !== 'cerrado' && actividad.estado !== 'cerrada_vencida'">
                   <div class="obs-form">

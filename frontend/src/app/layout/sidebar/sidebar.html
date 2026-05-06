@@ -1,6 +1,7 @@
 <div class="main-sidebar">
   <!-- Header con Logo -->
   <div class="sidebar-header">
+<<<<<<< HEAD
     <h2>📊 Seguimiento Infraestructura</h2>
   </div>
 
@@ -12,6 +13,22 @@
          [class.expanded]="submenuOpen"
          (click)="toggleSubmenu()">
       <span class="icon">📝</span>
+=======
+    <div class="sidebar-logo-container">
+      <img src="/claro-logo.png" alt="Claro Logo" class="sidebar-logo">
+    </div>
+    <h2>Infraestructura</h2>
+  </div>
+
+  <!-- Main Menu -->
+  <div class="sidebar-section">
+    <!-- Actividades - Expandible -->
+    <div class="sidebar-main-item" 
+         [class.active]="activeMenuItem.includes('actividades') || activeMenuItem.includes('mis') || activeMenuItem.includes('grupo') || activeMenuItem.includes('total') || activeMenuItem.includes('seguimiento') || activeMenuItem.includes('aprobacion')"
+         [class.expanded]="submenuOpen"
+         (click)="toggleSubmenu()">
+      <span class="icon">📋</span>
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       <span>Actividades</span>
       <span class="chevron">›</span>
     </div>
@@ -21,24 +38,40 @@
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'mis-actividades'"
            (click)="setActiveMenu('mis-actividades')">
+<<<<<<< HEAD
         📝 Mis Actividades
+=======
+        ✏️ Mis Actividades
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'grupo'"
            (click)="setActiveMenu('grupo')">
+<<<<<<< HEAD
         👥 Actividades por Grupo
+=======
+        👥 Mi Grupo
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'total'"
            *ngIf="puedeVerTotal()"
            (click)="setActiveMenu('total')">
+<<<<<<< HEAD
         📊 Total de Actividades
+=======
+        🌍 Total
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'seguimiento'"
            *ngIf="puedeVerSeguimiento()"
            (click)="setActiveMenu('seguimiento')">
+<<<<<<< HEAD
         📈 Seguimiento Semanal
+=======
+        📊 Seguimiento
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'aprobacion'"
@@ -47,6 +80,7 @@
         ⚠️ Aprobación Vencimientos
       </div>
     </div>
+<<<<<<< HEAD
 
     <!-- Reportes -->
     <div class="sidebar-main-item"
@@ -102,6 +136,49 @@
       <span>Gestión Usuarios</span>
     </div>
   </nav>
+=======
+  </div>
+
+  <!-- Reportes -->
+  <div class="sidebar-section">
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'reportes'"
+         (click)="navigateTo('reportes')">
+      <span class="icon">📈</span>
+      <span>Reportes</span>
+    </div>
+  </div>
+
+  <!-- Catálogo -->
+  <div class="sidebar-section">
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'catalogo'"
+         (click)="navigateTo('catalogo')">
+      <span class="icon">📚</span>
+      <span>Catálogo</span>
+    </div>
+  </div>
+
+  <!-- Asignación -->
+  <div class="sidebar-section">
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'asignacion'"
+         (click)="navigateTo('asignacion')">
+      <span class="icon">📦</span>
+      <span>Asignación</span>
+    </div>
+  </div>
+
+  <!-- Gestión Usuarios -->
+  <div class="sidebar-section" *ngIf="puedeVerGestionUsuarios()">
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'gestion-usuarios'"
+         (click)="navigateTo('gestion-usuarios')">
+      <span class="icon">👥</span>
+      <span>Usuarios</span>
+    </div>
+  </div>
+>>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
   <!-- Footer -->
   <div class="sidebar-footer">
