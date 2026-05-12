@@ -8,7 +8,10 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './sidebar.html',
-  styleUrls: ['./sidebar.css']
+  styleUrls: ['./sidebar.css'],
+  host: {
+    style: 'display: block; flex-shrink: 0;'
+  }
 })
 export class SidebarComponent implements OnInit {
   usuario: any = null;
@@ -22,23 +25,15 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
-    console.log('👤 Usuario en sidebar:', this.usuario);
-    
-    // Actualizar el menú activo basado en la ruta actual
     this.actualizarMenuActivo();
     
-    // Escuchar cambios de ruta para actualizar el menú
     this.router.events.subscribe(() => {
       this.actualizarMenuActivo();
     });
   }
 
-  /**
-   * Actualiza el menú activo según la ruta actual
-   */
   actualizarMenuActivo(): void {
     const url = this.router.url;
-    console.log('📍 Ruta actual:', url);
 
     if (url.includes('actividades/aprobacion-vencimientos')) {
       this.activeMenuItem = 'aprobacion';
@@ -61,6 +56,12 @@ export class SidebarComponent implements OnInit {
     } else if (url.includes('catalogo')) {
       this.activeMenuItem = 'catalogo';
       this.submenuOpen = false;
+    } else if (url.includes('festivos')) {
+      this.activeMenuItem = 'festivos';
+      this.submenuOpen = false;
+    } else if (url.includes('flujo-valor')) {
+      this.activeMenuItem = 'flujo-valor';
+      this.submenuOpen = false;
     } else if (url.includes('asignacion')) {
       this.activeMenuItem = 'asignacion';
       this.submenuOpen = false;
@@ -71,77 +72,87 @@ export class SidebarComponent implements OnInit {
   }
 
   toggleSubmenu(): void {
-    console.log('🔄 Toggling submenu:', !this.submenuOpen);
     this.submenuOpen = !this.submenuOpen;
   }
 
   navigateTo(ruta: string): void {
-    console.log('🔗 Navegando a:', ruta);
-    
-    // Validar permisos para usuarios
-    if (ruta === 'gestion-usuarios' && !this.puedeVerGestionUsuarios()) {
-      console.log('❌ No tienes permisos para acceder a Gestión de Usuarios');
-      return;
-    }
-    
     this.activeMenuItem = ruta;
     this.submenuOpen = false;
-    console.log('➡️ Ruta final:', `/${ruta}`);
     this.router.navigate([`/${ruta}`]);
   }
 
   setActiveMenu(item: string): void {
-    console.log('📌 Estableciendo menú activo:', item);
     this.activeMenuItem = item;
     
     if (item === 'mis-actividades') {
-      console.log('➡️ Navegando a /actividades');
       this.router.navigate(['/actividades']);
     } else if (item === 'grupo') {
-      console.log('➡️ Navegando a /actividades/grupo');
       this.router.navigate(['/actividades/grupo']);
     } else if (item === 'total') {
-      console.log('➡️ Navegando a /actividades/total');
       this.router.navigate(['/actividades/total']);
     } else if (item === 'seguimiento') {
-      console.log('➡️ Navegando a /actividades/seguimiento');
       this.router.navigate(['/actividades/seguimiento']);
     } else if (item === 'aprobacion') {
-      console.log('➡️ Navegando a /actividades/aprobacion-vencimientos');
       this.router.navigate(['/actividades/aprobacion-vencimientos']);
     }
   }
 
   puedeVerTotal(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
-    const puede = rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
-    console.log('🔐 puedeVerTotal para', rol, ':', puede);
-    return puede;
+    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
   }
 
   puedeVerSeguimiento(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
-    const puede = rol === 'senior' || rol === 'coordinador' || rol === 'administrador';
-    console.log('🔐 puedeVerSeguimiento para', rol, ':', puede);
-    return puede;
+    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
   }
 
   puedeVerAprobacionVencimientos(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
-    const puede = rol === 'coordinador' || rol === 'administrador';
-    console.log('🔐 puedeVerAprobacionVencimientos para', rol, ':', puede);
-    return puede;
+    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
   }
 
   puedeVerGestionUsuarios(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
-    const puede = rol === 'coordinador' || rol === 'administrador';
-    console.log('🔐 puedeVerGestionUsuarios para', rol, ':', puede);
-    return puede;
+    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+  }
+
+  puedeVerReportes(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+  }
+
+  puedeVerCatalogo(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+  }
+
+  puedeVerFestivos(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'administrador' || rol === 'super_admin';
+  }
+
+  puedeVerFlujoValor(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'administrador' || rol === 'super_admin' || rol === 'coordinador' || rol === 'senior';
+  }
+
+  puedeVerAsignacion(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+  }
+
+  esAdministrador(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'administrador' || rol === 'super_admin';
+  }
+
+  esSuperAdmin(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'super_admin';
   }
 
   logout(): void {
-    console.log('🚪 Cerrando sesión');
     this.authService.logout();
     this.router.navigate(['/login']);
   }
