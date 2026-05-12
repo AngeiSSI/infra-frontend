@@ -209,43 +209,6 @@ import { ChangeDetectorRef } from '@angular/core';
       text-transform: uppercase;
     }
 
-<<<<<<< HEAD
-    .decision-section {
-      display: flex;
-      gap: 2rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid #E0E0E0;
-    }
-
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-    }
-
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .checkbox-label input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: #CC0000;
-    }
-
-    .checkbox-text {
-      font-weight: 600;
-      color: #333;
-      font-size: 0.95rem;
-    }
-
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .comentario-form {
       margin-bottom: 1rem;
     }
@@ -296,18 +259,12 @@ import { ChangeDetectorRef } from '@angular/core';
       color: white;
     }
 
-<<<<<<< HEAD
-    .btn-success:hover:not(:disabled) {
-=======
     .btn-success:hover {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       background: #45a049;
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
     }
 
-<<<<<<< HEAD
-=======
     .btn-danger {
       background: #CC0000;
       color: white;
@@ -319,7 +276,6 @@ import { ChangeDetectorRef } from '@angular/core';
       box-shadow: 0 4px 12px rgba(204, 0, 0, 0.2);
     }
 
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -437,10 +393,6 @@ export class AprobacionVencimientosComponent implements OnInit {
   usuario: any = null;
 
   comentarioForm: { [key: string]: string } = {};
-<<<<<<< HEAD
-  decisionForm: { [key: string]: { aprobar?: boolean; rechazar?: boolean } } = {};
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   tabActivo: 'pendientes' | 'aprobadas' | 'rechazadas' = 'pendientes';
 
   filtroLider: string = '';
@@ -458,35 +410,19 @@ export class AprobacionVencimientosComponent implements OnInit {
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
     
-<<<<<<< HEAD
-    console.log('👤 Usuario en AprobacionVencimientos:', this.usuario);
-    console.log('👤 Rol:', this.usuario?.rol?.toLowerCase());
-    
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     if (!this.usuario) {
       this.router.navigate(['/login']);
       return;
     }
 
-<<<<<<< HEAD
-    const rol = this.usuario.rol?.toLowerCase();
-    if (rol !== 'coordinador' && rol !== 'administrador' && rol !== 'super_admin') {
-      console.log('❌ Rol no autorizado:', rol);
-=======
     // Verificar permisos
     const rol = this.usuario.rol?.toLowerCase();
     if (rol !== 'coordinador' && rol !== 'administrador') {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       this.error = 'No tienes permisos para acceder a esta sección';
       setTimeout(() => this.router.navigate(['/actividades']), 2000);
       return;
     }
 
-<<<<<<< HEAD
-    console.log('✅ Acceso permitido para rol:', rol);
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     this.cargarActividades();
   }
 
@@ -494,16 +430,9 @@ export class AprobacionVencimientosComponent implements OnInit {
     this.loading = true;
     this.actividadesService.getActividades().subscribe({
       next: (data) => {
-<<<<<<< HEAD
-        this.actividades = data.filter(a => a.estado === 'pendiente validacion');
-        
-        console.log('📊 Actividades pendientes de validación:', this.actividades.length);
-        
-=======
         // Filtrar solo actividades en estado "pendiente validacion"
         this.actividades = data.filter(a => a.estado === 'pendiente validacion');
         
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.filtrarActividades();
         this.cargarFiltros();
         this.loading = false;
@@ -568,97 +497,28 @@ export class AprobacionVencimientosComponent implements OnInit {
     this.filtrarActividades();
   }
 
-<<<<<<< HEAD
-  obtenerDecision(actividadId: string, tipo: 'aprobar' | 'rechazar'): boolean {
-    return tipo === 'aprobar' 
-      ? this.decisionForm[actividadId]?.aprobar || false
-      : this.decisionForm[actividadId]?.rechazar || false;
-  }
-
-  toggleDecision(actividadId: string, tipo: 'aprobar' | 'rechazar'): void {
-    if (!this.decisionForm[actividadId]) {
-      this.decisionForm[actividadId] = {};
-    }
-
-    if (tipo === 'aprobar') {
-      this.decisionForm[actividadId].aprobar = !this.decisionForm[actividadId].aprobar;
-      if (this.decisionForm[actividadId].aprobar) {
-        this.decisionForm[actividadId].rechazar = false;
-      }
-    } else if (tipo === 'rechazar') {
-      this.decisionForm[actividadId].rechazar = !this.decisionForm[actividadId].rechazar;
-      if (this.decisionForm[actividadId].rechazar) {
-        this.decisionForm[actividadId].aprobar = false;
-      }
-    }
-
-    console.log('✅ Decisión actualizada para:', actividadId, this.decisionForm[actividadId]);
-  }
-
-  tieneDecisionSeleccionada(actividadId: string): boolean {
-    return !!(this.decisionForm[actividadId]?.aprobar || this.decisionForm[actividadId]?.rechazar);
-  }
-
-  procesarDecision(actividadId: string | undefined): void {
-    if (!actividadId) return;
-
-    const decision = this.decisionForm[actividadId];
-    
-    if (!decision?.aprobar && !decision?.rechazar) {
-      this.error = 'Debes seleccionar una decisión (Aprobar o Rechazar)';
-      return;
-    }
-
-=======
   aprobarCierre(actividadId: string | undefined): void {
     if (!actividadId) return;
 
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     if (!this.comentarioForm[actividadId]?.trim()) {
       this.error = 'Debes agregar un comentario';
       return;
     }
 
-<<<<<<< HEAD
-    this.error = '';
-
-    if (decision.aprobar) {
-      this.aprobarCierre(actividadId);
-    } else if (decision.rechazar) {
-      this.rechazarCierre(actividadId);
-    }
-  }
-
-  aprobarCierre(actividadId: string | undefined): void {
-    if (!actividadId) return;
-=======
     if (!confirm('¿Está seguro de aprobar el cierre de esta actividad?')) {
       return;
     }
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
     this.loading = true;
     this.error = '';
 
-<<<<<<< HEAD
-    console.log('✅ Aprobando cierre de actividad:', actividadId);
-
     this.actividadesService.aprobarCierre(actividadId, this.comentarioForm[actividadId]).subscribe({
       next: (actividadActualizada: Actividad) => {
-        console.log('✅ Cierre aprobado exitosamente');
-=======
-    this.actividadesService.aprobarCierre(actividadId, this.comentarioForm[actividadId]).subscribe({
-      next: (actividadActualizada: Actividad) => {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         const index = this.actividades.findIndex(a => a._id === actividadId);
         if (index !== -1) {
           this.actividades[index] = actividadActualizada;
         }
         this.comentarioForm[actividadId] = '';
-<<<<<<< HEAD
-        this.decisionForm[actividadId] = {};
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.filtrarActividades();
         this.loading = false;
         this.cdr.detectChanges();
@@ -666,10 +526,6 @@ export class AprobacionVencimientosComponent implements OnInit {
       error: (err: any) => {
         this.loading = false;
         this.error = 'Error al aprobar: ' + (err.error?.message || err.statusText);
-<<<<<<< HEAD
-        console.error('❌ Error al aprobar:', err);
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       }
     });
   }
@@ -677,16 +533,6 @@ export class AprobacionVencimientosComponent implements OnInit {
   rechazarCierre(actividadId: string | undefined): void {
     if (!actividadId) return;
 
-<<<<<<< HEAD
-    this.loading = true;
-    this.error = '';
-
-    console.log('❌ Rechazando cierre de actividad:', actividadId);
-
-    this.actividadesService.rechazarCierre(actividadId, this.comentarioForm[actividadId]).subscribe({
-      next: (actividadActualizada: Actividad) => {
-        console.log('✅ Cierre rechazado exitosamente');
-=======
     if (!this.comentarioForm[actividadId]?.trim()) {
       this.error = 'Debes agregar un motivo de rechazo';
       return;
@@ -701,16 +547,11 @@ export class AprobacionVencimientosComponent implements OnInit {
 
     this.actividadesService.rechazarCierre(actividadId, this.comentarioForm[actividadId]).subscribe({
       next: (actividadActualizada: Actividad) => {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         const index = this.actividades.findIndex(a => a._id === actividadId);
         if (index !== -1) {
           this.actividades[index] = actividadActualizada;
         }
         this.comentarioForm[actividadId] = '';
-<<<<<<< HEAD
-        this.decisionForm[actividadId] = {};
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.filtrarActividades();
         this.loading = false;
         this.cdr.detectChanges();
@@ -718,10 +559,6 @@ export class AprobacionVencimientosComponent implements OnInit {
       error: (err: any) => {
         this.loading = false;
         this.error = 'Error al rechazar: ' + (err.error?.message || err.statusText);
-<<<<<<< HEAD
-        console.error('❌ Error al rechazar:', err);
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       }
     });
   }

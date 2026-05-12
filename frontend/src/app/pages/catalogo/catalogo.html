@@ -15,13 +15,8 @@
 
     <div class="form-grid">
       <div class="form-group">
-<<<<<<< HEAD
-        <label for="tipificacion">Tipificación <span style="color: red;">*</span></label>
-        <select [(ngModel)]="formData.tipificacion" id="tipificacion" required>
-=======
         <label for="tipificacion">Tipificación:</label>
         <select [(ngModel)]="formData.tipificacion" id="tipificacion">
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
           <option value="">Selecciona tipificación</option>
           <option *ngFor="let tip of tipificaciones" [value]="tip">
             {{ tip }}
@@ -30,86 +25,50 @@
       </div>
 
       <div class="form-group">
-<<<<<<< HEAD
-        <label for="actividad">Actividad <span style="color: red;">*</span></label>
-=======
         <label for="actividad">Actividad:</label>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         <input
           type="text"
           id="actividad"
           [(ngModel)]="formData.actividad"
           placeholder="Nombre de la actividad"
-<<<<<<< HEAD
-          required
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         />
       </div>
 
       <div class="form-group">
-<<<<<<< HEAD
-        <label for="diasHabiles">Días Hábiles <span style="color: red;">*</span></label>
-=======
         <label for="diasHabiles">Días Hábiles:</label>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         <input
           type="number"
           id="diasHabiles"
           [(ngModel)]="formData.diasHabiles"
           min="1"
           placeholder="Días estimados"
-<<<<<<< HEAD
-          required
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         />
       </div>
 
       <div class="form-group">
-<<<<<<< HEAD
-        <label for="horasMinimas">⏱️ Horas Mínimas <span style="color: red;">*</span></label>
-=======
         <label for="horasMinimas">⏱️ Horas Mínimas:</label>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         <input
           type="number"
           id="horasMinimas"
           [(ngModel)]="formData.horasMinimas"
           min="0"
           placeholder="Mínimo de horas"
-<<<<<<< HEAD
-          required
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         />
       </div>
 
       <div class="form-group">
-<<<<<<< HEAD
-        <label for="horasMaximas">⏱️ Horas Máximas <span style="color: red;">*</span></label>
-=======
         <label for="horasMaximas">⏱️ Horas Máximas:</label>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         <input
           type="number"
           id="horasMaximas"
           [(ngModel)]="formData.horasMaximas"
           min="0"
           placeholder="Máximo de horas"
-<<<<<<< HEAD
-          required
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         />
       </div>
 
       <div class="form-group">
-<<<<<<< HEAD
-        <label for="observaciones">📝 Observaciones (opcional)</label>
-=======
         <label for="observaciones">📝 Observaciones (opcional):</label>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         <textarea
           id="observaciones"
           [(ngModel)]="formData.observaciones"
@@ -158,11 +117,7 @@
 
   <!-- Loading -->
   <div *ngIf="loading" class="loading">
-<<<<<<< HEAD
-    <p>⏳ Cargando...</p>
-=======
     <p>Cargando...</p>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   </div>
 
   <!-- ============= PESTAÑA: CATÁLOGO OFICIAL ============= -->
@@ -209,11 +164,7 @@
     </div>
 
     <div *ngIf="!loading && catalogoFiltrado.length === 0" class="empty-state">
-<<<<<<< HEAD
-      <p>📭 No hay servicios en el catálogo oficial</p>
-=======
       <p>No hay servicios en el catálogo oficial</p>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     </div>
   </div>
 
@@ -275,11 +226,7 @@
     </div>
 
     <div *ngIf="!loading && catalogoFiltrado.length === 0" class="empty-state">
-<<<<<<< HEAD
-      <p>📭 No hay sugerencias por aprobar</p>
-=======
       <p>No hay sugerencias por aprobar</p>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     </div>
   </div>
 
@@ -344,11 +291,6 @@
             <th>Tipificación</th>
             <th>Actividad</th>
             <th>Días Hábiles</th>
-<<<<<<< HEAD
-            <th>⏱️ Horas Mín.</th>
-            <th>⏱️ Horas Máx.</th>
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
             <th>Sugerido por</th>
             <th>Fecha Sugerencia</th>
             <th>Estado</th>
@@ -360,11 +302,6 @@
             <td>{{ item.tipificacion }}</td>
             <td>{{ item.actividad }}</td>
             <td>{{ item.diasHabiles }}</td>
-<<<<<<< HEAD
-            <td>{{ item.horasMinimas }}h</td>
-            <td>{{ item.horasMaximas }}h</td>
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
             <td>
               {{ item.sugeridoPor }}
               <span style="color: #999; font-size: 0.85rem;">
@@ -372,15 +309,9 @@
               </span>
             </td>
             <td>{{ item.fechaSugerencia | date: 'dd/MM/yyyy HH:mm' }}</td>
-<<<<<<< HEAD
-            <td>
-              <span class="badge" [ngClass]="'badge-' + (item.estadoHistorico || item.estado)">
-                {{ (item.estadoHistorico || item.estado) === 'aprobado' ? '✅ APROBADO' : '❌ RECHAZADO' }}
-=======
                         <td>
               <span class="badge" [ngClass]="'badge-' + item.estadoHistorico">
                 {{ item.estadoHistorico === 'aprobado' ? '✅ APROBADO' : '❌ RECHAZADO' }}
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
               </span>
             </td>
             <td style="max-width: 200px; word-wrap: break-word;">
@@ -395,11 +326,7 @@
     </div>
 
     <div *ngIf="!loading && historicoFiltrado.length === 0" class="empty-state">
-<<<<<<< HEAD
-      <p>📭 No hay registros en el histórico con los filtros aplicados</p>
-=======
       <p>No hay registros en el histórico con los filtros aplicados</p>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     </div>
   </div>
 </div>

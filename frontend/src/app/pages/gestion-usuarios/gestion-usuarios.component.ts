@@ -39,10 +39,7 @@ import { Router } from '@angular/router';
       padding: 2rem;
     }
 
-<<<<<<< HEAD
-=======
     /* TABLA */
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .tabla-usuarios {
       width: 100%;
     }
@@ -107,22 +104,6 @@ import { Router } from '@angular/router';
       color: #1976d2;
     }
 
-<<<<<<< HEAD
-    .badge-super-admin {
-      background: #fce4ec;
-      color: #c2185b;
-      font-weight: 700;
-      border: 1px solid #c2185b;
-    }
-
-    .badge-administrador {
-      background: #f3e5f5;
-      color: #7b1fa2;
-      font-weight: 700;
-    }
-
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .badge-activo {
       display: inline-block;
       padding: 0.4rem 0.8rem;
@@ -143,8 +124,6 @@ import { Router } from '@angular/router';
       color: #d32f2f;
     }
 
-<<<<<<< HEAD
-=======
     .btn-editar {
       background: none;
       border: none;
@@ -159,7 +138,6 @@ import { Router } from '@angular/router';
     }
 
     /* FORMULARIO */
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .formulario-container {
       background: white;
       border-radius: 8px;
@@ -221,12 +199,8 @@ import { Router } from '@angular/router';
       font-size: 0.95rem;
     }
 
-<<<<<<< HEAD
-    input, select {
-=======
     input,
     select {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       padding: 0.75rem;
       border: 1px solid #ddd;
       border-radius: 4px;
@@ -235,26 +209,13 @@ import { Router } from '@angular/router';
       transition: border-color 0.3s;
     }
 
-<<<<<<< HEAD
-    input:focus, select:focus {
-=======
     input:focus,
     select:focus {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       outline: none;
       border-color: #667eea;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
-<<<<<<< HEAD
-    select:disabled {
-      background: #f5f5f5;
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .password-input {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -277,8 +238,6 @@ import { Router } from '@angular/router';
       background: #777;
     }
 
-<<<<<<< HEAD
-=======
     /* CHECKBOX */
     .checkbox-label {
       display: flex;
@@ -304,7 +263,6 @@ import { Router } from '@angular/router';
       margin-bottom: 0;
     }
 
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .btn-group {
       display: flex;
       gap: 1rem;
@@ -376,15 +334,6 @@ import { Router } from '@angular/router';
       border-left: 4px solid #d32f2f;
     }
 
-<<<<<<< HEAD
-    .alert-warning {
-      background: #fff3e0;
-      color: #f57c00;
-      border-left: 4px solid #f57c00;
-    }
-
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .loading {
       text-align: center;
       padding: 2rem;
@@ -450,35 +399,6 @@ import { Router } from '@angular/router';
       background: #1976d2;
     }
 
-<<<<<<< HEAD
-    .btn-editar {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      padding: 0.5rem;
-      transition: transform 0.2s;
-    }
-
-    .btn-editar:hover {
-      transform: scale(1.2);
-    }
-
-    .info-box {
-      background: #e3f2fd;
-      border-left: 4px solid #2196f3;
-      padding: 1rem;
-      border-radius: 4px;
-      margin-bottom: 1rem;
-      color: #1976d2;
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 1024px) {
-      .tabla { font-size: 0.9rem; }
-      .tabla th, .tabla td { padding: 0.75rem; }
-=======
     @media (max-width: 1024px) {
       .tabla {
         font-size: 0.9rem;
@@ -488,7 +408,6 @@ import { Router } from '@angular/router';
       .tabla td {
         padding: 0.75rem;
       }
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     }
   `]
 })
@@ -501,11 +420,6 @@ export class GestionUsuariosComponent implements OnInit {
   error = '';
   mensaje = '';
   usuario: any = null;
-<<<<<<< HEAD
-  yaExisteSuperAdmin = false;
-  cantidadAdministradores = 0;
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
   formulario = {
     nombre: '',
@@ -516,16 +430,12 @@ export class GestionUsuariosComponent implements OnInit {
     activo: true
   };
 
-<<<<<<< HEAD
-  perfiles: any[] = [];
-=======
   perfiles = [
     { valor: 'lider', label: 'Líder de Infraestructura' },
     { valor: 'senior', label: 'Líder de Infraestructura Senior' },
     { valor: 'coordinador', label: 'Coordinador' },
     { valor: 'administrador', label: 'Administrador' }
   ];
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
   grupos = [
     { valor: 'Grupo 1', label: 'Grupo 1 Corporativo' },
@@ -546,69 +456,18 @@ export class GestionUsuariosComponent implements OnInit {
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
-<<<<<<< HEAD
-    console.log('👤 Usuario actual:', this.usuario);
-    
-    const rol = this.usuario?.rol?.toLowerCase();
-    console.log('👤 Rol:', rol);
-    
-    if (rol !== 'coordinador' && rol !== 'administrador' && rol !== 'super_admin') {
-      console.log('❌ Acceso denegado');
-=======
     console.log('👤 Usuario:', this.usuario);
     
     const rol = this.usuario?.rol?.toLowerCase();
     
     if (rol !== 'coordinador' && rol !== 'administrador') {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       this.router.navigate(['/actividades']);
       return;
     }
 
-<<<<<<< HEAD
-    console.log('✅ Acceso permitido a Gestión de Usuarios');
-    this.establecerPerfiles();
     this.cargarUsuarios();
   }
 
-  establecerPerfiles(): void {
-    const rol = this.usuario?.rol?.toLowerCase();
-    console.log('🔧 Estableciendo perfiles para rol:', rol);
-
-    if (rol === 'super_admin') {
-      this.perfiles = [
-        { valor: 'lider', label: 'Líder de Infraestructura' },
-        { valor: 'senior', label: 'Líder de Infraestructura Senior' },
-        { valor: 'coordinador', label: 'Coordinador' },
-        { valor: 'administrador', label: '🔐 Administrador (Máximo 2)' },
-        { valor: 'super_admin', label: '👑 Super Admin (Máximo 1)' }
-      ];
-      console.log('✅ Super Admin - Todos los perfiles disponibles');
-    } else if (rol === 'administrador') {
-      this.perfiles = [
-        { valor: 'lider', label: 'Líder de Infraestructura' },
-        { valor: 'senior', label: 'Líder de Infraestructura Senior' },
-        { valor: 'coordinador', label: 'Coordinador' },
-        { valor: 'administrador', label: '🔐 Administrador (Máximo 2)' },
-        { valor: 'super_admin', label: '👑 Super Admin (Máximo 1)' }
-      ];
-      console.log('✅ Administrador - Todos los perfiles disponibles');
-    } else if (rol === 'coordinador') {
-      this.perfiles = [
-        { valor: 'lider', label: 'Líder de Infraestructura' },
-        { valor: 'senior', label: 'Líder de Infraestructura Senior' },
-        { valor: 'coordinador', label: 'Coordinador' },
-        { valor: 'administrador', label: '🔐 Administrador (Máximo 2)' }
-      ];
-      console.log('✅ Coordinador - Perfiles básicos + Administrador');
-    }
-  }
-
-=======
-    this.cargarUsuarios();
-  }
-
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   cargarUsuarios(): void {
     this.loading = true;
     console.log('🔄 Cargando usuarios...');
@@ -617,16 +476,6 @@ export class GestionUsuariosComponent implements OnInit {
       next: (data: Usuario[]) => {
         console.log('✅ Usuarios cargados:', data.length);
         this.usuarios = data;
-<<<<<<< HEAD
-
-        this.yaExisteSuperAdmin = data.some(u => u.rol?.toLowerCase() === 'super_admin');
-        console.log('👑 ¿Ya existe Super Admin?:', this.yaExisteSuperAdmin);
-
-        this.cantidadAdministradores = data.filter(u => u.rol?.toLowerCase() === 'administrador').length;
-        console.log('🔐 Cantidad de Administradores:', this.cantidadAdministradores);
-
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -678,135 +527,31 @@ export class GestionUsuariosComponent implements OnInit {
 
   guardarUsuario(): void {
     console.log('🔍 Validando formulario...');
-<<<<<<< HEAD
-
-    if (!this.formulario.nombre.trim()) {
-=======
     console.log('📋 Formulario actual:', this.formulario);
     console.log('✏️ Usuario seleccionado:', this.usuarioSeleccionado);
 
     if (!this.formulario.nombre.trim()) {
       console.log('❌ Nombre vacío');
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       this.error = '❌ El nombre es requerido';
       return;
     }
     if (!this.formulario.email.trim()) {
-<<<<<<< HEAD
-=======
       console.log('❌ Email vacío');
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       this.error = '❌ El email es requerido';
       return;
     }
     if (!this.formulario.perfil) {
-<<<<<<< HEAD
-=======
       console.log('❌ Perfil vacío');
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       this.error = '❌ El perfil es requerido';
       return;
     }
     if (!this.formulario.grupo) {
-<<<<<<< HEAD
-      this.error = '❌ El grupo es requerido';
-      return;
-    }
-
-    const rol = this.usuario?.rol?.toLowerCase();
-    const perfil = this.formulario.perfil;
-    const esEdicion = !!this.usuarioSeleccionado;
-    const usuarioEsAdmin = this.usuarioSeleccionado?.rol?.toLowerCase() === 'administrador';
-    const usuarioEsSuperAdmin = this.usuarioSeleccionado?.rol?.toLowerCase() === 'super_admin';
-
-    console.log('📊 Debug:', { 
-      rol, 
-      perfil, 
-      esEdicion, 
-      usuarioEsAdmin, 
-      usuarioEsSuperAdmin, 
-      cantidadAdministradores: this.cantidadAdministradores, 
-      yaExisteSuperAdmin: this.yaExisteSuperAdmin 
-    });
-
-    // VALIDACIÓN: Super Admin
-    if (rol === 'super_admin') {
-      if (perfil === 'super_admin') {
-        if (this.yaExisteSuperAdmin && !esEdicion) {
-          this.error = '❌ Ya existe un Super Admin. Solo puede haber 1 en el sistema.';
-          return;
-        }
-        if (esEdicion && !usuarioEsSuperAdmin && this.yaExisteSuperAdmin) {
-          this.error = '❌ Ya existe un Super Admin. Solo puede haber 1 en el sistema.';
-          return;
-        }
-      }
-      
-      if (perfil === 'administrador') {
-        if (this.cantidadAdministradores >= 2 && !esEdicion) {
-          this.error = '❌ Ya hay 2 Administradores. Solo puede haber máximo 2.';
-          return;
-        }
-        if (esEdicion && !usuarioEsAdmin && this.cantidadAdministradores >= 2) {
-          this.error = '❌ Ya hay 2 Administradores. Solo puede haber máximo 2.';
-          return;
-        }
-      }
-    }
-    // VALIDACIÓN: Administrador
-    else if (rol === 'administrador') {
-      // Administrador SÍ puede crear Super Admin (máximo 1)
-      if (perfil === 'super_admin') {
-        if (this.yaExisteSuperAdmin && !esEdicion) {
-          this.error = '❌ Ya existe un Super Admin. Solo puede haber 1 en el sistema.';
-          return;
-        }
-        if (esEdicion && !usuarioEsSuperAdmin && this.yaExisteSuperAdmin) {
-          this.error = '❌ Ya existe un Super Admin. Solo puede haber 1 en el sistema.';
-          return;
-        }
-      }
-      
-      if (perfil === 'administrador') {
-        if (this.cantidadAdministradores >= 2 && !esEdicion) {
-          this.error = '❌ Ya hay 2 Administradores. Solo puede haber máximo 2.';
-          return;
-        }
-        if (esEdicion && !usuarioEsAdmin && this.cantidadAdministradores >= 2) {
-          this.error = '❌ Ya hay 2 Administradores. Solo puede haber máximo 2.';
-          return;
-        }
-      }
-    }
-    // VALIDACIÓN: Coordinador
-    else if (rol === 'coordinador') {
-      // Coordinador NO puede crear Super Admin
-      if (perfil === 'super_admin') {
-        this.error = '❌ No tienes permisos para crear Super Admin';
-        return;
-      }
-      
-      if (perfil === 'administrador') {
-        if (this.cantidadAdministradores >= 2 && !esEdicion) {
-          this.error = '❌ Ya hay 2 Administradores. Solo puede haber máximo 2.';
-          return;
-        }
-        if (esEdicion && !usuarioEsAdmin && this.cantidadAdministradores >= 2) {
-          this.error = '❌ Ya hay 2 Administradores. Solo puede haber máximo 2.';
-          return;
-        }
-      }
-    }
-
-    if (!this.usuarioSeleccionado && (!this.formulario.password || this.formulario.password.length < 6)) {
-=======
       console.log('❌ Grupo vacío');
       this.error = '❌ El grupo es requerido';
       return;
     }
     if (!this.usuarioSeleccionado && (!this.formulario.password || this.formulario.password.length < 6)) {
       console.log('❌ Contraseña vacía o muy corta');
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       this.error = '❌ La contraseña debe tener mínimo 6 caracteres';
       return;
     }
@@ -825,11 +570,8 @@ export class GestionUsuariosComponent implements OnInit {
         activo: this.formulario.activo
       };
 
-<<<<<<< HEAD
-=======
       console.log('📤 Datos a enviar (actualización):', usuarioActualizado);
 
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       this.accesosService.actualizarUsuario(this.usuarioSeleccionado._id!, usuarioActualizado).subscribe({
         next: () => {
           console.log('✅ Usuario actualizado exitosamente');
@@ -860,11 +602,8 @@ export class GestionUsuariosComponent implements OnInit {
         grupo: this.formulario.grupo
       };
 
-<<<<<<< HEAD
-=======
       console.log('📤 Datos a enviar (nuevo):', nuevoUsuario);
 
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       this.accesosService.crearUsuario(nuevoUsuario).subscribe({
         next: (resultado) => {
           console.log('✅ Usuario creado exitosamente:', resultado);
@@ -923,12 +662,6 @@ export class GestionUsuariosComponent implements OnInit {
     this.formulario.password = password;
   }
 
-<<<<<<< HEAD
-  resetearPassword(usuarioId: string, usuarioNombre: string): void {
-    const nueva_password = prompt(`Ingresa la nueva contraseña para ${usuarioNombre}:`);
-    
-    if (!nueva_password) return;
-=======
   /* ================= RESETEAR CONTRASEÑA ================= */
   resetearPassword(usuarioId: string, usuarioNombre: string): void {
     const nueva_password = prompt(`Ingresa la nueva contraseña para ${usuarioNombre}:`);
@@ -936,7 +669,6 @@ export class GestionUsuariosComponent implements OnInit {
     if (!nueva_password) {
       return;
     }
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
     if (nueva_password.length < 6) {
       this.error = 'La contraseña debe tener mínimo 6 caracteres';
@@ -952,10 +684,7 @@ export class GestionUsuariosComponent implements OnInit {
         },
         error: (err: any) => {
           this.error = 'Error: ' + (err.error?.message || err.statusText);
-<<<<<<< HEAD
-=======
           console.error('Error:', err);
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         }
       });
     }
@@ -964,15 +693,4 @@ export class GestionUsuariosComponent implements OnInit {
   obtenerGrupo(usuario: Usuario): string {
     return (usuario as any).grupo || '-';
   }
-<<<<<<< HEAD
-
-  esSuperAdmin(usuario: Usuario): boolean {
-    return usuario.rol?.toLowerCase() === 'super_admin';
-  }
-
-  esAdministrador(usuario: Usuario): boolean {
-    return usuario.rol?.toLowerCase() === 'administrador';
-  }
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 }

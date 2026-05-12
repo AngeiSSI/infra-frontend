@@ -8,11 +8,6 @@ import { CatalogoComponent } from './pages/catalogo/catalogo.component';
 import { RecuperarPasswordComponent } from './pages/recuperar-password/recuperar-password.component';
 import { AsignacionComponent } from './pages/asignacion/asignacion';
 import { ReportesComponent } from './pages/reportes/reportes.component';
-<<<<<<< HEAD
-import { FestivosComponent } from './pages/festivos/festivos.component';
-import { FlujoValorComponent } from './pages/flujo-valor/flujo-valor.component';
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
 export const appRoutes: Routes = [
   {
@@ -60,24 +55,10 @@ export const appRoutes: Routes = [
     component: CatalogoComponent
   },
   {
-<<<<<<< HEAD
-    path: 'festivos',
-    component: FestivosComponent
-  },
-  {
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     path: 'asignacion',
     component: AsignacionComponent
   },
   {
-<<<<<<< HEAD
-    path: 'flujo-valor',
-    component: FlujoValorComponent
-  },
-  {
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     path: 'gestion-usuarios',
     component: GestionUsuariosComponent
   },

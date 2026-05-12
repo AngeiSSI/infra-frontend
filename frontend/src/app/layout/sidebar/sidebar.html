@@ -1,19 +1,6 @@
 <div class="main-sidebar">
   <!-- Header con Logo -->
   <div class="sidebar-header">
-<<<<<<< HEAD
-    <h2>📊 Seguimiento Infraestructura</h2>
-  </div>
-
-  <!-- Main Menu -->
-  <nav class="menu">
-    <!-- Actividades - Expandible -->
-    <div class="sidebar-main-item" 
-         [class.active]="activeMenuItem === 'mis-actividades' || submenuOpen"
-         [class.expanded]="submenuOpen"
-         (click)="toggleSubmenu()">
-      <span class="icon">📝</span>
-=======
     <div class="sidebar-logo-container">
       <img src="/claro-logo.png" alt="Claro Logo" class="sidebar-logo">
     </div>
@@ -28,7 +15,6 @@
          [class.expanded]="submenuOpen"
          (click)="toggleSubmenu()">
       <span class="icon">📋</span>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       <span>Actividades</span>
       <span class="chevron">›</span>
     </div>
@@ -38,40 +24,24 @@
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'mis-actividades'"
            (click)="setActiveMenu('mis-actividades')">
-<<<<<<< HEAD
-        📝 Mis Actividades
-=======
         ✏️ Mis Actividades
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'grupo'"
            (click)="setActiveMenu('grupo')">
-<<<<<<< HEAD
-        👥 Actividades por Grupo
-=======
         👥 Mi Grupo
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'total'"
            *ngIf="puedeVerTotal()"
            (click)="setActiveMenu('total')">
-<<<<<<< HEAD
-        📊 Total de Actividades
-=======
         🌍 Total
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'seguimiento'"
            *ngIf="puedeVerSeguimiento()"
            (click)="setActiveMenu('seguimiento')">
-<<<<<<< HEAD
-        📈 Seguimiento Semanal
-=======
         📊 Seguimiento
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'aprobacion'"
@@ -80,63 +50,6 @@
         ⚠️ Aprobación Vencimientos
       </div>
     </div>
-<<<<<<< HEAD
-
-    <!-- Reportes -->
-    <div class="sidebar-main-item"
-         [class.active]="activeMenuItem === 'reportes'"
-         *ngIf="puedeVerReportes()"
-         (click)="navigateTo('reportes')">
-      <span class="icon">📊</span>
-      <span>Reportes</span>
-    </div>
-
-    <!-- Catálogo -->
-    <div class="sidebar-main-item"
-         [class.active]="activeMenuItem === 'catalogo'"
-         *ngIf="puedeVerCatalogo()"
-         (click)="navigateTo('catalogo')">
-      <span class="icon">📖</span>
-      <span>Catálogo</span>
-    </div>
-
-    <!-- Gestión de Festivos -->
-    <div class="sidebar-main-item"
-         [class.active]="activeMenuItem === 'festivos'"
-         *ngIf="puedeVerFestivos()"
-         (click)="navigateTo('festivos')">
-      <span class="icon">📅</span>
-      <span>Gestión Festivos</span>
-    </div>
-
-    <!-- Flujo de Valor -->
-    <div class="sidebar-main-item"
-         [class.active]="activeMenuItem === 'flujo-valor'"
-         *ngIf="puedeVerFlujoValor()"
-         (click)="navigateTo('flujo-valor')">
-      <span class="icon">🌊</span>
-      <span>Flujo de Valor</span>
-    </div>
-
-    <!-- Asignación -->
-    <div class="sidebar-main-item"
-         [class.active]="activeMenuItem === 'asignacion'"
-         *ngIf="puedeVerAsignacion()"
-         (click)="navigateTo('asignacion')">
-      <span class="icon">👥</span>
-      <span>Asignación</span>
-    </div>
-
-    <!-- Gestión Usuarios -->
-    <div class="sidebar-main-item"
-         [class.active]="activeMenuItem === 'gestion-usuarios'"
-         *ngIf="puedeVerGestionUsuarios()"
-         (click)="navigateTo('gestion-usuarios')">
-      <span class="icon">👨‍💼</span>
-      <span>Gestión Usuarios</span>
-    </div>
-  </nav>
-=======
   </div>
 
   <!-- Reportes -->
@@ -178,7 +91,6 @@
       <span>Usuarios</span>
     </div>
   </div>
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 
   <!-- Footer -->
   <div class="sidebar-footer">

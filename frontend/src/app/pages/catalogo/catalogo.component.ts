@@ -3,11 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-<<<<<<< HEAD
-import { CatalogoService, CatalogoItem, HistoricoItem } from '../../services/catalogo.service';
-import { ChangeDetectorRef } from '@angular/core';
-
-=======
 import { CatalogoService, CatalogoItem } from '../../services/catalogo.service';
 import { ChangeDetectorRef } from '@angular/core';
 
@@ -16,7 +11,6 @@ interface HistoricoItem extends CatalogoItem {
   esHistorico?: boolean;
 }
 
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
 @Component({
   selector: 'app-catalogo',
   standalone: true,
@@ -124,28 +118,14 @@ interface HistoricoItem extends CatalogoItem {
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
-<<<<<<< HEAD
-    .btn-group {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     .btn-success {
       padding: 0.75rem 1.5rem;
       background: #4caf50;
       color: white;
       border: none;
       border-radius: 4px;
-<<<<<<< HEAD
-      font-weight: 600;
-      cursor: pointer;
-=======
       cursor: pointer;
       font-weight: 600;
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       transition: background 0.3s;
     }
 
@@ -160,60 +140,6 @@ interface HistoricoItem extends CatalogoItem {
 
     .btn-secondary {
       padding: 0.75rem 1.5rem;
-<<<<<<< HEAD
-      background: #f0f0f0;
-      color: #333;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .btn-secondary:hover {
-      background: #e8e8e8;
-      border-color: #999;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      color: #667eea;
-      font-weight: 600;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 2rem;
-      color: #999;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 2px solid #eee;
-    }
-
-    .tab {
-      padding: 1rem 1.5rem;
-      background: none;
-      border: none;
-      border-bottom: 3px solid transparent;
-      color: #999;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .tab.active {
-      color: #667eea;
-      border-bottom-color: #667eea;
-    }
-
-    .tab:hover {
-      color: #667eea;
-=======
       background: #757575;
       color: white;
       border: none;
@@ -225,7 +151,6 @@ interface HistoricoItem extends CatalogoItem {
 
     .btn-secondary:hover {
       background: #616161;
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     }
 
     .tabla-wrapper {
@@ -304,9 +229,6 @@ interface HistoricoItem extends CatalogoItem {
       border: none;
       border-radius: 4px;
       cursor: pointer;
-<<<<<<< HEAD
-      transition: all 0.3s;
-=======
       transition: background 0.3s;
     }
 
@@ -317,7 +239,6 @@ interface HistoricoItem extends CatalogoItem {
 
     .btn-warning:hover {
       background: #e68900;
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     }
 
     .btn-info {
@@ -329,29 +250,12 @@ interface HistoricoItem extends CatalogoItem {
       background: #1976d2;
     }
 
-<<<<<<< HEAD
-    .btn-success-small {
-      background: #4caf50;
-      color: white;
-    }
-
-    .btn-success-small:hover {
-      background: #45a049;
-    }
-
-    .btn-danger {
-      background: #f44336;
-=======
     .btn-danger {
       background: #d32f2f;
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       color: white;
     }
 
     .btn-danger:hover {
-<<<<<<< HEAD
-      background: #da190b;
-=======
       background: #b71c1c;
     }
 
@@ -430,16 +334,11 @@ interface HistoricoItem extends CatalogoItem {
       font-size: 1.8rem;
       font-weight: 800;
       margin: 0;
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     }
 
     .filter-section {
       background: white;
-<<<<<<< HEAD
-      padding: 1.5rem;
-=======
       padding: 1rem;
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       border-radius: 8px;
       margin-bottom: 1.5rem;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -451,39 +350,6 @@ interface HistoricoItem extends CatalogoItem {
       gap: 1rem;
     }
 
-<<<<<<< HEAD
-    .stats-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .stat-card {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-
-    .stat-label {
-      color: #999;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin: 0 0 0.5rem 0;
-      text-transform: uppercase;
-    }
-
-    .stat-number {
-      color: #667eea;
-      font-size: 2rem;
-      font-weight: 800;
-      margin: 0;
-    }
-
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     @media (max-width: 768px) {
       .catalogo-container {
         padding: 1rem;
@@ -537,10 +403,7 @@ export class CatalogoComponent implements OnInit {
     observaciones: ''
   };
 
-<<<<<<< HEAD
-=======
   // Filtros para histórico
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   filtroHistoricoEstado: 'todos' | 'aprobado' | 'rechazado' = 'todos';
   filtroHistoricoSugeridor: string = '';
   sugridoresDisponibles: string[] = [];
@@ -579,32 +442,6 @@ export class CatalogoComponent implements OnInit {
     const rol = this.usuario.rol?.toLowerCase();
     const esAutorizado = rol === 'coordinador' || rol === 'administrador';
 
-<<<<<<< HEAD
-    console.log('📖 Iniciando carga de catálogo...');
-    console.log('  Usuario:', this.usuario.nombre);
-    console.log('  Rol:', rol);
-    console.log('  esAutorizado:', esAutorizado);
-
-    this.catalogoService.getCatalogo(esAutorizado).subscribe({
-      next: (data) => {
-        console.log('📖 Datos recibidos del servidor:', data.length, 'items');
-        console.log('📖 Datos completos:', data);
-        
-        this.catalogo = this.ordenarCatalogo(data);
-        
-        console.log('📖 Catálogo después de ordenar:', this.catalogo.length, 'items');
-        console.log('📖 Estados presentes:', [...new Set(this.catalogo.map(c => c.estado))]);
-        console.log('📖 Catálogo ordenado:', this.catalogo);
-        
-        this.filtrarCatalogo();
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err: any) => {
-        this.error = 'Error al cargar catálogo: ' + (err.error?.message || err.statusText);
-        this.loading = false;
-        console.error('❌ Error:', err);
-=======
     this.catalogoService.getCatalogo(esAutorizado).subscribe({
       next: (data) => {
         this.catalogo = this.ordenarCatalogo(data);
@@ -617,7 +454,6 @@ export class CatalogoComponent implements OnInit {
         this.error = 'Error al cargar catálogo: ' + (err.error?.message || err.statusText);
         this.loading = false;
         console.error('Error:', err);
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       }
     });
   }
@@ -632,41 +468,28 @@ export class CatalogoComponent implements OnInit {
       next: (data: any) => {
         console.log('📊 Datos recibidos del servidor:', data.length, 'registros');
         
-<<<<<<< HEAD
-=======
         // Debug: mostrar estructura de datos
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         if (data.length > 0) {
           console.log('📋 Estructura de primer registro:');
           console.log('   - _id:', data[0]._id);
           console.log('   - actividad:', data[0].actividad);
           console.log('   - estado:', data[0].estado);
           console.log('   - estadoHistorico:', data[0].estadoHistorico);
-<<<<<<< HEAD
-=======
           console.log('   - esHistorico:', data[0].esHistorico);
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         }
 
         this.historico = data;
         this.cargarSugridoresDisponibles();
         this.aplicarFiltrosHistorico();
         
-<<<<<<< HEAD
-=======
         // Cargar estadísticas
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.catalogoService.getEstadisticasHistorico().subscribe({
           next: (stats) => {
             console.log('📊 Estadísticas recibidas:', stats);
             this.estadisticas = stats;
             this.cdr.detectChanges();
           },
-<<<<<<< HEAD
-          error: (err: any) => {
-=======
           error: (err) => {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
             console.error('Error al cargar estadísticas:', err);
           }
         });
@@ -675,11 +498,7 @@ export class CatalogoComponent implements OnInit {
         this.cdr.detectChanges();
         console.log('✅ Histórico cargado completamente');
       },
-<<<<<<< HEAD
-      error: (err: any) => {
-=======
       error: (err) => {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.error = 'Error al cargar histórico: ' + (err.error?.message || err.statusText);
         this.loading = false;
         console.error('❌ Error en getHistorico:', err);
@@ -697,32 +516,11 @@ export class CatalogoComponent implements OnInit {
   }
 
   filtrarCatalogo(): void {
-<<<<<<< HEAD
-    console.log('🔍 Filtrando catálogo...');
-    console.log('  activeTab:', this.activeTab);
-    console.log('  catalogo.length:', this.catalogo.length);
-    console.log('  catalogo:', this.catalogo);
-
-    if (this.activeTab === 'oficial') {
-      this.catalogoFiltrado = this.catalogo.filter(item => {
-        const match = item.estado === 'oficial';
-        console.log(`  - "${item.actividad}" (estado: "${item.estado}") → ${match ? '✅' : '❌'}`);
-        return match;
-      });
-      console.log('  ✅ Catálogo oficial filtrado:', this.catalogoFiltrado.length, 'items');
-    } else if (this.activeTab === 'sugerencias') {
-      this.catalogoFiltrado = this.catalogo.filter(item => item.estado === 'pendiente');
-      console.log('  ✅ Sugerencias filtradas:', this.catalogoFiltrado.length, 'items');
-    }
-
-    this.cdr.detectChanges();
-=======
     if (this.activeTab === 'oficial') {
       this.catalogoFiltrado = this.catalogo.filter(item => item.estado === 'oficial');
     } else if (this.activeTab === 'sugerencias') {
       this.catalogoFiltrado = this.catalogo.filter(item => item.estado === 'pendiente');
     }
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   cargarSugridoresDisponibles(): void {
@@ -744,10 +542,7 @@ export class CatalogoComponent implements OnInit {
     let filtrado = [...this.historico];
     console.log('  Registros iniciales:', filtrado.length);
 
-<<<<<<< HEAD
-=======
     // FILTRO 1: Por estado
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     if (this.filtroHistoricoEstado && this.filtroHistoricoEstado !== 'todos') {
       console.log('\n  📊 Aplicando filtro de ESTADO:', this.filtroHistoricoEstado);
       
@@ -765,10 +560,7 @@ export class CatalogoComponent implements OnInit {
       console.log(`  Registros después de filtro estado: ${antes} → ${filtrado.length}`);
     }
 
-<<<<<<< HEAD
-=======
     // FILTRO 2: Por sugeridor
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     if (this.filtroHistoricoSugeridor && this.filtroHistoricoSugeridor !== '') {
       console.log('\n  👤 Aplicando filtro de SUGERIDOR:', this.filtroHistoricoSugeridor);
       
@@ -784,10 +576,7 @@ export class CatalogoComponent implements OnInit {
       console.log(`  Registros después de filtro sugeridor: ${antes} → ${filtrado.length}`);
     }
 
-<<<<<<< HEAD
-=======
     // ORDENAR - Con validación de fechas
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
     this.historicoFiltrado = filtrado.sort((a, b) => {
       const fechaA = a.fechaSugerencia ? new Date(a.fechaSugerencia).getTime() : 0;
       const fechaB = b.fechaSugerencia ? new Date(b.fechaSugerencia).getTime() : 0;
@@ -819,27 +608,7 @@ export class CatalogoComponent implements OnInit {
 
   guardar(): void {
     if (!this.validarFormulario()) {
-<<<<<<< HEAD
-      return;
-    }
-
-    const actividadNormalizada = this.formData.actividad.toLowerCase().trim();
-    const tipificacionSeleccionada = this.formData.tipificacion;
-
-    const existeDuplicado = this.catalogo.some(item => {
-      const itemActividadNormalizada = item.actividad.toLowerCase().trim();
-      return (
-        item.tipificacion === tipificacionSeleccionada &&
-        itemActividadNormalizada === actividadNormalizada &&
-        item._id !== this.editandoId
-      );
-    });
-
-    if (existeDuplicado) {
-      this.error = `⚠️ Ya existe una actividad llamada "${this.formData.actividad}" en la tipificación "${tipificacionSeleccionada}". Por favor usa un nombre diferente.`;
-=======
       this.error = 'Por favor completa todos los campos';
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
       return;
     }
 
@@ -862,11 +631,7 @@ export class CatalogoComponent implements OnInit {
 
         setTimeout(() => this.mensaje = '', 3000);
       },
-<<<<<<< HEAD
-      error: (err: any) => {
-=======
       error: (err) => {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
         this.loading = false;
         this.error = 'Error: ' + (err.error?.message || err.statusText);
         console.error('Error:', err);
@@ -900,11 +665,7 @@ export class CatalogoComponent implements OnInit {
           this.cargarCatalogo();
           setTimeout(() => this.mensaje = '', 3000);
         },
-<<<<<<< HEAD
-        error: (err: any) => {
-=======
         error: (err) => {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
           this.error = 'Error: ' + (err.error?.message || err.statusText);
         }
       });
@@ -921,11 +682,7 @@ export class CatalogoComponent implements OnInit {
           this.cargarCatalogo();
           setTimeout(() => this.mensaje = '', 3000);
         },
-<<<<<<< HEAD
-        error: (err: any) => {
-=======
         error: (err) => {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
           this.error = 'Error: ' + (err.error?.message || err.statusText);
         }
       });
@@ -940,11 +697,7 @@ export class CatalogoComponent implements OnInit {
           this.cargarCatalogo();
           setTimeout(() => this.mensaje = '', 3000);
         },
-<<<<<<< HEAD
-        error: (err: any) => {
-=======
         error: (err) => {
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
           this.error = 'Error: ' + (err.error?.message || err.statusText);
         }
       });
@@ -952,45 +705,6 @@ export class CatalogoComponent implements OnInit {
   }
 
   validarFormulario(): boolean {
-<<<<<<< HEAD
-    this.error = '';
-
-    if (!this.formData.tipificacion?.trim()) {
-      this.error = 'La tipificación es obligatoria';
-      return false;
-    }
-
-    if (!this.formData.actividad?.trim()) {
-      this.error = 'La actividad es obligatoria';
-      return false;
-    }
-
-    if (!this.formData.diasHabiles || this.formData.diasHabiles <= 0) {
-      this.error = '⚠️ Los días hábiles son obligatorios y deben ser mayor a 0';
-      return false;
-    }
-
-    if (this.formData.horasMinimas === null || 
-        this.formData.horasMinimas === undefined || 
-        this.formData.horasMinimas < 0) {
-      this.error = '⚠️ Las horas mínimas son obligatorias y deben ser >= 0';
-      return false;
-    }
-
-    if (this.formData.horasMaximas === null || 
-        this.formData.horasMaximas === undefined || 
-        this.formData.horasMaximas < 0) {
-      this.error = '⚠️ Las horas máximas son obligatorias y deben ser >= 0';
-      return false;
-    }
-
-    if (this.formData.horasMinimas > this.formData.horasMaximas) {
-      this.error = '⚠️ Las horas mínimas no pueden ser mayores que las máximas';
-      return false;
-    }
-
-    return true;
-=======
     return !!(
       this.formData.tipificacion.trim() &&
       this.formData.actividad.trim() &&
@@ -999,7 +713,6 @@ export class CatalogoComponent implements OnInit {
       this.formData.horasMaximas >= 0 &&
       this.formData.horasMaximas >= this.formData.horasMinimas
     );
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   resetFormulario(): void {
@@ -1012,10 +725,6 @@ export class CatalogoComponent implements OnInit {
       observaciones: ''
     };
     this.editandoId = null;
-<<<<<<< HEAD
-    this.error = '';
-=======
->>>>>>> f284d1bd06979c1df65535c5f52e3a928d5c23f4
   }
 
   esAutorizado(): boolean {
