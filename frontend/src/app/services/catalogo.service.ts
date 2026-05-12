@@ -38,7 +38,7 @@ export interface HistoricoItem {
   providedIn: 'root'
 })
 export class CatalogoService {
-  private apiUrl = 'https://api-infra-actividades-prod-hygpfxfdeudpfsaz.westcentralus-01.azurewebsites.net/';
+  private apiUrl = 'https://api-infra-actividades-g0dve6hncubtf8au.westcentralus-01.azurewebsites.net/';
 
   constructor(private http: HttpClient) {}
 
