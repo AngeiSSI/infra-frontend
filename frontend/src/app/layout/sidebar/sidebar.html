@@ -1,20 +1,17 @@
 <div class="main-sidebar">
   <!-- Header con Logo -->
   <div class="sidebar-header">
-    <div class="sidebar-logo-container">
-      <img src="/claro-logo.png" alt="Claro Logo" class="sidebar-logo">
-    </div>
-    <h2>Infraestructura</h2>
+    <h2>📊 Seguimiento Infraestructura</h2>
   </div>
 
   <!-- Main Menu -->
-  <div class="sidebar-section">
+  <nav class="menu">
     <!-- Actividades - Expandible -->
     <div class="sidebar-main-item" 
-         [class.active]="activeMenuItem.includes('actividades') || activeMenuItem.includes('mis') || activeMenuItem.includes('grupo') || activeMenuItem.includes('total') || activeMenuItem.includes('seguimiento') || activeMenuItem.includes('aprobacion')"
+         [class.active]="activeMenuItem === 'mis-actividades' || submenuOpen"
          [class.expanded]="submenuOpen"
          (click)="toggleSubmenu()">
-      <span class="icon">📋</span>
+      <span class="icon">📝</span>
       <span>Actividades</span>
       <span class="chevron">›</span>
     </div>
@@ -24,24 +21,24 @@
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'mis-actividades'"
            (click)="setActiveMenu('mis-actividades')">
-        ✏️ Mis Actividades
+        📝 Mis Actividades
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'grupo'"
            (click)="setActiveMenu('grupo')">
-        👥 Mi Grupo
+        👥 Actividades por Grupo
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'total'"
            *ngIf="puedeVerTotal()"
            (click)="setActiveMenu('total')">
-        🌍 Total
+        📊 Total de Actividades
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'seguimiento'"
            *ngIf="puedeVerSeguimiento()"
            (click)="setActiveMenu('seguimiento')">
-        📊 Seguimiento
+        📈 Seguimiento Semanal
       </div>
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'aprobacion'"
@@ -50,47 +47,61 @@
         ⚠️ Aprobación Vencimientos
       </div>
     </div>
-  </div>
 
-  <!-- Reportes -->
-  <div class="sidebar-section">
+    <!-- Reportes -->
     <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'reportes'"
+         *ngIf="puedeVerReportes()"
          (click)="navigateTo('reportes')">
-      <span class="icon">📈</span>
+      <span class="icon">📊</span>
       <span>Reportes</span>
     </div>
-  </div>
 
-  <!-- Catálogo -->
-  <div class="sidebar-section">
+    <!-- Catálogo -->
     <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'catalogo'"
+         *ngIf="puedeVerCatalogo()"
          (click)="navigateTo('catalogo')">
-      <span class="icon">📚</span>
+      <span class="icon">📖</span>
       <span>Catálogo</span>
     </div>
-  </div>
 
-  <!-- Asignación -->
-  <div class="sidebar-section">
+    <!-- Gestión de Festivos -->
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'festivos'"
+         *ngIf="puedeVerFestivos()"
+         (click)="navigateTo('festivos')">
+      <span class="icon">📅</span>
+      <span>Gestión Festivos</span>
+    </div>
+
+    <!-- Flujo de Valor -->
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'flujo-valor'"
+         *ngIf="puedeVerFlujoValor()"
+         (click)="navigateTo('flujo-valor')">
+      <span class="icon">🌊</span>
+      <span>Flujo de Valor</span>
+    </div>
+
+    <!-- Asignación -->
     <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'asignacion'"
+         *ngIf="puedeVerAsignacion()"
          (click)="navigateTo('asignacion')">
-      <span class="icon">📦</span>
+      <span class="icon">👥</span>
       <span>Asignación</span>
     </div>
-  </div>
 
-  <!-- Gestión Usuarios -->
-  <div class="sidebar-section" *ngIf="puedeVerGestionUsuarios()">
+    <!-- Gestión Usuarios -->
     <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'gestion-usuarios'"
+         *ngIf="puedeVerGestionUsuarios()"
          (click)="navigateTo('gestion-usuarios')">
-      <span class="icon">👥</span>
-      <span>Usuarios</span>
+      <span class="icon">👨‍💼</span>
+      <span>Gestión Usuarios</span>
     </div>
-  </div>
+  </nav>
 
   <!-- Footer -->
   <div class="sidebar-footer">
