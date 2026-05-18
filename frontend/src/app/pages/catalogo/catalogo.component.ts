@@ -781,7 +781,7 @@ export class CatalogoComponent implements OnInit {
         continue;
       }
 
-      const clave = `${tipificacion.trim().toLowerCase()}||${actividad.trim().toLowerCase()}`;
+      const clave = actividad.trim().toLowerCase();
 
       if (!mapaUnicos.has(clave)) {
         mapaUnicos.set(clave, {
