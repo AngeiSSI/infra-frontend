@@ -37,6 +37,32 @@ interface HistoricoItem extends CatalogoItem {
       font-size: 1.8rem;
     }
 
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .import-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      background: #0f766e;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .import-btn input[type='file'] {
+      display: none;
+    }
+
     .alert {
       padding: 1rem;
       border-radius: 4px;
@@ -304,6 +330,7 @@ interface HistoricoItem extends CatalogoItem {
     .btn-group {
       display: flex;
       gap: 1rem;
+      flex-wrap: wrap;
     }
 
     .stats-section {
@@ -403,7 +430,6 @@ export class CatalogoComponent implements OnInit {
     observaciones: ''
   };
 
-  // Filtros para histórico
   filtroHistoricoEstado: 'todos' | 'aprobado' | 'rechazado' = 'todos';
   filtroHistoricoSugeridor: string = '';
   sugridoresDisponibles: string[] = [];
@@ -426,7 +452,7 @@ export class CatalogoComponent implements OnInit {
 
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
-    
+
     if (!this.usuario) {
       this.router.navigate(['/login']);
       return;
@@ -448,12 +474,10 @@ export class CatalogoComponent implements OnInit {
         this.filtrarCatalogo();
         this.loading = false;
         this.cdr.detectChanges();
-        console.log('📖 Catálogo cargado:', this.catalogo.length, 'items');
       },
       error: (err) => {
         this.error = 'Error al cargar catálogo: ' + (err.error?.message || err.statusText);
         this.loading = false;
-        console.error('Error:', err);
       }
     });
   }
@@ -462,46 +486,25 @@ export class CatalogoComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    console.log('📊 Iniciando carga de histórico...');
-
     this.catalogoService.getHistorico().subscribe({
       next: (data: any) => {
-        console.log('📊 Datos recibidos del servidor:', data.length, 'registros');
-        
-        // Debug: mostrar estructura de datos
-        if (data.length > 0) {
-          console.log('📋 Estructura de primer registro:');
-          console.log('   - _id:', data[0]._id);
-          console.log('   - actividad:', data[0].actividad);
-          console.log('   - estado:', data[0].estado);
-          console.log('   - estadoHistorico:', data[0].estadoHistorico);
-          console.log('   - esHistorico:', data[0].esHistorico);
-        }
-
         this.historico = data;
         this.cargarSugridoresDisponibles();
         this.aplicarFiltrosHistorico();
-        
-        // Cargar estadísticas
+
         this.catalogoService.getEstadisticasHistorico().subscribe({
           next: (stats) => {
-            console.log('📊 Estadísticas recibidas:', stats);
             this.estadisticas = stats;
             this.cdr.detectChanges();
-          },
-          error: (err) => {
-            console.error('Error al cargar estadísticas:', err);
           }
         });
 
         this.loading = false;
         this.cdr.detectChanges();
-        console.log('✅ Histórico cargado completamente');
       },
       error: (err) => {
         this.error = 'Error al cargar histórico: ' + (err.error?.message || err.statusText);
         this.loading = false;
-        console.error('❌ Error en getHistorico:', err);
       }
     });
   }
@@ -534,58 +537,21 @@ export class CatalogoComponent implements OnInit {
   }
 
   aplicarFiltrosHistorico(): void {
-    console.log('\n🔍 ========== APLICANDO FILTROS ==========');
-    console.log('  Total registros en historico:', this.historico.length);
-    console.log('  Estado seleccionado:', this.filtroHistoricoEstado);
-    console.log('  Sugeridor seleccionado:', this.filtroHistoricoSugeridor);
-
     let filtrado = [...this.historico];
-    console.log('  Registros iniciales:', filtrado.length);
 
-    // FILTRO 1: Por estado
     if (this.filtroHistoricoEstado && this.filtroHistoricoEstado !== 'todos') {
-      console.log('\n  📊 Aplicando filtro de ESTADO:', this.filtroHistoricoEstado);
-      
-      const antes = filtrado.length;
-      filtrado = filtrado.filter(item => {
-        const match = item.estadoHistorico === this.filtroHistoricoEstado;
-        if (match) {
-          console.log(`    ✅ "${item.actividad}" tiene estadoHistorico="${item.estadoHistorico}"`);
-        } else {
-          console.log(`    ❌ "${item.actividad}" tiene estadoHistorico="${item.estadoHistorico}" (buscando "${this.filtroHistoricoEstado}")`);
-        }
-        return match;
-      });
-      
-      console.log(`  Registros después de filtro estado: ${antes} → ${filtrado.length}`);
+      filtrado = filtrado.filter(item => item.estadoHistorico === this.filtroHistoricoEstado);
     }
 
-    // FILTRO 2: Por sugeridor
     if (this.filtroHistoricoSugeridor && this.filtroHistoricoSugeridor !== '') {
-      console.log('\n  👤 Aplicando filtro de SUGERIDOR:', this.filtroHistoricoSugeridor);
-      
-      const antes = filtrado.length;
-      filtrado = filtrado.filter(item => {
-        const match = item.sugeridoPor === this.filtroHistoricoSugeridor;
-        if (match) {
-          console.log(`    ✅ "${item.actividad}" sugerido por "${item.sugeridoPor}"`);
-        }
-        return match;
-      });
-      
-      console.log(`  Registros después de filtro sugeridor: ${antes} → ${filtrado.length}`);
+      filtrado = filtrado.filter(item => item.sugeridoPor === this.filtroHistoricoSugeridor);
     }
 
-    // ORDENAR - Con validación de fechas
     this.historicoFiltrado = filtrado.sort((a, b) => {
       const fechaA = a.fechaSugerencia ? new Date(a.fechaSugerencia).getTime() : 0;
       const fechaB = b.fechaSugerencia ? new Date(b.fechaSugerencia).getTime() : 0;
       return fechaB - fechaA;
     });
-
-    console.log('\n✅ ========== RESULTADO FINAL ==========');
-    console.log('  Registros en historicoFiltrado:', this.historicoFiltrado.length);
-    console.log('==========================================\n');
   }
 
   limpiarFiltrosHistorico(): void {
@@ -595,11 +561,9 @@ export class CatalogoComponent implements OnInit {
   }
 
   cambiarTab(tab: 'oficial' | 'sugerencias' | 'historico'): void {
-    console.log('🔄 Cambiando a pestaña:', tab);
     this.activeTab = tab;
-    
+
     if (tab === 'historico') {
-      console.log('📊 Cargando histórico...');
       this.cargarHistorico();
     } else {
       this.filtrarCatalogo();
@@ -615,17 +579,17 @@ export class CatalogoComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    const llamada = this.editandoId 
+    const llamada = this.editandoId
       ? this.catalogoService.actualizarCatalogo(this.editandoId, this.formData)
       : this.catalogoService.crearCatalogo(this.formData);
 
     llamada.subscribe({
       next: () => {
         this.loading = false;
-        this.mensaje = this.editandoId 
-          ? '✅ Catálogo actualizado correctamente' 
+        this.mensaje = this.editandoId
+          ? '✅ Catálogo actualizado correctamente'
           : '✅ Catálogo agregado correctamente';
-        
+
         this.resetFormulario();
         this.cargarCatalogo();
 
@@ -634,7 +598,6 @@ export class CatalogoComponent implements OnInit {
       error: (err) => {
         this.loading = false;
         this.error = 'Error: ' + (err.error?.message || err.statusText);
-        console.error('Error:', err);
       }
     });
   }
@@ -674,7 +637,7 @@ export class CatalogoComponent implements OnInit {
 
   rechazar(id: string): void {
     const observaciones = prompt('¿Por qué rechazar esta sugerencia?');
-    
+
     if (observaciones !== null) {
       this.catalogoService.rechazarCatalogo(id, observaciones).subscribe({
         next: () => {
@@ -702,6 +665,137 @@ export class CatalogoComponent implements OnInit {
         }
       });
     }
+  }
+
+  descargarPlantillaCSV(): void {
+    const contenido = [
+      'tipificacion,actividad,diasHabiles,horasMinimas,horasMaximas,observaciones',
+      'Soporte,Reinicio de servicio,1,0,2,Actividad de ejemplo',
+      'Gestión,Actualización de inventario,2,1,4,Actividad de ejemplo'
+    ].join('\n');
+
+    const blob = new Blob([contenido], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const enlace = document.createElement('a');
+
+    enlace.href = url;
+    enlace.download = 'plantilla_catalogo.csv';
+    enlace.click();
+
+    window.URL.revokeObjectURL(url);
+  }
+
+  importarCSV(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+
+    if (!archivo) {
+      return;
+    }
+
+    const lector = new FileReader();
+
+    lector.onload = () => {
+      const contenido = lector.result as string;
+      const registros = this.parsearCSV(contenido);
+
+      if (registros.length === 0) {
+        this.error = 'No se encontraron registros válidos para importar.';
+        input.value = '';
+        return;
+      }
+
+      this.loading = true;
+      this.error = '';
+
+      this.catalogoService.importarCatalogo(registros).subscribe({
+        next: (respuesta) => {
+          this.loading = false;
+          this.mensaje = `✅ Importación completada. Insertados: ${respuesta?.resumen?.insertados || 0}, duplicados en archivo: ${respuesta?.resumen?.duplicadosEnArchivo || 0}, duplicados en BD: ${respuesta?.resumen?.duplicadosEnBD || 0}`;
+          this.cargarCatalogo();
+          input.value = '';
+          setTimeout(() => this.mensaje = '', 5000);
+        },
+        error: (err) => {
+          this.loading = false;
+          this.error = 'Error al importar: ' + (err.error?.error || err.error?.message || err.statusText);
+          input.value = '';
+        }
+      });
+    };
+
+    lector.readAsText(archivo, 'utf-8');
+  }
+
+  private parsearCSV(contenido: string): {
+    tipificacion: string;
+    actividad: string;
+    diasHabiles: number;
+    horasMinimas: number;
+    horasMaximas: number;
+    observaciones: string;
+  }[] {
+    const lineas = contenido
+      .split(/\r?\n/)
+      .map(linea => linea.trim())
+      .filter(linea => linea.length > 0);
+
+    if (lineas.length <= 1) {
+      return [];
+    }
+
+    const encabezados = lineas[0].split(',').map(valor => valor.trim().toLowerCase());
+
+    const indiceTipificacion = encabezados.indexOf('tipificacion');
+    const indiceActividad = encabezados.indexOf('actividad');
+    const indiceDiasHabiles = encabezados.indexOf('diashabiles');
+    const indiceHorasMinimas = encabezados.indexOf('horasminimas');
+    const indiceHorasMaximas = encabezados.indexOf('horasmaximas');
+    const indiceObservaciones = encabezados.indexOf('observaciones');
+
+    if (indiceTipificacion === -1 || indiceActividad === -1 || indiceDiasHabiles === -1) {
+      this.error = 'El archivo debe contener como mínimo las columnas tipificacion, actividad y diasHabiles.';
+      return [];
+    }
+
+    const mapaUnicos = new Map<string, {
+      tipificacion: string;
+      actividad: string;
+      diasHabiles: number;
+      horasMinimas: number;
+      horasMaximas: number;
+      observaciones: string;
+    }>();
+
+    for (let i = 1; i < lineas.length; i++) {
+      const columnas = lineas[i].split(',').map(valor => valor.trim());
+
+      const tipificacion = columnas[indiceTipificacion]?.trim() || '';
+      const actividad = columnas[indiceActividad]?.trim() || '';
+      const diasHabiles = Number(columnas[indiceDiasHabiles] || 1);
+      const horasMinimas = indiceHorasMinimas >= 0 ? Number(columnas[indiceHorasMinimas] || 0) : 0;
+      const horasMaximas = indiceHorasMaximas >= 0 ? Number(columnas[indiceHorasMaximas] || 0) : 0;
+      const observaciones = indiceObservaciones >= 0 ? (columnas[indiceObservaciones]?.trim() || '') : '';
+
+      if (!tipificacion || !actividad || !diasHabiles || diasHabiles <= 0) {
+        continue;
+      }
+
+      const clave = `${tipificacion.trim().toLowerCase()}||${actividad.trim().toLowerCase()}`;
+
+      if (!mapaUnicos.has(clave)) {
+        mapaUnicos.set(clave, {
+          tipificacion,
+          actividad,
+          diasHabiles,
+          horasMinimas: horasMinimas >= 0 ? horasMinimas : 0,
+          horasMaximas: horasMaximas >= 0 ? horasMaximas : 0,
+          observaciones
+        });
+      }
+    }
+
+    return Array.from(mapaUnicos.values());
   }
 
   validarFormulario(): boolean {

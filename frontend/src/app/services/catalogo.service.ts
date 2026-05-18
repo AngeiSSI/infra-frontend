@@ -34,15 +34,23 @@ export interface HistoricoItem {
   aprobadoPor?: string;
 }
 
+export interface ImportacionCatalogoItem {
+  tipificacion: string;
+  actividad: string;
+  diasHabiles: number;
+  horasMinimas: number;
+  horasMaximas: number;
+  observaciones?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class CatalogoService {
-  private apiUrl = 'https://api-infra-actividades-g0dve6hncubtf8au.westcentralus-01.azurewebsites.net/';
+  private apiUrl = 'https://api-infra-actividades-g0dve6hncubtf8au.westcentralus-01.azurewebsites.net';
 
   constructor(private http: HttpClient) {}
 
-  // ================= CATÁLOGO OFICIAL Y SUGERENCIAS =================
   getCatalogo(esAutorizado: boolean): Observable<CatalogoItem[]> {
     const url = esAutorizado ? '/catalogo/todos' : '/catalogo';
     return this.http.get<CatalogoItem[]>(`${this.apiUrl}${url}`);
@@ -68,27 +76,29 @@ export class CatalogoService {
     return this.http.delete(`${this.apiUrl}/catalogo/${id}`);
   }
 
-  // ================= HISTÓRICO DE APROBACIONES Y RECHAZOS =================
+  importarCatalogo(items: ImportacionCatalogoItem[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/catalogo/importar`, { items });
+  }
+
   getHistorico(filtros?: { estado?: string; sugeridoPor?: string }): Observable<HistoricoItem[]> {
     let url = `${this.apiUrl}/catalogo/historico`;
-    
+
     if (filtros) {
       const params = new URLSearchParams();
-      
-      // Usar "aprobado" o "rechazado" como valores
+
       if (filtros.estado && filtros.estado !== 'todos') {
         params.append('estado', filtros.estado);
       }
-      
+
       if (filtros.sugeridoPor) {
         params.append('sugeridoPor', filtros.sugeridoPor);
       }
-      
+
       if (params.toString()) {
         url += '?' + params.toString();
       }
     }
-    
+
     console.log('📊 Llamando a:', url);
     return this.http.get<HistoricoItem[]>(url);
   }

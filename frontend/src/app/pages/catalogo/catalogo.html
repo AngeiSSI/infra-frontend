@@ -1,12 +1,22 @@
 <div class="catalogo-container">
   <div class="page-header">
     <h1>📚 Catálogo de Servicios</h1>
+
+    <div class="header-actions" *ngIf="esAutorizado() && activeTab !== 'historico'">
+      <button class="btn-secondary" (click)="descargarPlantillaCSV()">
+        📥 Descargar plantilla CSV
+      </button>
+
+      <label class="import-btn">
+        📤 Importar CSV
+        <input type="file" accept=".csv" (change)="importarCSV($event)" />
+      </label>
+    </div>
   </div>
 
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
   <div *ngIf="mensaje" class="alert alert-success">{{ mensaje }}</div>
 
-  <!-- Formulario (Todos pueden crear/sugerir) -->
   <div class="form-card" *ngIf="activeTab !== 'historico'">
     <h3>{{ editandoId ? '✏️ Editar Servicio' : '➕ Nuevo Servicio o Sugerencia' }}</h3>
     <p style="color: #999; font-size: 0.9rem;">
@@ -88,26 +98,25 @@
     </div>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <button 
-      class="tab" 
+    <button
+      class="tab"
       [class.active]="activeTab === 'oficial'"
       (click)="cambiarTab('oficial')"
     >
       📋 Catálogo Oficial
     </button>
-    <button 
+    <button
       *ngIf="esAutorizado()"
-      class="tab" 
+      class="tab"
       [class.active]="activeTab === 'sugerencias'"
       (click)="cambiarTab('sugerencias')"
     >
       💡 Sugerencias por Aprobar
     </button>
-    <button 
+    <button
       *ngIf="esAutorizado()"
-      class="tab" 
+      class="tab"
       [class.active]="activeTab === 'historico'"
       (click)="cambiarTab('historico')"
     >
@@ -115,12 +124,10 @@
     </button>
   </div>
 
-  <!-- Loading -->
   <div *ngIf="loading" class="loading">
     <p>Cargando...</p>
   </div>
 
-  <!-- ============= PESTAÑA: CATÁLOGO OFICIAL ============= -->
   <div *ngIf="activeTab === 'oficial'">
     <div *ngIf="!loading && catalogoFiltrado.length > 0" class="tabla-wrapper">
       <table class="tabla">
@@ -168,7 +175,6 @@
     </div>
   </div>
 
-  <!-- ============= PESTAÑA: SUGERENCIAS ============= -->
   <div *ngIf="activeTab === 'sugerencias' && esAutorizado()">
     <div *ngIf="!loading && catalogoFiltrado.length > 0" class="tabla-wrapper">
       <table class="tabla">
@@ -230,9 +236,7 @@
     </div>
   </div>
 
-  <!-- ============= PESTAÑA: HISTÓRICO ============= -->
   <div *ngIf="activeTab === 'historico' && esAutorizado()">
-    <!-- Estadísticas -->
     <div *ngIf="estadisticas" class="stats-section">
       <div class="stat-card">
         <p class="stat-label">Total Procesados</p>
@@ -252,7 +256,6 @@
       </div>
     </div>
 
-    <!-- Filtros -->
     <div class="filter-section">
       <div class="filter-grid">
         <div class="form-group">
@@ -283,7 +286,6 @@
       </div>
     </div>
 
-    <!-- Tabla de Histórico -->
     <div *ngIf="!loading && historicoFiltrado.length > 0" class="tabla-wrapper">
       <table class="tabla">
         <thead>
@@ -309,7 +311,7 @@
               </span>
             </td>
             <td>{{ item.fechaSugerencia | date: 'dd/MM/yyyy HH:mm' }}</td>
-                        <td>
+            <td>
               <span class="badge" [ngClass]="'badge-' + item.estadoHistorico">
                 {{ item.estadoHistorico === 'aprobado' ? '✅ APROBADO' : '❌ RECHAZADO' }}
               </span>
