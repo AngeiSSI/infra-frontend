@@ -9,7 +9,7 @@ import { RecuperarPasswordComponent } from './pages/recuperar-password/recuperar
 import { AsignacionComponent } from './pages/asignacion/asignacion';
 import { ReportesComponent } from './pages/reportes/reportes.component';
 import { FestivosComponent } from './pages/festivos/festivos.component';
-import { FlujoValorComponent } from './pages/flujo-valor/flujo-valor.component';
+import { ListasMaestrasComponent } from './pages/listas-maestras/listas-maestras.component';
 
 export const appRoutes: Routes = [
   {
@@ -65,8 +65,8 @@ export const appRoutes: Routes = [
     component: AsignacionComponent
   },
   {
-    path: 'flujo-valor',
-    component: FlujoValorComponent
+    path: 'listas-maestras',
+    component: ListasMaestrasComponent
   },
   {
     path: 'gestion-usuarios',

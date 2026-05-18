@@ -1,0 +1,136 @@
+<div class="listas-maestras-page">
+  <div class="page-header">
+    <div>
+      <h1>🗂️ Listas maestras</h1>
+      <p>
+        Administra catálogos base del sistema como flujo de valor, gerentes,
+        células, líderes técnicos y roles asociados.
+      </p>
+    </div>
+  </div>
+
+  <div class="tipo-selector">
+    <button
+      *ngFor="let tipo of tipos"
+      class="tipo-btn"
+      [class.active]="tipoSeleccionado === tipo.valor"
+      (click)="seleccionarTipo(tipo.valor)">
+      {{ tipo.etiqueta }}
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <input
+        type="text"
+        [value]="terminoBusqueda"
+        (input)="onBuscar($event)"
+        placeholder="Buscar por nombre o descripción" />
+    </div>
+
+    <div class="toolbar-actions">
+      <button class="secondary-btn" (click)="descargarPlantillaCSV()">
+        Descargar plantilla CSV
+      </button>
+
+      <label class="import-btn">
+        Importar CSV
+        <input type="file" accept=".csv" (change)="importarCSV($event)" />
+      </label>
+
+      <button class="primary-btn" (click)="abrirCrear()">
+        + Nuevo {{ obtenerEtiquetaTipoActual() }}
+      </button>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="table-card">
+      <div class="table-header">
+        <h2>{{ obtenerEtiquetaTipoActual() }}</h2>
+        <span class="badge">{{ itemsFiltrados.length }} registro(s)</span>
+      </div>
+
+      <div class="table-wrapper" *ngIf="itemsFiltrados.length > 0; else emptyState">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Creación</th>
+              <th>Modificación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of itemsFiltrados">
+              <td>{{ item.nombre }}</td>
+              <td>{{ item.descripcion || '-' }}</td>
+              <td>
+                <span class="status-badge" [class.inactive]="!item.activo">
+                  {{ item.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>{{ item.fechaCreacion | date:'short' }}</td>
+              <td>{{ item.fechaModificacion | date:'short' }}</td>
+              <td class="actions-cell">
+                <button class="action-btn edit" (click)="editarItem(item)">Editar</button>
+                <button class="action-btn toggle" (click)="cambiarEstado(item)">
+                  {{ item.activo ? 'Inactivar' : 'Activar' }}
+                </button>
+                <button class="action-btn delete" (click)="eliminar(item)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <p>No hay registros para {{ obtenerEtiquetaTipoActual() }}.</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="form-card" *ngIf="mostrarFormulario">
+      <div class="form-header">
+        <h2>{{ modoFormulario === 'crear' ? 'Nuevo registro' : 'Editar registro' }}</h2>
+        <span class="tipo-actual">{{ obtenerEtiquetaTipoActual() }}</span>
+      </div>
+
+      <div class="form-body">
+        <label for="nombre">Nombre</label>
+        <input
+          id="nombre"
+          type="text"
+          [value]="formulario.nombre"
+          (input)="onNombreChange($event)"
+          placeholder="Ingresa el nombre" />
+
+        <label for="descripcion">Descripción</label>
+        <textarea
+          id="descripcion"
+          rows="4"
+          [value]="formulario.descripcion"
+          (input)="onDescripcionChange($event)"
+          placeholder="Ingresa una descripción"></textarea>
+
+        <label class="checkbox-row">
+          <input
+            type="checkbox"
+            [checked]="formulario.activo"
+            (change)="onActivoChange($event)" />
+          <span>Registro activo</span>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button class="secondary-btn" (click)="cancelarFormulario()">Cancelar</button>
+        <button class="primary-btn" (click)="guardar()">
+          {{ modoFormulario === 'crear' ? 'Guardar' : 'Actualizar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

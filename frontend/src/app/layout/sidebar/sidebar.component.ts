@@ -26,7 +26,7 @@ export class SidebarComponent implements OnInit {
   ngOnInit(): void {
     this.usuario = this.authService.getUsuario();
     this.actualizarMenuActivo();
-    
+
     this.router.events.subscribe(() => {
       this.actualizarMenuActivo();
     });
@@ -59,11 +59,11 @@ export class SidebarComponent implements OnInit {
     } else if (url.includes('festivos')) {
       this.activeMenuItem = 'festivos';
       this.submenuOpen = false;
-    } else if (url.includes('flujo-valor')) {
-      this.activeMenuItem = 'flujo-valor';
-      this.submenuOpen = false;
     } else if (url.includes('asignacion')) {
       this.activeMenuItem = 'asignacion';
+      this.submenuOpen = false;
+    } else if (url.includes('listas-maestras')) {
+      this.activeMenuItem = 'listas-maestras';
       this.submenuOpen = false;
     } else if (url.includes('gestion-usuarios')) {
       this.activeMenuItem = 'gestion-usuarios';
@@ -83,7 +83,7 @@ export class SidebarComponent implements OnInit {
 
   setActiveMenu(item: string): void {
     this.activeMenuItem = item;
-    
+
     if (item === 'mis-actividades') {
       this.router.navigate(['/actividades']);
     } else if (item === 'grupo') {
@@ -132,14 +132,14 @@ export class SidebarComponent implements OnInit {
     return rol === 'administrador' || rol === 'super_admin';
   }
 
-  puedeVerFlujoValor(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'administrador' || rol === 'super_admin' || rol === 'coordinador' || rol === 'senior';
-  }
-
   puedeVerAsignacion(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
     return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+  }
+
+  puedeVerListasMaestras(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
   }
 
   esAdministrador(): boolean {

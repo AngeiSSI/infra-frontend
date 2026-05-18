@@ -1,12 +1,9 @@
 <div class="main-sidebar">
-  <!-- Header con Logo -->
   <div class="sidebar-header">
     <h2>📊 Seguimiento Infraestructura</h2>
   </div>
 
-  <!-- Main Menu -->
   <nav class="menu">
-    <!-- Actividades - Expandible -->
     <div class="sidebar-main-item" 
          [class.active]="activeMenuItem === 'mis-actividades' || submenuOpen"
          [class.expanded]="submenuOpen"
@@ -16,7 +13,6 @@
       <span class="chevron">›</span>
     </div>
 
-    <!-- Submenu de Actividades -->
     <div class="sidebar-submenu" [class.open]="submenuOpen">
       <div class="sidebar-subitem" 
            [class.active]="activeMenuItem === 'mis-actividades'"
@@ -48,7 +44,6 @@
       </div>
     </div>
 
-    <!-- Reportes -->
     <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'reportes'"
          *ngIf="puedeVerReportes()"
@@ -57,7 +52,6 @@
       <span>Reportes</span>
     </div>
 
-    <!-- Catálogo -->
     <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'catalogo'"
          *ngIf="puedeVerCatalogo()"
@@ -66,7 +60,6 @@
       <span>Catálogo</span>
     </div>
 
-    <!-- Gestión de Festivos -->
     <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'festivos'"
          *ngIf="puedeVerFestivos()"
@@ -75,16 +68,6 @@
       <span>Gestión Festivos</span>
     </div>
 
-    <!-- Flujo de Valor -->
-    <div class="sidebar-main-item"
-         [class.active]="activeMenuItem === 'flujo-valor'"
-         *ngIf="puedeVerFlujoValor()"
-         (click)="navigateTo('flujo-valor')">
-      <span class="icon">🌊</span>
-      <span>Flujo de Valor</span>
-    </div>
-
-    <!-- Asignación -->
     <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'asignacion'"
          *ngIf="puedeVerAsignacion()"
@@ -93,7 +76,14 @@
       <span>Asignación</span>
     </div>
 
-    <!-- Gestión Usuarios -->
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'listas-maestras'"
+         *ngIf="puedeVerListasMaestras()"
+         (click)="navigateTo('listas-maestras')">
+      <span class="icon">🗂️</span>
+      <span>Listas maestras</span>
+    </div>
+
     <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'gestion-usuarios'"
          *ngIf="puedeVerGestionUsuarios()"
@@ -103,7 +93,6 @@
     </div>
   </nav>
 
-  <!-- Footer -->
   <div class="sidebar-footer">
     <div class="sidebar-footer-item">
       👤 <strong>{{ usuario?.nombre }}</strong>
