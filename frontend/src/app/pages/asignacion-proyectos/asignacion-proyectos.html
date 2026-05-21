@@ -1,0 +1,665 @@
+<div class="page-wrapper">
+  <div class="page-shell">
+    <div class="hero">
+      <div class="hero-content">
+        <div class="hero-title">
+          <h1>Asignación de Proyectos</h1>
+          <p>
+            Registra la información general del proyecto, planifica actividades desde catálogo,
+            visualiza el Gantt estimado, guarda borradores, consulta históricos y genera el PDF completo.
+          </p>
+        </div>
+
+        <div class="hero-badge">
+          <div class="label">Proyecto actual</div>
+          <div class="value">
+            {{ proyecto.nombreProyecto.trim() ? proyecto.nombreProyecto : 'Sin nombre aún' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bullets">
+      <div class="tab-bullet" [class.active]="tabActiva === 'nueva'" (click)="cambiarTab('nueva')">
+        <span class="tab-dot"></span>
+        <span>Nueva asignación</span>
+      </div>
+
+      <div class="tab-bullet" [class.active]="tabActiva === 'borradores'" (click)="cambiarTab('borradores')">
+        <span class="tab-dot"></span>
+        <span>Borradores</span>
+      </div>
+
+      <div class="tab-bullet" [class.active]="tabActiva === 'historico'" (click)="cambiarTab('historico')">
+        <span class="tab-dot"></span>
+        <span>Histórico</span>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+    <div *ngIf="advertencia" class="alert alert-warning">{{ advertencia }}</div>
+    <div *ngIf="exito" class="alert alert-success">{{ exito }}</div>
+
+    <ng-container *ngIf="tabActiva === 'nueva'">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title-row">
+            <div>
+              <h3 class="panel-title">Información de asignación</h3>
+              <p class="panel-subtitle">
+                Registra la información ejecutiva, funcional y organizacional del proyecto.
+              </p>
+            </div>
+            <span class="pill-info">
+              {{ modoEdicion ? '✏️ Editando proyecto guardado' : '📌 Registro principal del proyecto' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="section-block">
+            <div class="btn-row" style="margin-bottom: 1rem;">
+              <button class="btn-secondary" (click)="nuevoProyecto()">🆕 Nuevo proyecto</button>
+            </div>
+
+            <div class="section-heading">
+              <div class="section-icon">📁</div>
+              <div>
+                <h4>Datos principales</h4>
+                <p>Información general e identificadores del proyecto</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nombre del proyecto *</label>
+                <input [(ngModel)]="proyecto.nombreProyecto" placeholder="Nombre del proyecto">
+              </div>
+
+              <div class="form-group">
+                <label>Fecha solicitud *</label>
+                <input type="date" [(ngModel)]="proyecto.fechaSolicitud">
+              </div>
+
+              <div class="form-group">
+                <label>ID Feature *</label>
+                <input [(ngModel)]="proyecto.idFeature" placeholder="Feature / idea">
+              </div>
+
+              <div class="form-group">
+                <label>PEP</label>
+                <input [(ngModel)]="proyecto.pep" placeholder="Código PEP">
+              </div>
+
+              <div class="form-group">
+                <label>Tipo de proyecto *</label>
+                <select [(ngModel)]="proyecto.tipoProyecto">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let tipo of tiposProyecto" [value]="tipo">{{ tipo }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Fase del proyecto</label>
+                <select [(ngModel)]="proyecto.faseProyecto">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let fase of fasesProyecto" [value]="fase">{{ fase }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>% Asignación</label>
+                <input type="number" min="0" max="100" [(ngModel)]="proyecto.porcentajeAsignacion">
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-heading">
+              <div class="section-icon">👥</div>
+              <div>
+                <h4>Roles del proyecto</h4>
+                <p>Selecciona los responsables y perfiles involucrados</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Líder de infraestructura *</label>
+                <select [(ngModel)]="proyecto.liderInfraestructura">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let item of lideresInfraestructura" [value]="item.nombre">
+                    {{ item.nombre }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Líder de infraestructura FV</label>
+                <select [(ngModel)]="proyecto.liderInfraestructuraFV">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let item of lideresInfraestructuraFV" [value]="item.nombre">
+                    {{ item.nombre }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Gerente solicitante *</label>
+                <select [(ngModel)]="proyecto.gerenteSolicitante">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let item of gerentes" [value]="item.nombre">{{ item.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Líder técnico *</label>
+                <select [(ngModel)]="proyecto.liderTecnico">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let item of lideresTecnicos" [value]="item.nombre">{{ item.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Scrum *</label>
+                <select [(ngModel)]="proyecto.scrum">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let item of scrums" [value]="item.nombre">{{ item.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>PO *</label>
+                <select [(ngModel)]="proyecto.po">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let item of pos" [value]="item.nombre">{{ item.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Arquitecto *</label>
+                <select [(ngModel)]="proyecto.arquitecto">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let item of arquitectos" [value]="item.nombre">{{ item.nombre }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-heading">
+              <div class="section-icon">🏢</div>
+              <div>
+                <h4>Contexto organizacional</h4>
+                <p>Ubicación funcional del proyecto dentro de la organización</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Flujo de valor *</label>
+                <select [(ngModel)]="proyecto.flujoValor">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let item of flujosValor" [value]="item.nombre">{{ item.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Célula *</label>
+                <select [(ngModel)]="proyecto.celula">
+                  <option value="">Selecciona</option>
+                  <option *ngFor="let item of celulas" [value]="item.nombre">{{ item.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width">
+                <label>Contexto / descripción</label>
+                <textarea rows="4" [(ngModel)]="proyecto.contexto" placeholder="Describe el objetivo, alcance o necesidad del proyecto"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title-row">
+            <div>
+              <h3 class="panel-title">Planeación de actividades</h3>
+              <p class="panel-subtitle">
+                Usa actividades del catálogo para definir el plan estimado del proyecto.
+              </p>
+            </div>
+            <span class="pill-info">🧩 Basado en catálogo oficial</span>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="section-heading" style="margin-bottom: 1rem;">
+            <div class="section-icon">➕</div>
+            <div>
+              <h4>Agregar actividad</h4>
+              <p>Selecciona la actividad y define dependencias si aplica</p>
+            </div>
+          </div>
+
+          <div class="add-activity-grid">
+            <div class="form-group">
+              <label>Actividad de catálogo *</label>
+              <select [(ngModel)]="actividadNueva.catalogoKey">
+                <option value="">Selecciona una actividad</option>
+                <option *ngFor="let item of catalogo" [value]="obtenerCatalogoKey(item)">
+                  {{ item.tipificacion }} - {{ item.actividad }} ({{ item.diasHabiles }} días)
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Fecha inicio</label>
+              <input type="date" [(ngModel)]="actividadNueva.fechaInicio">
+            </div>
+
+            <div class="form-group">
+              <label>Dependencia</label>
+              <select [(ngModel)]="actividadNueva.dependenciaIdLocal">
+                <option value="">Sin dependencia</option>
+                <option *ngFor="let item of opcionesDependencia" [value]="item.idLocal">
+                  {{ item.actividad }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid" style="margin-top: 1rem;">
+            <div class="form-group full-width">
+              <label>Observaciones</label>
+              <textarea rows="2" [(ngModel)]="actividadNueva.observaciones" placeholder="Comentarios adicionales sobre la actividad"></textarea>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-primary" (click)="agregarActividadDesdeCatalogo()">➕ Agregar actividad al plan</button>
+          </div>
+
+          <div class="tabla-shell" style="margin-top: 1.25rem;">
+            <div class="tabla-wrapper" *ngIf="actividadesProyecto.length > 0; else estadoVacioActividades">
+              <table class="tabla">
+                <thead>
+                  <tr>
+                    <th>Actividad</th>
+                    <th>Duración</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th>Dependencia</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of actividadesProyecto">
+                    <td>
+                      <div class="activity-cell">
+                        <span class="activity-name">{{ item.actividad }}</span>
+                        <span class="activity-meta">{{ item.tipificacion }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="days-badge">{{ item.diasHabiles }} días</span>
+                    </td>
+                    <td>
+                      <span class="date-badge">{{ item.fechaInicio | date:'dd/MM/yyyy' }}</span>
+                    </td>
+                    <td>
+                      <span class="date-badge">{{ item.fechaFin | date:'dd/MM/yyyy' }}</span>
+                    </td>
+                    <td>{{ obtenerNombreDependencia(item.dependenciaIdLocal) }}</td>
+                    <td>
+                      <button class="action-btn delete" (click)="eliminarActividad(item.idLocal)">
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ng-template #estadoVacioActividades>
+              <div class="empty-activities">
+                <strong>Aún no has agregado actividades.</strong>
+                <div style="margin-top: .4rem;">
+                  Selecciona una actividad del catálogo para comenzar la planeación.
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" *ngIf="actividadesProyecto.length > 0">
+        <div class="panel-header">
+          <div class="panel-title-row">
+            <div>
+              <h3 class="panel-title">Diagrama Gantt estimado</h3>
+              <p class="panel-subtitle">
+                Visualización simple de la secuencia y duración de las actividades planeadas.
+              </p>
+            </div>
+            <span class="pill-info">📅 Vista cronológica</span>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="gantt-card">
+            <div class="gantt-list">
+              <div class="gantt-row" *ngFor="let item of actividadesProyecto">
+                <div class="gantt-label">
+                  <strong>{{ item.actividad }}</strong>
+                  <span>{{ item.fechaInicio | date:'dd/MM/yyyy' }} - {{ item.fechaFin | date:'dd/MM/yyyy' }}</span>
+                </div>
+
+                <div class="gantt-bar-wrap">
+                  <div
+                    class="gantt-bar"
+                    [style.left.px]="getMinOffset(item.fechaInicio)"
+                    [style.width.px]="getBarWidth(item.diasHabiles)">
+                    {{ item.diasHabiles }} días
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-panel">
+        <div class="actions-bar">
+          <div class="actions-info">
+            <span class="title">Acciones del proyecto</span>
+            <span class="text">
+              Guarda un borrador, finaliza la asignación para alimentar la tabla actual o imprime el PDF completo.
+            </span>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-secondary" (click)="guardarBorrador()">💾 Guardar borrador</button>
+            <button class="btn-success" (click)="finalizarAsignacion()" [disabled]="loading">✅ Finalizar asignación</button>
+            <button class="btn-primary" (click)="imprimirPDF()">🖨️ Imprimir PDF completo</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="tabActiva === 'borradores'">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title-row">
+            <div>
+              <h3 class="panel-title">Borradores</h3>
+              <p class="panel-subtitle">
+                Proyectos guardados para continuar después dentro de esta misma pestaña.
+              </p>
+            </div>
+            <span class="pill-info">💾 Guardado local del navegador</span>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="tabla-shell">
+            <div class="tabla-wrapper" *ngIf="borradores.length > 0; else estadoVacioBorradores">
+              <table class="tabla">
+                <thead>
+                  <tr>
+                    <th>Proyecto</th>
+                    <th>Líder</th>
+                    <th>Fecha solicitud</th>
+                    <th>Tipo</th>
+                    <th>Actividades</th>
+                    <th>Última modificación</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of borradores">
+                    <td>{{ item.nombreProyecto }}</td>
+                    <td>{{ item.liderInfraestructura || '-' }}</td>
+                    <td>{{ item.fechaSolicitud | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ item.tipoProyecto || '-' }}</td>
+                    <td>{{ item.actividades.length || 0 }}</td>
+                    <td>{{ item.fechaModificacion | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>
+                      <button class="action-btn primary" (click)="cargarProyectoGuardado(item)">Continuar</button>
+                      <button class="action-btn delete" (click)="eliminarBorrador(item.id)">Eliminar</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ng-template #estadoVacioBorradores>
+              <div class="empty-activities">
+                <strong>No hay borradores guardados.</strong>
+                <div style="margin-top: .4rem;">
+                  Usa el botón “Guardar borrador” para continuar más tarde.
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="tabActiva === 'historico'">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title-row">
+            <div>
+              <h3 class="panel-title">Histórico de asignaciones finalizadas</h3>
+              <p class="panel-subtitle">
+                Consulta asignaciones ya finalizadas y reutiliza su información si lo necesitas.
+              </p>
+            </div>
+            <span class="pill-info">📚 Histórico local</span>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="tabla-shell">
+            <div class="tabla-wrapper" *ngIf="historico.length > 0; else estadoVacioHistorico">
+              <table class="tabla">
+                <thead>
+                  <tr>
+                    <th>Proyecto</th>
+                    <th>Líder</th>
+                    <th>Fecha solicitud</th>
+                    <th>Tipo</th>
+                    <th>Inicio estimado</th>
+                    <th>Fin estimado</th>
+                    <th>Actividades</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of historico">
+                    <td>{{ item.nombreProyecto }}</td>
+                    <td>{{ item.liderInfraestructura || '-' }}</td>
+                    <td>{{ item.fechaSolicitud | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ item.tipoProyecto || '-' }}</td>
+                    <td>
+                      {{
+                        item.actividades && item.actividades.length > 0
+                          ? (item.actividades[0].fechaInicio | date:'dd/MM/yyyy')
+                          : '-'
+                      }}
+                    </td>
+                    <td>
+                      {{
+                        item.actividades && item.actividades.length > 0
+                          ? (item.actividades[item.actividades.length - 1].fechaFin | date:'dd/MM/yyyy')
+                          : '-'
+                      }}
+                    </td>
+                    <td>{{ item.actividades.length || 0 }}</td>
+                    <td>
+                      <button class="action-btn primary" (click)="cargarProyectoGuardado(item)">Ver / cargar</button>
+                      <button class="action-btn success" (click)="imprimirDesdeHistorico(item)">Imprimir</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ng-template #estadoVacioHistorico>
+              <div class="empty-activities">
+                <strong>No hay asignaciones finalizadas aún.</strong>
+                <div style="margin-top: .4rem;">
+                  Cuando finalices una asignación se registrará aquí.
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <div class="pdf-render-host">
+      <div #pdfContent class="pdf-area pdf-print-layout">
+        <div class="pdf-sheet">
+          <div class="pdf-title">
+            FORMATO DE ASIGNACIÓN Y PLANEACIÓN DEL PROYECTO
+          </div>
+
+          <table class="pdf-table pdf-header-table">
+            <tr>
+              <th>Nombre del Proyecto</th>
+              <td colspan="5">{{ proyecto.nombreProyecto || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Nombre del Líder Infraestructura Senior Flujo de Valor</th>
+              <td colspan="2">{{ proyecto.liderInfraestructura || '-' }}</td>
+              <th>Fecha Solicitud del requerimiento</th>
+              <td colspan="2">{{ proyecto.fechaSolicitud ? (proyecto.fechaSolicitud | date:'dd/MM/yyyy') : '-' }}</td>
+            </tr>
+            <tr>
+              <th>Nombre del Líder Infraestructura FV</th>
+              <td colspan="5">{{ proyecto.liderInfraestructuraFV || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Nombre del Gerente del proyecto Flujo de Valor</th>
+              <td colspan="2">{{ proyecto.gerenteSolicitante || '-' }}</td>
+              <th>Nombre Célula</th>
+              <td colspan="2">{{ proyecto.celula || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Nombre del Líder Técnico Proyecto</th>
+              <td colspan="2">{{ proyecto.liderTecnico || '-' }}</td>
+              <th>Flujo de valor</th>
+              <td colspan="2">{{ proyecto.flujoValor || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Nombre del Scrum Master</th>
+              <td colspan="2">{{ proyecto.scrum || '-' }}</td>
+              <th>Arquitecto del proyecto</th>
+              <td colspan="2">{{ proyecto.arquitecto || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Nombre del Product Owner</th>
+              <td colspan="2">{{ proyecto.po || '-' }}</td>
+              <th>Tipo de Proyecto</th>
+              <td colspan="2">{{ proyecto.tipoProyecto || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Fase del proyecto</th>
+              <td colspan="2">{{ proyecto.faseProyecto || '-' }}</td>
+              <th>ID Proyecto / Feature / Idea</th>
+              <td colspan="2">{{ proyecto.idFeature || '-' }}</td>
+            </tr>
+            <tr>
+              <th>PEP</th>
+              <td colspan="5">{{ proyecto.pep || '-' }}</td>
+            </tr>
+            <tr>
+              <th>Contexto (descripción del requerimiento)</th>
+              <td colspan="5" class="pdf-contexto">{{ proyecto.contexto || '-' }}</td>
+            </tr>
+          </table>
+
+          <div class="pdf-section-title">
+            Información resumen de estimación del proyecto
+          </div>
+
+          <table class="pdf-table pdf-summary-table">
+            <tr>
+              <th>Líder de infraestructura asignado</th>
+              <td>{{ proyecto.liderInfraestructura || '-' }}</td>
+              <th>Capacidad</th>
+              <td>{{ capacidadTexto }}</td>
+            </tr>
+            <tr>
+              <th>Fecha estimada de inicio del proyecto</th>
+              <td>{{ resumenFechaInicio === '-' ? '-' : (resumenFechaInicio | date:'dd/MM/yyyy') }}</td>
+              <th>Fecha estimada de entrega del proyecto</th>
+              <td>{{ resumenFechaFin === '-' ? '-' : (resumenFechaFin | date:'dd/MM/yyyy') }}</td>
+            </tr>
+            <tr>
+              <th>Total tiempo estimado (días)</th>
+              <td>{{ totalDiasEstimados }}</td>
+              <th></th>
+              <td></td>
+            </tr>
+          </table>
+
+          <div class="pdf-section-title">
+            Actividades planeadas del proyecto
+          </div>
+
+          <table class="pdf-table pdf-activities-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tipificación</th>
+                <th>Actividad</th>
+                <th>Días</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Depende de</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of actividadesProyecto; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.tipificacion }}</td>
+                <td>{{ item.actividad }}</td>
+                <td>{{ item.diasHabiles }}</td>
+                <td>{{ item.fechaInicio | date:'dd/MM/yyyy' }}</td>
+                <td>{{ item.fechaFin | date:'dd/MM/yyyy' }}</td>
+                <td>{{ obtenerNombreDependencia(item.dependenciaIdLocal) }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pdf-section-title">
+            Diagrama Gantt del proyecto
+          </div>
+
+          <div class="pdf-gantt-box">
+            <div class="pdf-gantt-row" *ngFor="let item of actividadesProyecto">
+              <div class="pdf-gantt-label">
+                <strong>{{ item.actividad }}</strong>
+                <span>{{ item.fechaInicio | date:'dd/MM/yyyy' }} - {{ item.fechaFin | date:'dd/MM/yyyy' }}</span>
+              </div>
+
+              <div class="pdf-gantt-track">
+                <div
+                  class="pdf-gantt-bar"
+                  [style.left.px]="getPdfMinOffset(item.fechaInicio)"
+                  [style.width.px]="getPdfBarWidth(item.diasHabiles)">
+                  {{ item.diasHabiles }} días
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

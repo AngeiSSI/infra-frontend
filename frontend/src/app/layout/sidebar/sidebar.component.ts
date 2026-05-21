@@ -50,6 +50,12 @@ export class SidebarComponent implements OnInit {
     } else if (url.includes('actividades') && !url.includes('actividades/')) {
       this.activeMenuItem = 'mis-actividades';
       this.submenuOpen = true;
+    } else if (url.includes('asignacion-proyectos')) {
+      this.activeMenuItem = 'asignacion-proyectos';
+      this.submenuOpen = false;
+    } else if (url.includes('macro-tareas')) {
+      this.activeMenuItem = 'macro-tareas';
+      this.submenuOpen = false;
     } else if (url.includes('reportes')) {
       this.activeMenuItem = 'reportes';
       this.submenuOpen = false;
@@ -133,6 +139,16 @@ export class SidebarComponent implements OnInit {
   }
 
   puedeVerAsignacion(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+  }
+
+  puedeVerAsignacionProyectos(): boolean {
+    const rol = this.usuario?.rol?.toLowerCase();
+    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
+  }
+
+  puedeVerMacroTareas(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
     return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
   }

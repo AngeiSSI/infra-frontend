@@ -69,6 +69,22 @@
     </div>
 
     <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'asignacion-proyectos'"
+         *ngIf="puedeVerAsignacionProyectos()"
+         (click)="navigateTo('asignacion-proyectos')">
+      <span class="icon">📁</span>
+      <span>Asignación de Proyectos</span>
+    </div>
+
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'macro-tareas'"
+         *ngIf="puedeVerMacroTareas()"
+         (click)="navigateTo('macro-tareas')">
+      <span class="icon">🎯</span>
+      <span>Macro Tareas</span>
+    </div>
+
+    <div class="sidebar-main-item"
          [class.active]="activeMenuItem === 'asignacion'"
          *ngIf="puedeVerAsignacion()"
          (click)="navigateTo('asignacion')">

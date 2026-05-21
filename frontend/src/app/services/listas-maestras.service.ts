@@ -6,6 +6,7 @@ export type ListaMaestraTipo =
   | 'celula'
   | 'lider_tecnico'
   | 'lider_tecnico_flujo_valor'
+  | 'lider_infraestructura_fv'
   | 'scrum'
   | 'po'
   | 'arquitecto';
@@ -98,6 +99,15 @@ export class ListasMaestrasService {
       activo: true,
       fechaCreacion: '2026-05-18T09:10:00',
       fechaModificacion: '2026-05-18T09:10:00'
+    },
+    {
+      id: 9,
+      tipo: 'lider_infraestructura_fv',
+      nombre: 'María Fernanda Suárez',
+      descripcion: 'Líder de infraestructura asociada al flujo de valor',
+      activo: true,
+      fechaCreacion: '2026-05-18T09:20:00',
+      fechaModificacion: '2026-05-18T09:20:00'
     }
   ];
 
@@ -134,6 +144,7 @@ export class ListasMaestrasService {
       { valor: 'celula', etiqueta: 'Célula' },
       { valor: 'lider_tecnico', etiqueta: 'Líder técnico' },
       { valor: 'lider_tecnico_flujo_valor', etiqueta: 'Líder técnico flujo de valor' },
+      { valor: 'lider_infraestructura_fv', etiqueta: 'Líder infraestructura FV' },
       { valor: 'scrum', etiqueta: 'Scrum' },
       { valor: 'po', etiqueta: 'PO' },
       { valor: 'arquitecto', etiqueta: 'Arquitecto' }

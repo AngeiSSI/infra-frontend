@@ -10,6 +10,8 @@ import { AsignacionComponent } from './pages/asignacion/asignacion';
 import { ReportesComponent } from './pages/reportes/reportes.component';
 import { FestivosComponent } from './pages/festivos/festivos.component';
 import { ListasMaestrasComponent } from './pages/listas-maestras/listas-maestras.component';
+import { AsignacionProyectosComponent } from './pages/asignacion-proyectos/asignacion-proyectos.component';
+import { MacroTareasComponent } from './pages/macro-tareas/macro-tareas.component';
 
 export const appRoutes: Routes = [
   {
@@ -47,6 +49,14 @@ export const appRoutes: Routes = [
   {
     path: 'actividades/aprobacion-vencimientos',
     component: AprobacionVencimientosComponent
+  },
+  {
+    path: 'asignacion-proyectos',
+    component: AsignacionProyectosComponent
+  },
+  {
+    path: 'macro-tareas',
+    component: MacroTareasComponent
   },
   {
     path: 'reportes',
