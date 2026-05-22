@@ -47,7 +47,7 @@ export interface ImportacionCatalogoItem {
   providedIn: 'root'
 })
 export class CatalogoService {
-  private apiUrl = 'https://api-infra-actividades-g0dve6hncubtf8au.westcentralus-01.azurewebsites.net';
+  private apiUrl = 'https://infra-actividades-dbg3caaua8eydrbn.westcentralus-01.azurewebsites.net';
 
   constructor(private http: HttpClient) {}
 

@@ -102,7 +102,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let macro of macroTareas">
+              <tr *ngFor="let macro of macroTareas; trackBy: trackByMacroId">
                 <td>
                   {{ macro.nombre }}
                   <span class="badge-creador" *ngIf="esDelUsuarioActual(macro.liderInfraestructuraNombre)">Tu tarea</span>
@@ -129,7 +129,7 @@
           </table>
 
           <!-- Expandir Macro Tarea para ver Micro Tareas -->
-          <div *ngFor="let macro of macroTareas" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5eaf0;">
+          <div *ngFor="let macro of macroTareas; trackBy: trackByMacroId" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5eaf0;">
             <h5 style="margin: 0 0 0.5rem 0; color: #111827; font-weight: 700;">
               {{ macro.nombre }}
               <span style="font-size: 0.85rem; color: #6b7280;">(por {{ macro.liderInfraestructuraNombre }})</span>

@@ -463,14 +463,16 @@ export class MacroTareasComponent implements OnInit {
         this.loading = false;
         this.exito = 'Macro tarea creada correctamente.';
 
-        // Agregar inmediatamente a la lista local
+        // ✅ AGREGAR INMEDIATAMENTE A LA LISTA
         this.macroTareas.push(creada);
 
-        // También recargar del servicio para sincronizar
+        // ✅ RESETEAR FORMULARIO
+        this.resetFormulario();
+        
+        // ✅ RECARGAR DESPUÉS DE 1 SEGUNDO
         setTimeout(() => {
           this.cargarMacroTareas();
-          this.resetFormulario();
-        }, 500);
+        }, 1000);
 
         setTimeout(() => this.exito = '', 3000);
       },
@@ -519,6 +521,10 @@ export class MacroTareasComponent implements OnInit {
     return nombreCreador === this.usuario.nombre;
   }
 
+  trackByMacroId(index: number, macro: MacroTarea): string {
+    return macro._id || index.toString();
+  }
+
   resetFormulario(): void {
     this.nuevaMacroTarea = {
       nombre: '',
@@ -526,6 +532,7 @@ export class MacroTareasComponent implements OnInit {
       microTareas: [],
       estado: 'activa'
     };
+    
     this.actividadSeleccionada = null;
     this.totalDiasActual = 0;
 

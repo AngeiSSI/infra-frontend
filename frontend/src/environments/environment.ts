@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api-infra-actividades-g0dve6hncubtf8au.westcentralus-01.azurewebsites.net'
+  apiUrl: 'https://infra-actividades-dbg3caaua8eydrbn.westcentralus-01.azurewebsites.net'
 };
