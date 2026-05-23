@@ -354,7 +354,7 @@ export class RecuperarPasswordComponent {
     this.error = '';
 
     this.http.post(
-      'https://infra-actividades-dbg3caaua8eydrbn.westcentralus-01.azurewebsites.net/recuperar-password',
+      'https://api-infra-actividades-gwevagd8g0dfaxcv.westcentralus-01.azurewebsites.net',
       { email: this.email }
     ).subscribe({
       next: (response: any) => {
@@ -410,7 +410,7 @@ export class RecuperarPasswordComponent {
     console.log('📤 Enviando solicitud de reset...');
 
     this.http.post(
-      'https://infra-actividades-dbg3caaua8eydrbn.westcentralus-01.azurewebsites.net/resetear-password',
+      'https://api-infra-actividades-gwevagd8g0dfaxcv.westcentralus-01.azurewebsites.net/resetear-password',
       { token: this.token, nueva_password: this.nueva_password }
     ).subscribe({
       next: (response: any) => {

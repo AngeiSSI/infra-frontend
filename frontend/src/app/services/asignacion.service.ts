@@ -29,7 +29,7 @@ export interface Asignacion {
   providedIn: 'root'
 })
 export class AsignacionService {
-  private readonly API_URL = 'https://infra-actividades-dbg3caaua8eydrbn.westcentralus-01.azurewebsites.net';
+  private readonly API_URL = 'https://api-infra-actividades-gwevagd8g0dfaxcv.westcentralus-01.azurewebsites.net';
 
   constructor(private http: HttpClient) {}
 
