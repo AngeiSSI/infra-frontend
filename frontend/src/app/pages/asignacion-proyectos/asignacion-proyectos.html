@@ -5,7 +5,7 @@
         <div class="hero-title">
           <h1>Asignación de Proyectos</h1>
           <p>
-            Registra la información general del proyecto, planifica actividades desde catálogo,
+            Registra la información general del proyecto, planifica actividades desde macro tareas,
             visualiza el Gantt estimado, guarda borradores, consulta históricos y genera el PDF completo.
           </p>
         </div>
@@ -227,10 +227,10 @@
             <div>
               <h3 class="panel-title">Planeación de actividades</h3>
               <p class="panel-subtitle">
-                Usa actividades del catálogo para definir el plan estimado del proyecto.
+                Usa macro tareas para definir el plan estimado del proyecto.
               </p>
             </div>
-            <span class="pill-info">🧩 Basado en catálogo oficial</span>
+            <span class="pill-info">🧩 Basado en macro tareas</span>
           </div>
         </div>
 
@@ -238,18 +238,18 @@
           <div class="section-heading" style="margin-bottom: 1rem;">
             <div class="section-icon">➕</div>
             <div>
-              <h4>Agregar actividad</h4>
-              <p>Selecciona la actividad y define dependencias si aplica</p>
+              <h4>Agregar macro tarea</h4>
+              <p>Selecciona la macro tarea y define dependencias si aplica</p>
             </div>
           </div>
 
           <div class="add-activity-grid">
             <div class="form-group">
-              <label>Actividad de catálogo *</label>
-              <select [(ngModel)]="actividadNueva.catalogoKey">
-                <option value="">Selecciona una actividad</option>
-                <option *ngFor="let item of catalogo" [value]="obtenerCatalogoKey(item)">
-                  {{ item.tipificacion }} - {{ item.actividad }} ({{ item.diasHabiles }} días)
+              <label>Macro Tarea *</label>
+              <select [(ngModel)]="actividadNueva.macroTareaId">
+                <option value="">Selecciona una macro tarea</option>
+                <option *ngFor="let macro of macroTareas" [value]="macro._id">
+                  {{ macro.nombre }} ({{ calcularDiasMacroTarea(macro) }} días)
                 </option>
               </select>
             </div>
@@ -273,12 +273,12 @@
           <div class="form-grid" style="margin-top: 1rem;">
             <div class="form-group full-width">
               <label>Observaciones</label>
-              <textarea rows="2" [(ngModel)]="actividadNueva.observaciones" placeholder="Comentarios adicionales sobre la actividad"></textarea>
+              <textarea rows="2" [(ngModel)]="actividadNueva.observaciones" placeholder="Comentarios adicionales sobre la macro tarea"></textarea>
             </div>
           </div>
 
           <div class="btn-row">
-            <button class="btn-primary" (click)="agregarActividadDesdeCatalogo()">➕ Agregar actividad al plan</button>
+            <button class="btn-primary" (click)="agregarActividadDesdeMacroTarea()">➕ Agregar macro tarea al plan</button>
           </div>
 
           <div class="tabla-shell" style="margin-top: 1.25rem;">
@@ -324,9 +324,9 @@
 
             <ng-template #estadoVacioActividades>
               <div class="empty-activities">
-                <strong>Aún no has agregado actividades.</strong>
+                <strong>Aún no has agregado macro tareas.</strong>
                 <div style="margin-top: .4rem;">
-                  Selecciona una actividad del catálogo para comenzar la planeación.
+                  Selecciona una macro tarea para comenzar la planeación.
                 </div>
               </div>
             </ng-template>
@@ -340,7 +340,7 @@
             <div>
               <h3 class="panel-title">Diagrama Gantt estimado</h3>
               <p class="panel-subtitle">
-                Visualización simple de la secuencia y duración de las actividades planeadas.
+                Visualización simple de la secuencia y duración de las macro tareas planeadas.
               </p>
             </div>
             <span class="pill-info">📅 Vista cronológica</span>
@@ -438,7 +438,7 @@
               <div class="empty-activities">
                 <strong>No hay borradores guardados.</strong>
                 <div style="margin-top: .4rem;">
-                  Usa el botón “Guardar borrador” para continuar más tarde.
+                  Usa el botón "Guardar borrador" para continuar más tarde.
                 </div>
               </div>
             </ng-template>
@@ -608,7 +608,7 @@
           </table>
 
           <div class="pdf-section-title">
-            Actividades planeadas del proyecto
+            Macro tareas planeadas del proyecto
           </div>
 
           <table class="pdf-table pdf-activities-table">
@@ -616,7 +616,7 @@
               <tr>
                 <th>#</th>
                 <th>Tipificación</th>
-                <th>Actividad</th>
+                <th>Macro Tarea</th>
                 <th>Días</th>
                 <th>Inicio</th>
                 <th>Fin</th>

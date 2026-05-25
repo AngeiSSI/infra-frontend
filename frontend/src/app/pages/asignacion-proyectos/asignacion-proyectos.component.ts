@@ -16,6 +16,7 @@ import {
 } from '../../services/asignacion-proyectos.service';
 import { AsignacionService, Asignacion } from '../../services/asignacion.service';
 import { FestivosService } from '../../services/festivos.service';
+import { MacroTareasService, MacroTarea } from '../../services/macro-tareas.service';
 
 type TabAsignacionProyectos = 'nueva' | 'borradores' | 'historico';
 
@@ -852,6 +853,7 @@ export class AsignacionProyectosComponent implements OnInit {
 
   usuarios: Usuario[] = [];
   catalogo: Catalogo[] = [];
+  macroTareas: MacroTarea[] = [];
   festivos: any[] = [];
 
   readonly ganttDayWidth = 18;
@@ -896,7 +898,7 @@ export class AsignacionProyectosComponent implements OnInit {
   };
 
   actividadNueva = {
-    catalogoKey: '',
+    macroTareaId: '',
     fechaInicio: new Date().toISOString().split('T')[0],
     dependenciaIdLocal: '',
     observaciones: ''
@@ -914,7 +916,8 @@ export class AsignacionProyectosComponent implements OnInit {
     private listasMaestrasService: ListasMaestrasService,
     private asignacionProyectosService: AsignacionProyectosService,
     private asignacionService: AsignacionService,
-    private festivosService: FestivosService
+    private festivosService: FestivosService,
+    private macroTareasService: MacroTareasService
   ) {}
 
   ngOnInit(): void {
@@ -930,6 +933,8 @@ export class AsignacionProyectosComponent implements OnInit {
       return;
     }
 
+    // ✅ CARGAR MACRO TAREAS INMEDIATAMENTE
+    this.cargarMacroTareasInmediato();
     this.cargarCombos();
     this.cargarFestivos();
     this.cargarBorradores();
@@ -945,18 +950,24 @@ export class AsignacionProyectosComponent implements OnInit {
     return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
   }
 
+  cargarMacroTareasInmediato(): void {
+    console.log('Cargando macro tareas inmediatamente...');
+    this.macroTareasService.obtenerMacroTareas().subscribe({
+      next: (macroTareas) => {
+        console.log('Macro tareas cargadas:', macroTareas.length);
+        this.macroTareas = macroTareas;
+      },
+      error: (err) => {
+        console.error('Error al cargar macro tareas:', err);
+        this.macroTareas = [];
+      }
+    });
+  }
+
   cargarCombos(): void {
     this.actividadesService.getUsuarios().subscribe({
       next: (usuarios) => {
         this.usuarios = usuarios.filter(u => u.activo !== false);
-      }
-    });
-
-    this.actividadesService.getCatalogo().subscribe({
-      next: (catalogo) => {
-        this.catalogo = [...catalogo].sort((a, b) =>
-          a.actividad.localeCompare(b.actividad, 'es', { sensitivity: 'base' })
-        );
       }
     });
 
@@ -1123,34 +1134,36 @@ export class AsignacionProyectosComponent implements OnInit {
     this.resetActividadNueva();
   }
 
-  agregarActividadDesdeCatalogo(): void {
-    if (!this.actividadNueva.catalogoKey) {
-      this.error = 'Selecciona una actividad del catálogo.';
+  agregarActividadDesdeMacroTarea(): void {
+    if (!this.actividadNueva.macroTareaId) {
+      this.error = 'Selecciona una macro tarea.';
       return;
     }
 
-    const seleccionado = this.catalogo.find(
-      c => this.obtenerCatalogoKey(c) === this.actividadNueva.catalogoKey
+    const macroSeleccionada = this.macroTareas.find(
+      m => m._id === this.actividadNueva.macroTareaId
     );
 
-    if (!seleccionado) {
-      this.error = 'No se encontró la actividad seleccionada.';
+    if (!macroSeleccionada) {
+      this.error = 'No se encontró la macro tarea seleccionada.';
       return;
     }
 
+    const diasTotales = this.macroTareasService.calcularDiasTotales(macroSeleccionada);
+
     const fechaInicioCalculada = this.obtenerFechaInicioActividad();
-    const fechaFinCalculada = this.calcularFechaFinSimple(fechaInicioCalculada, seleccionado.diasHabiles);
+    const fechaFinCalculada = this.calcularFechaFinSimple(fechaInicioCalculada, diasTotales);
 
     const nueva: ProyectoActividadPlanificada = {
       idLocal: (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
         ? crypto.randomUUID()
         : `act_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-      catalogoId: seleccionado._id || '',
-      tipificacion: seleccionado.tipificacion,
-      actividad: seleccionado.actividad,
-      diasHabiles: seleccionado.diasHabiles,
-      horasMinimas: seleccionado.horasMinimas,
-      horasMaximas: seleccionado.horasMaximas,
+      catalogoId: macroSeleccionada._id || '',
+      tipificacion: 'Macro Tarea',
+      actividad: macroSeleccionada.nombre,
+      diasHabiles: diasTotales,
+      horasMinimas: 0,
+      horasMaximas: 0,
       responsable: '',
       fechaInicio: fechaInicioCalculada,
       fechaFin: fechaFinCalculada,
@@ -1203,7 +1216,7 @@ export class AsignacionProyectosComponent implements OnInit {
     }
 
     if (this.actividadesProyecto.length === 0) {
-      this.error = 'Debes agregar al menos una actividad del catálogo.';
+      this.error = 'Debes agregar al menos una macro tarea.';
       return;
     }
 
@@ -1245,26 +1258,15 @@ export class AsignacionProyectosComponent implements OnInit {
     this.asignacionService.getAsignaciones().subscribe({
       next: (asignaciones: Asignacion[]) => {
         console.log('Asignaciones obtenidas:', asignaciones);
-        console.log('Proyecto actual normalizado:', proyectoActual);
-        console.log('Feature actual normalizado:', featureActual);
 
         const existente = asignaciones.find(item => {
           const proyectoItem = normalizar(item.proyecto);
           const featureItem = normalizar(item.idFeature);
-
-          const coincide = proyectoItem === proyectoActual && featureItem === featureActual;
-
-          if (coincide) {
-            console.log('Proyecto existente encontrado:', item);
-          }
-
-          return coincide;
+          return proyectoItem === proyectoActual && featureItem === featureActual;
         });
 
         if (existente) {
           const porcentajeExistente = Number(existente.porcentajeAsignacion ?? 0);
-
-          console.log('Porcentaje existente:', porcentajeExistente);
 
           if (porcentajeExistente === 0) {
             if (!existente._id) {
@@ -1281,19 +1283,8 @@ export class AsignacionProyectosComponent implements OnInit {
                   .guardarFinalizado(payloadProyecto, this.proyectoEnEdicionId || undefined)
                   .subscribe({
                     next: () => {
-                      this.loading = false;
-                      this.error = '';
-                      this.advertencia = '';
-                      this.exito = 'Asignación existente actualizada correctamente y guardada en histórico.';
-                      this.cargarBorradores();
-                      this.cargarHistorico();
-                      this.nuevoProyecto();
-                      this.tabActiva = 'historico';
-                      setTimeout(() => this.exito = '', 4000);
-                    },
-                    error: () => {
-                      this.loading = false;
-                      this.error = 'Se actualizó la asignación, pero falló el guardado en histórico local.';
+                      // ✅ CREAR ACTIVIDADES DESDE ASIGNACIÓN
+                      this.crearActividadesDesdeAsignacion();
                     }
                   });
               },
@@ -1324,19 +1315,8 @@ export class AsignacionProyectosComponent implements OnInit {
               .guardarFinalizado(payloadProyecto, this.proyectoEnEdicionId || undefined)
               .subscribe({
                 next: () => {
-                  this.loading = false;
-                  this.error = '';
-                  this.advertencia = '';
-                  this.exito = 'Asignación finalizada, enviada a la tabla de Asignación y guardada en histórico.';
-                  this.cargarBorradores();
-                  this.cargarHistorico();
-                  this.nuevoProyecto();
-                  this.tabActiva = 'historico';
-                  setTimeout(() => this.exito = '', 4000);
-                },
-                error: () => {
-                  this.loading = false;
-                  this.error = 'Se creó la asignación, pero falló el guardado en histórico local.';
+                  // ✅ CREAR ACTIVIDADES DESDE ASIGNACIÓN
+                  this.crearActividadesDesdeAsignacion();
                 }
               });
           },
@@ -1351,6 +1331,102 @@ export class AsignacionProyectosComponent implements OnInit {
         this.error = 'No fue posible validar asignaciones existentes: ' + (err.error?.message || err.statusText);
       }
     });
+  }
+
+  // ✅ NUEVO MÉTODO: CREAR ACTIVIDADES AUTOMÁTICAMENTE
+  crearActividadesDesdeAsignacion(): void {
+    console.log('=== INICIANDO CREACIÓN DE ACTIVIDADES ===');
+    console.log('Macro tareas en proyecto:', this.actividadesProyecto.length);
+
+    let actividadesCreadas = 0;
+    let actividadesEnProceso = 0;
+
+    this.actividadesProyecto.forEach((macroTarea) => {
+      const macroOriginal = this.macroTareas.find(m => m._id === macroTarea.catalogoId);
+
+      if (!macroOriginal || !macroOriginal.microTareas || macroOriginal.microTareas.length === 0) {
+        console.warn('Macro tarea no encontrada o sin micro tareas:', macroTarea.catalogoId);
+        return;
+      }
+
+      console.log(`\n📌 Procesando macro tarea: ${macroTarea.actividad}`);
+      console.log(`   Micro tareas: ${macroOriginal.microTareas.length}`);
+
+      let fechaActual = new Date(`${macroTarea.fechaInicio}T00:00:00`);
+
+      macroOriginal.microTareas.forEach((microTarea, index) => {
+        actividadesEnProceso++;
+
+        const actividadPayload: any = {
+          nombre: microTarea.actividad,
+          macroTareaId: macroTarea.catalogoId,
+          macroTareaNombre: macroTarea.actividad,
+          lider: this.proyecto.liderInfraestructura,
+          fechaInicio: this.formatearFecha(fechaActual),
+          fechaFin: '',
+          estado: 'pendiente',
+          diasHabiles: microTarea.diasHabiles,
+          horasMinimas: microTarea.horasMinimas,
+          horasMaximas: microTarea.horasMaximas,
+          esUltima: index === macroOriginal.microTareas!.length - 1,
+          indiceSecuencia: index
+        };
+
+        console.log(`   ✅ Creando micro tarea [${index + 1}/${macroOriginal.microTareas!.length}]: ${microTarea.actividad}`);
+        console.log(`      Payload:`, actividadPayload);
+
+        this.asignacionService.crearActividad(actividadPayload).subscribe({
+          next: (creada) => {
+            actividadesCreadas++;
+            actividadesEnProceso--;
+            console.log(`   ✓ Actividad creada: ${creada._id}`);
+
+            if (actividadesEnProceso === 0) {
+              this.finalizarCreacionActividades(actividadesCreadas);
+            }
+          },
+          error: (err) => {
+            actividadesEnProceso--;
+            console.error(`   ✗ Error al crear actividad: ${microTarea.actividad}`, err);
+            
+            if (actividadesEnProceso === 0) {
+              this.finalizarCreacionActividades(actividadesCreadas);
+            }
+          }
+        });
+
+        // ✅ CALCULAR FECHA INICIO PARA LA SIGUIENTE MICRO TAREA
+        if (index < macroOriginal.microTareas!.length - 1) {
+          const fechaFin = new Date(this.calcularFechaFinSimple(
+            this.formatearFecha(fechaActual),
+            microTarea.diasHabiles
+          ));
+          fechaActual = new Date(this.siguienteDia(fechaFin));
+          console.log(`      Próxima fecha: ${this.formatearFecha(fechaActual)}`);
+        }
+      });
+    });
+
+    if (actividadesEnProceso === 0) {
+      this.finalizarCreacionActividades(actividadesCreadas);
+    }
+  }
+
+  finalizarCreacionActividades(totalCreadas: number): void {
+    console.log(`\n=== FINALIZADO ===`);
+    console.log(`Total de actividades creadas: ${totalCreadas}`);
+
+    this.loading = false;
+    this.error = '';
+    this.advertencia = '';
+    this.exito = `✅ Asignación finalizada. Se crearon ${totalCreadas} actividades automáticamente.`;
+    
+    this.cargarBorradores();
+    this.cargarHistorico();
+    this.nuevoProyecto();
+    this.tabActiva = 'historico';
+    
+    setTimeout(() => this.exito = '', 5000);
   }
 
   guardarBorrador(): void {
@@ -1442,10 +1518,6 @@ export class AsignacionProyectosComponent implements OnInit {
   imprimirDesdeHistorico(item: ProyectoAsignacionGuardado): void {
     this.cargarProyectoGuardado(item);
     setTimeout(() => this.imprimirPDF(), 300);
-  }
-
-  obtenerCatalogoKey(item: Catalogo): string {
-    return `${item.tipificacion}|||${item.actividad}`;
   }
 
   obtenerFechaInicioActividad(): string {
@@ -1591,9 +1663,9 @@ export class AsignacionProyectosComponent implements OnInit {
     );
   }
 
-    resetActividadNueva(): void {
+  resetActividadNueva(): void {
     this.actividadNueva = {
-      catalogoKey: '',
+      macroTareaId: '',
       fechaInicio: this.proyecto.fechaSolicitud || new Date().toISOString().split('T')[0],
       dependenciaIdLocal: '',
       observaciones: ''
@@ -1610,5 +1682,9 @@ export class AsignacionProyectosComponent implements OnInit {
 
   getBarWidth(dias: number): number {
     return Math.max(56, dias * this.ganttDayWidth);
+  }
+
+  calcularDiasMacroTarea(macroTarea: MacroTarea): number {
+    return this.macroTareasService.calcularDiasTotales(macroTarea);
   }
 }

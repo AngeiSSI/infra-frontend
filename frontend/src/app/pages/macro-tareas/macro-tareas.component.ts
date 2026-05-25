@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -230,6 +230,46 @@ import { SearchableSelectComponent } from '../../components/searchable-select/se
       margin-left: 0.5rem;
       background: #ffebee;
       color: #c62828;
+      transition: all 0.22s ease;
+    }
+
+    .action-btn:hover {
+      background: #ef5350;
+      color: white;
+    }
+
+    .btn-ver {
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.8rem;
+      background: #e3f2fd;
+      color: #0066cc;
+      transition: all 0.22s ease;
+    }
+
+    .btn-ver:hover {
+      background: #0066cc;
+      color: white;
+    }
+
+    .btn-editar {
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.8rem;
+      background: #fff3e0;
+      color: #f57c00;
+      transition: all 0.22s ease;
+    }
+
+    .btn-editar:hover {
+      background: #f57c00;
+      color: white;
     }
 
     .badge-dias {
@@ -282,6 +322,7 @@ export class MacroTareasComponent implements OnInit {
 
   macroTareas: MacroTarea[] = [];
   catalogo: Catalogo[] = [];
+  macroTareasExpandidas: { [key: string]: boolean } = {};
 
   nuevaMacroTarea: Partial<MacroTarea> = {
     nombre: '',
@@ -290,6 +331,8 @@ export class MacroTareasComponent implements OnInit {
     estado: 'activa'
   };
 
+  // Para edición
+  macroTareaEnEdicion: Partial<MacroTarea> | null = null;
   actividadSeleccionada: any = null;
   totalDiasActual = 0;
 
@@ -298,7 +341,8 @@ export class MacroTareasComponent implements OnInit {
     private router: Router,
     private macroTareasService: MacroTareasService,
     private actividadesService: ActividadesService,
-    private listasMaestrasService: ListasMaestrasService
+    private listasMaestrasService: ListasMaestrasService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -346,14 +390,11 @@ export class MacroTareasComponent implements OnInit {
       next: (macroTareasAPI) => {
         console.log('Macro tareas obtenidas de API:', macroTareasAPI.length);
 
-        // Obtener también las del localStorage
         const macroTareasLocal = this.macroTareasService.leerDelLocal();
         console.log('Macro tareas del localStorage:', macroTareasLocal.length);
 
-        // Combinar ambas (evitando duplicados)
         const todasLasMacroTareas = [...macroTareasAPI];
 
-        // Agregar las del localStorage que no están en la API
         macroTareasLocal.forEach(local => {
           const yaExiste = todasLasMacroTareas.find(api => api._id === local._id);
           if (!yaExiste) {
@@ -363,22 +404,23 @@ export class MacroTareasComponent implements OnInit {
 
         console.log('Total de macro tareas:', todasLasMacroTareas.length);
 
-        // Mostrar todas las macro tareas válidas (con líder asignado)
         this.macroTareas = todasLasMacroTareas.filter(mt =>
           mt.liderInfraestructuraNombre && mt.liderInfraestructuraNombre.trim().length > 0
         );
 
         console.log('Macro tareas válidas:', this.macroTareas.length);
+        this.cdr.detectChanges(); // ✅ FUERZA LA DETECCIÓN DE CAMBIOS
       },
       error: (err) => {
         console.error('Error al cargar macro tareas de API:', err);
 
-        // Si falla la API, carga solo del localStorage
         const macroTareasLocal = this.macroTareasService.leerDelLocal();
 
         this.macroTareas = macroTareasLocal.filter(mt =>
           mt.liderInfraestructuraNombre && mt.liderInfraestructuraNombre.trim().length > 0
         );
+        
+        this.cdr.detectChanges(); // ✅ FUERZA LA DETECCIÓN DE CAMBIOS
       }
     });
   }
@@ -417,10 +459,49 @@ export class MacroTareasComponent implements OnInit {
     setTimeout(() => this.exito = '', 2000);
   }
 
+  agregarMicroTareaEdicion(): void {
+    if (!this.actividadSeleccionada) {
+      this.error = 'Selecciona una actividad del catálogo.';
+      return;
+    }
+
+    const microTarea: MicroTarea = {
+      _id: (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+        ? crypto.randomUUID()
+        : `micro_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+      actividad: this.actividadSeleccionada.actividad,
+      catalogoId: this.actividadSeleccionada._id || '',
+      diasHabiles: this.actividadSeleccionada.diasHabiles,
+      horasMinimas: this.actividadSeleccionada.horasMinimas,
+      horasMaximas: this.actividadSeleccionada.horasMaximas
+    };
+
+    if (!this.macroTareaEnEdicion?.microTareas) {
+      this.macroTareaEnEdicion!.microTareas = [];
+    }
+
+    this.macroTareaEnEdicion?.microTareas?.push(microTarea);
+    this.actividadSeleccionada = null;
+    this.error = '';
+    this.exito = 'Micro tarea agregada correctamente.';
+
+    if (this.searchableSelect) {
+      this.searchableSelect.resetear();
+    }
+
+    setTimeout(() => this.exito = '', 2000);
+  }
+
   eliminarMicroTarea(index: number): void {
     if (this.nuevaMacroTarea.microTareas) {
       this.nuevaMacroTarea.microTareas.splice(index, 1);
       this.actualizarTotalDias();
+    }
+  }
+
+  eliminarMicroTareaEdicion(index: number): void {
+    if (this.macroTareaEnEdicion?.microTareas) {
+      this.macroTareaEnEdicion.microTareas.splice(index, 1);
     }
   }
 
@@ -463,16 +544,13 @@ export class MacroTareasComponent implements OnInit {
         this.loading = false;
         this.exito = 'Macro tarea creada correctamente.';
 
-        // ✅ AGREGAR INMEDIATAMENTE A LA LISTA
         this.macroTareas.push(creada);
-
-        // ✅ RESETEAR FORMULARIO
         this.resetFormulario();
-        
-        // ✅ RECARGAR DESPUÉS DE 1 SEGUNDO
+        this.cdr.detectChanges();
+
         setTimeout(() => {
           this.cargarMacroTareas();
-        }, 1000);
+        }, 500);
 
         setTimeout(() => this.exito = '', 3000);
       },
@@ -482,6 +560,51 @@ export class MacroTareasComponent implements OnInit {
         this.error = 'Error al crear macro tarea: ' + (err.error?.message || err.statusText || err.message);
       }
     });
+  }
+
+  guardarEdicion(): void {
+    if (!this.macroTareaEnEdicion?._id) {
+      this.error = 'ID inválido';
+      return;
+    }
+
+    if (!this.macroTareaEnEdicion.nombre?.trim()) {
+      this.error = 'Ingresa el nombre de la macro tarea.';
+      return;
+    }
+
+    if (!this.macroTareaEnEdicion.microTareas || this.macroTareaEnEdicion.microTareas.length === 0) {
+      this.error = 'Agrega al menos una micro tarea.';
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+
+    this.macroTareasService.actualizarMacroTarea(
+      this.macroTareaEnEdicion._id,
+      this.macroTareaEnEdicion as MacroTarea
+    ).subscribe({
+      next: (actualizada) => {
+        console.log('Macro tarea actualizada:', actualizada);
+        this.loading = false;
+        this.exito = 'Macro tarea actualizada correctamente.';
+        this.macroTareaEnEdicion = null;
+        this.cargarMacroTareas();
+        setTimeout(() => this.exito = '', 3000);
+      },
+      error: (err) => {
+        console.error('Error al actualizar:', err);
+        this.loading = false;
+        this.error = 'Error al actualizar macro tarea: ' + (err.error?.message || err.statusText || err.message);
+      }
+    });
+  }
+
+  cancelarEdicion(): void {
+    this.macroTareaEnEdicion = null;
+    this.error = '';
+    this.actividadSeleccionada = null;
   }
 
   eliminarMacroTarea(id: string | undefined): void {
@@ -525,6 +648,24 @@ export class MacroTareasComponent implements OnInit {
     return macro._id || index.toString();
   }
 
+  toggleVerMicroTareas(macroId: string): void {
+    this.macroTareasExpandidas[macroId] = !this.macroTareasExpandidas[macroId];
+  }
+
+  editarMacroTarea(id: string): void {
+    if (!id) {
+      this.error = 'ID inválido';
+      return;
+    }
+    console.log('Editar macro tarea:', id);
+    
+    const macroAEditar = this.macroTareas.find(m => m._id === id);
+    if (macroAEditar) {
+      this.macroTareaEnEdicion = JSON.parse(JSON.stringify(macroAEditar)); // Copia profunda
+      this.actividadSeleccionada = null;
+    }
+  }
+
   resetFormulario(): void {
     this.nuevaMacroTarea = {
       nombre: '',
@@ -532,7 +673,6 @@ export class MacroTareasComponent implements OnInit {
       microTareas: [],
       estado: 'activa'
     };
-    
     this.actividadSeleccionada = null;
     this.totalDiasActual = 0;
 

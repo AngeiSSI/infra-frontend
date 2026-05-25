@@ -11,8 +11,82 @@
     <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
     <div *ngIf="exito" class="alert alert-success">{{ exito }}</div>
 
+    <!-- Panel: Editar Macro Tarea -->
+    <div class="panel" *ngIf="macroTareaEnEdicion">
+      <div class="panel-header">
+        <h3 class="panel-title">✏️ Editar Macro Tarea</h3>
+        <p class="panel-subtitle">Modifica el nombre y las micro tareas</p>
+      </div>
+
+      <div class="panel-body">
+        <div class="form-grid" style="grid-template-columns: 1fr;">
+          <div class="form-group full-width">
+            <label>Nombre de la macro tarea *</label>
+            <input 
+              [(ngModel)]="macroTareaEnEdicion.nombre" 
+              placeholder="Ej: Implementación de API, Configuración de Servidor, etc."
+              style="width: 100%; font-size: 1rem; padding: 1rem;"
+            >
+          </div>
+        </div>
+
+        <!-- Micro Tareas Actuales -->
+        <div style="margin-top: 2rem; border-top: 1px solid #e5eaf0; padding-top: 1rem;">
+          <h4 style="margin: 0 0 1rem 0; color: #111827; font-weight: 800;">Micro Tareas Actuales</h4>
+
+          <div *ngIf="macroTareaEnEdicion.microTareas && macroTareaEnEdicion.microTareas.length > 0" class="micro-tareas-list">
+            <div *ngFor="let micro of macroTareaEnEdicion.microTareas; let i = index" class="micro-item">
+              <div class="micro-info">
+                <div class="micro-name">{{ micro.actividad }}</div>
+                <div class="micro-dias">
+                  <span class="badge-dias">{{ micro.diasHabiles }} días</span>
+                </div>
+              </div>
+              <button class="action-btn" (click)="eliminarMicroTareaEdicion(i)">Eliminar</button>
+            </div>
+          </div>
+
+          <div *ngIf="!macroTareaEnEdicion.microTareas || macroTareaEnEdicion.microTareas.length === 0" style="padding: 1rem; color: #9ca3af; font-size: 0.9rem;">
+            Sin micro tareas asignadas
+          </div>
+        </div>
+
+        <!-- Agregar más Micro Tareas -->
+        <div style="margin-top: 2rem; border-top: 1px solid #e5eaf0; padding-top: 1rem;">
+          <h4 style="margin: 0 0 1rem 0; color: #111827; font-weight: 800;">Agregar Más Micro Tareas</h4>
+
+          <p style="color: #6b7280; font-size: 0.9rem; margin: 0 0 1rem 0;">
+            Catálogo disponible: {{ catalogo.length }} actividades
+          </p>
+
+          <div class="form-grid" style="grid-template-columns: 1fr;">
+            <div class="form-group full-width">
+              <label>Selecciona actividades del catálogo *</label>
+              <app-searchable-select
+                [opciones]="catalogo"
+                placeholder="🔍 Busca una actividad..."
+                campoMostrar="actividad"
+                (seleccionChanged)="actividadSeleccionada = $event"
+              ></app-searchable-select>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+              <button class="btn-primary" (click)="agregarMicroTareaEdicion()" style="width: 100%;">+ Agregar Micro Tarea</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-top: 1.5rem;">
+          <button class="btn-success" (click)="guardarEdicion()" [disabled]="loading" style="flex: 1;">
+            {{ loading ? 'Guardando...' : '✅ Guardar Cambios' }}
+          </button>
+          <button class="btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Panel: Crear Nueva Macro Tarea -->
-    <div class="panel">
+    <div class="panel" *ngIf="!macroTareaEnEdicion">
       <div class="panel-header">
         <h3 class="panel-title">➕ Crear Nueva Macro Tarea</h3>
         <p class="panel-subtitle">Define el nombre y las micro tareas que la componen</p>
@@ -82,7 +156,7 @@
     </div>
 
     <!-- Panel: Todas las Macro Tareas -->
-    <div class="panel">
+    <div class="panel" *ngIf="!macroTareaEnEdicion">
       <div class="panel-header">
         <h3 class="panel-title">📋 Macro Tareas</h3>
         <p class="panel-subtitle">{{ macroTareas.length }} macro tareas registradas</p>
@@ -119,33 +193,39 @@
                     {{ macro.estado }}
                   </span>
                 </td>
-                <td>
-                  <button class="action-btn" (click)="eliminarMacroTarea(macro._id)">
-                    Eliminar
+                <td style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <button class="btn-ver" *ngIf="macro._id" (click)="toggleVerMicroTareas(macro._id!)">
+                    {{ (macroTareasExpandidas[macro._id!] || false) ? '✕ Ocultar' : '👁️ Ver' }}
                   </button>
+                  <button class="btn-editar" *ngIf="macro._id" (click)="editarMacroTarea(macro._id!)">✏️ Editar</button>
+                  <button class="action-btn" *ngIf="macro._id" (click)="eliminarMacroTarea(macro._id!)">🗑️ Eliminar</button>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <!-- Expandir Macro Tarea para ver Micro Tareas -->
-          <div *ngFor="let macro of macroTareas; trackBy: trackByMacroId" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e5eaf0;">
-            <h5 style="margin: 0 0 0.5rem 0; color: #111827; font-weight: 700;">
-              {{ macro.nombre }}
-              <span style="font-size: 0.85rem; color: #6b7280;">(por {{ macro.liderInfraestructuraNombre }})</span>
-            </h5>
-            <div *ngIf="macro.microTareas && macro.microTareas.length > 0" class="micro-tareas-list">
-              <div *ngFor="let micro of macro.microTareas" class="micro-item">
-                <div class="micro-info">
-                  <div class="micro-name">{{ micro.actividad }}</div>
-                  <div class="micro-dias">
-                    <span class="badge-dias">{{ micro.diasHabiles }} días</span>
+          <!-- Mostrar Micro Tareas cuando se expande -->
+          <div *ngFor="let macro of macroTareas; trackBy: trackByMacroId">
+            <div *ngIf="macro._id && (macroTareasExpandidas[macro._id!] || false)" style="margin-top: 2rem; padding: 1.5rem; background: #f9fafb; border-radius: 12px; border-left: 4px solid #0066cc;">
+              <h5 style="margin: 0 0 1rem 0; color: #111827; font-weight: 700;">
+                📋 Micro Tareas de: {{ macro.nombre }}
+              </h5>
+              <div *ngIf="macro.microTareas && macro.microTareas.length > 0" class="micro-tareas-list">
+                <div *ngFor="let micro of macro.microTareas" class="micro-item">
+                  <div class="micro-info">
+                    <div class="micro-name">{{ micro.actividad }}</div>
+                    <div class="micro-dias">
+                      <span class="badge-dias">{{ micro.diasHabiles }} días</span>
+                      <span style="margin-left: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        ({{ micro.horasMinimas }}-{{ micro.horasMaximas }} horas)
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div *ngIf="!macro.microTareas || macro.microTareas.length === 0" style="padding: 1rem; color: #9ca3af; font-size: 0.9rem;">
-              Sin micro tareas asignadas
+              <div *ngIf="!macro.microTareas || macro.microTareas.length === 0" style="padding: 1rem; color: #9ca3af; font-size: 0.9rem;">
+                Sin micro tareas asignadas
+              </div>
             </div>
           </div>
         </div>
