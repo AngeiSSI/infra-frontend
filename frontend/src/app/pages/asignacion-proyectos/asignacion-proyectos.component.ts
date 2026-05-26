@@ -1333,7 +1333,7 @@ export class AsignacionProyectosComponent implements OnInit {
     });
   }
 
-  // ✅ NUEVO MÉTODO: CREAR ACTIVIDADES AUTOMÁTICAMENTE
+   // ✅ NUEVO MÉTODO: CREAR ACTIVIDADES AUTOMÁTICAMENTE
   crearActividadesDesdeAsignacion(): void {
     console.log('=== INICIANDO CREACIÓN DE ACTIVIDADES ===');
     console.log('Macro tareas en proyecto:', this.actividadesProyecto.length);
@@ -1341,6 +1341,7 @@ export class AsignacionProyectosComponent implements OnInit {
     let actividadesCreadas = 0;
     let actividadesEnProceso = 0;
 
+    // ✅ CREAR ACTIVIDADES DE MACRO TAREAS
     this.actividadesProyecto.forEach((macroTarea) => {
       const macroOriginal = this.macroTareas.find(m => m._id === macroTarea.catalogoId);
 
@@ -1353,17 +1354,23 @@ export class AsignacionProyectosComponent implements OnInit {
       console.log(`   Micro tareas: ${macroOriginal.microTareas.length}`);
 
       let fechaActual = new Date(`${macroTarea.fechaInicio}T00:00:00`);
+      let ultimaFechaFin = macroTarea.fechaInicio;
 
       macroOriginal.microTareas.forEach((microTarea, index) => {
         actividadesEnProceso++;
+
+        const fechaFin = this.calcularFechaFinSimple(this.formatearFecha(fechaActual), microTarea.diasHabiles);
+        ultimaFechaFin = fechaFin;
 
         const actividadPayload: any = {
           nombre: microTarea.actividad,
           macroTareaId: macroTarea.catalogoId,
           macroTareaNombre: macroTarea.actividad,
           lider: this.proyecto.liderInfraestructura,
+          proyecto: this.proyecto.nombreProyecto,
+          tipificacion: 'Micro Tarea',
           fechaInicio: this.formatearFecha(fechaActual),
-          fechaFin: '',
+          fechaFin: fechaFin,
           estado: 'pendiente',
           diasHabiles: microTarea.diasHabiles,
           horasMinimas: microTarea.horasMinimas,
@@ -1373,7 +1380,6 @@ export class AsignacionProyectosComponent implements OnInit {
         };
 
         console.log(`   ✅ Creando micro tarea [${index + 1}/${macroOriginal.microTareas!.length}]: ${microTarea.actividad}`);
-        console.log(`      Payload:`, actividadPayload);
 
         this.asignacionService.crearActividad(actividadPayload).subscribe({
           next: (creada) => {
@@ -1382,7 +1388,7 @@ export class AsignacionProyectosComponent implements OnInit {
             console.log(`   ✓ Actividad creada: ${creada._id}`);
 
             if (actividadesEnProceso === 0) {
-              this.finalizarCreacionActividades(actividadesCreadas);
+              this.crearCierreProyecto();
             }
           },
           error: (err) => {
@@ -1390,36 +1396,73 @@ export class AsignacionProyectosComponent implements OnInit {
             console.error(`   ✗ Error al crear actividad: ${microTarea.actividad}`, err);
             
             if (actividadesEnProceso === 0) {
-              this.finalizarCreacionActividades(actividadesCreadas);
+              this.crearCierreProyecto();
             }
           }
         });
 
         // ✅ CALCULAR FECHA INICIO PARA LA SIGUIENTE MICRO TAREA
         if (index < macroOriginal.microTareas!.length - 1) {
-          const fechaFin = new Date(this.calcularFechaFinSimple(
-            this.formatearFecha(fechaActual),
-            microTarea.diasHabiles
-          ));
-          fechaActual = new Date(this.siguienteDia(fechaFin));
+          fechaActual = new Date(this.siguienteDia(new Date(fechaFin)));
           console.log(`      Próxima fecha: ${this.formatearFecha(fechaActual)}`);
         }
       });
     });
 
     if (actividadesEnProceso === 0) {
-      this.finalizarCreacionActividades(actividadesCreadas);
+      this.crearCierreProyecto();
     }
   }
 
-  finalizarCreacionActividades(totalCreadas: number): void {
+  // ✅ NUEVO MÉTODO: CREAR ACTIVIDAD "CIERRE DE PROYECTO"
+  crearCierreProyecto(): void {
+    console.log('\n=== CREANDO CIERRE DE PROYECTO ===');
+    console.log('Líder Infraestructura FV:', this.proyecto.liderInfraestructuraFV);
+
+    // ✅ Calcular fechas: inicio = fecha inicio del proyecto, fin = fecha fin última macro tarea
+    const fechaInicioCierre = this.resumenFechaInicio !== '-' ? this.resumenFechaInicio : this.proyecto.fechaSolicitud;
+    const fechaFinCierre = this.resumenFechaFin !== '-' ? this.resumenFechaFin : this.proyecto.fechaSolicitud;
+
+    const actividadCierre: any = {
+      nombre: 'Cierre de Proyecto',
+      macroTareaId: 'cierre-proyecto',
+      macroTareaNombre: 'Cierre de Proyecto',
+      lider: this.proyecto.liderInfraestructuraFV, // ✅ ASIGNADO AL LÍDER INFRAESTRUCTURA FV
+      proyecto: this.proyecto.nombreProyecto,
+      tipificacion: 'Cierre',
+      actividadCatalogo: 'Cierre de Proyecto',
+      fechaInicio: fechaInicioCierre,
+      fechaFin: fechaFinCierre,
+      estado: 'pendiente',
+      diasHabiles: this.contarDiasLaboralesIncluyendoFin(fechaInicioCierre, fechaFinCierre),
+      horasMinimas: 0,
+      horasMaximas: 0,
+      esUltima: true,
+      indiceSecuencia: 999
+    };
+
+    console.log('Payload Cierre de Proyecto:', actividadCierre);
+
+    this.asignacionService.crearActividad(actividadCierre).subscribe({
+      next: (creada) => {
+        console.log('✓ Cierre de Proyecto creado:', creada._id);
+        this.finalizarCreacionActividades();
+      },
+      error: (err) => {
+        console.error('✗ Error al crear Cierre de Proyecto:', err);
+        this.finalizarCreacionActividades();
+      }
+    });
+  }
+
+  // ✅ ACTUALIZAR: Método de finalización simplificado
+  finalizarCreacionActividades(): void {
     console.log(`\n=== FINALIZADO ===`);
-    console.log(`Total de actividades creadas: ${totalCreadas}`);
 
     this.loading = false;
     this.error = '';
     this.advertencia = '';
-    this.exito = `✅ Asignación finalizada. Se crearon ${totalCreadas} actividades automáticamente.`;
+    this.exito = `✅ Asignación finalizada. Actividades creadas automáticamente en la tabla.`;
     
     this.cargarBorradores();
     this.cargarHistorico();
