@@ -40,6 +40,7 @@
     <div *ngIf="advertencia" class="alert alert-warning">{{ advertencia }}</div>
     <div *ngIf="exito" class="alert alert-success">{{ exito }}</div>
 
+    <!-- TAB: NUEVA ASIGNACIÓN -->
     <ng-container *ngIf="tabActiva === 'nueva'">
       <div class="panel">
         <div class="panel-header">
@@ -388,6 +389,7 @@
       </div>
     </ng-container>
 
+    <!-- TAB: BORRADORES -->
     <ng-container *ngIf="tabActiva === 'borradores'">
       <div class="panel">
         <div class="panel-header">
@@ -447,6 +449,7 @@
       </div>
     </ng-container>
 
+    <!-- TAB: HISTÓRICO -->
     <ng-container *ngIf="tabActiva === 'historico'">
       <div class="panel">
         <div class="panel-header">
@@ -520,6 +523,7 @@
       </div>
     </ng-container>
 
+    <!-- PDF RENDER HOST -->
     <div class="pdf-render-host">
       <div #pdfContent class="pdf-area pdf-print-layout">
         <div class="pdf-sheet">

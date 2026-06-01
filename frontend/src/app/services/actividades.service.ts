@@ -20,11 +20,12 @@ export interface JustificacionCierre {
 
 export interface Actividad {
   _id?: string;
+  nombre?: string;
   lider: string;
   grupoLider?: string;
   proyecto: string;
   tipificacion: string;
-  actividadCatalogo: string;
+  actividadCatalogo?: string;
   descripcion: string;
   estado: string;
   estadoCaso?: string;
@@ -36,6 +37,12 @@ export interface Actividad {
   fechaCierre?: Date;
   observaciones?: Observacion[];
   justificacionCierre?: JustificacionCierre;
+  // Nuevas propiedades para micro tareas
+  macroTareaId?: string;
+  macroTareaNombre?: string;
+  indiceSecuencia?: number;
+  esUltima?: boolean;
+  esUltimaMicroTarea?: boolean;
 }
 
 export interface Catalogo {
@@ -54,6 +61,16 @@ export interface Usuario {
   rol: string;
   grupo?: string;
   activo?: boolean;
+}
+
+export interface GrupoMacroTarea {
+  macroTareaId?: string;
+  macroTareaNombre: string;
+  fechaCreacion: Date;
+  fechaCierre?: Date;
+  estado: string;
+  microTareas: Actividad[];
+  estaActiva: boolean;
 }
 
 @Injectable({
@@ -215,5 +232,73 @@ export class ActividadesService {
   // ================= MISCELÁNEO =================
   obtenerActividades(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API_URL}/actividades`);
+  }
+
+  // ================= AGRUPAR MICRO TAREAS POR MACRO TAREA =================
+  agruparPorMacroTarea(actividades: Actividad[]): GrupoMacroTarea[] {
+    const grupos = new Map<string, GrupoMacroTarea>();
+
+    // Actividades normales (no micro tareas)
+    const actividadesNormales: Actividad[] = [];
+
+    actividades.forEach((act) => {
+      if (act.macroTareaId && act.indiceSecuencia !== undefined) {
+        // Es una micro tarea
+        const key = act.macroTareaId || 'sin-grupo';
+        if (!grupos.has(key)) {
+          grupos.set(key, {
+            macroTareaId: act.macroTareaId,
+            macroTareaNombre: act.macroTareaNombre || 'Sin nombre',
+            fechaCreacion: act.fechaCreacion,
+            fechaCierre: undefined,
+            estado: 'en progreso',
+            microTareas: [],
+            estaActiva: true
+          });
+        }
+        grupos.get(key)!.microTareas.push(act);
+      } else {
+        // Es una actividad normal
+        actividadesNormales.push(act);
+      }
+    });
+
+    // Ordenar micro tareas dentro de cada grupo por indiceSecuencia
+    grupos.forEach((grupo) => {
+      grupo.microTareas.sort((a, b) => 
+        (a.indiceSecuencia || 0) - (b.indiceSecuencia || 0)
+      );
+
+      // Determinar estado de la macro tarea
+      const todasCerradas = grupo.microTareas.every(m => m.estado === 'cerrado' || m.estado === 'cerrada_vencida');
+      const algunaCerrada = grupo.microTareas.some(m => m.estado === 'cerrado' || m.estado === 'cerrada_vencida');
+
+      if (todasCerradas) {
+        grupo.estado = 'cerrado';
+        grupo.estaActiva = false;
+        // Fecha de cierre = fecha de cierre de la última micro tarea
+        grupo.fechaCierre = grupo.microTareas[grupo.microTareas.length - 1].fechaCierre;
+      } else if (algunaCerrada) {
+        grupo.estado = 'en progreso';
+        grupo.estaActiva = true;
+      }
+    });
+
+    // Convertir a array y agregar actividades normales al final
+    const resultado: GrupoMacroTarea[] = Array.from(grupos.values());
+
+    // Agregar actividades normales como grupos sin micro tareas
+    actividadesNormales.forEach((act) => {
+      resultado.push({
+        macroTareaNombre: act.nombre || act.actividadCatalogo || 'Actividad',
+        fechaCreacion: act.fechaCreacion,
+        fechaCierre: act.fechaCierre,
+        estado: act.estado,
+        microTareas: [act],
+        estaActiva: act.estado !== 'cerrado' && act.estado !== 'cerrada_vencida'
+      });
+    });
+
+    return resultado;
   }
 }

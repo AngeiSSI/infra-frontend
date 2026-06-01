@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ActividadesService, Catalogo, Actividad, JustificacionCierre } from '../../services/actividades.service';
+import { ActividadesService, Catalogo, Actividad, JustificacionCierre, GrupoMacroTarea } from '../../services/actividades.service';
 import { AuthService } from '../../services/auth.service';
 import { ChangeDetectorRef } from '@angular/core';
 
@@ -260,11 +260,6 @@ import { ChangeDetectorRef } from '@angular/core';
       color: #CC0000;
     }
 
-    .badge-proxima {
-      background: #FFF3E0;
-      color: #F57C00;
-    }
-
     .badge-success {
       background: #E8F5E9;
       color: #2E7D32;
@@ -306,6 +301,11 @@ import { ChangeDetectorRef } from '@angular/core';
 
     .btn-warning:hover {
       background: #E68900;
+    }
+
+    .btn-warning:disabled {
+      background: #CCCCCC;
+      cursor: not-allowed;
     }
 
     .btn-info {
@@ -494,75 +494,182 @@ import { ChangeDetectorRef } from '@angular/core';
       color: #CC0000;
     }
 
-    /* Estilos para justificación de vencidas */
-    .justificacion-container {
-      background: #FFEBEE;
-      padding: 1.5rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-      border-left: 4px solid #CC0000;
-    }
-
-    .justificacion-container h4 {
-      color: #CC0000;
-      margin-top: 0;
-      font-size: 1rem;
-      font-weight: 700;
-    }
-
-    .justificacion-info {
+    /* ESTILOS PARA MACRO TAREAS AGRUPADAS */
+    .macro-tarea-grupo {
       background: white;
-      padding: 1rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      font-size: 0.9rem;
-      color: #555;
-      line-height: 1.6;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border: 2px solid #E0E0E0;
     }
 
-    .justificacion-form {
+    .macro-tarea-grupo.cierre-proyecto {
+      border-color: #4CAF50;
+      border-left-color: #4CAF50;
+    }
+
+    .macro-tarea-grupo.cierre-proyecto-inactivo {
+      border-color: #CCCCCC;
+      border-left-color: #CCCCCC;
+      opacity: 0.6;
+    }
+
+    .macro-tarea-header {
+      background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+      padding: 1rem 1.2rem;
+      border-bottom: 2px solid #E0E0E0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .macro-tarea-grupo.cierre-proyecto-inactivo .macro-tarea-header {
+      cursor: not-allowed;
+    }
+
+    .macro-tarea-header:hover {
+      background: linear-gradient(135deg, #ececec 0%, #e0e0e0 100%);
+    }
+
+    .macro-tarea-grupo.cierre-proyecto-inactivo .macro-tarea-header:hover {
+      background: linear-gradient(135deg, #f5f5f5 0%, #eeeeee 100%);
+    }
+
+    .macro-tarea-title {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.25rem;
+      flex: 1;
     }
 
-    .justificacion-textarea {
-      width: 100% !important;
-      padding: 1rem !important;
-      border: 2px solid #E0E0E0 !important;
-      border-radius: 6px !important;
-      font-size: 1rem !important;
-      font-family: inherit !important;
-      resize: vertical;
-      min-height: 100px;
+    .macro-tarea-nombre {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #1f2937;
     }
 
-    .justificacion-textarea:focus {
-      outline: none !important;
-      border-color: #CC0000 !important;
-      box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.1) !important;
+    .macro-tarea-grupo.cierre-proyecto .macro-tarea-nombre {
+      color: #2E7D32;
     }
 
-    .justificacion-actions {
+    .macro-tarea-info {
+      font-size: 0.85rem;
+      color: #6b7280;
       display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
+      gap: 1.5rem;
     }
 
-    .estado-badge-pendiente {
-      background: #FFF3E0;
-      color: #F57C00;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: 600;
+    .macro-tarea-collapse-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0;
+      color: #6b7280;
+      transition: transform 0.2s;
+    }
+
+    .macro-tarea-collapse-btn.expanded {
+      transform: rotate(180deg);
+    }
+
+    .macro-tarea-grupo.cierre-proyecto-inactivo .macro-tarea-collapse-btn {
+      cursor: not-allowed;
+    }
+
+    .macro-tarea-content {
+      overflow-x: auto;
+    }
+
+    .micro-tareas-tabla {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 0.9rem;
     }
 
-    .badge-cerrada_vencida {
-  background: #FFEBEE;
-  color: #CC0000;
-}
+    .micro-tareas-tabla thead {
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+    }
 
+    .micro-tareas-tabla th {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .micro-tareas-tabla td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .micro-tareas-tabla tbody tr:hover {
+      background: #fafbfc;
+    }
+
+    .indicador-secuencia {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #374151;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .indicador-secuencia.activa {
+      background: #22c55e;
+      color: white;
+    }
+
+    .indicador-secuencia.cerrada {
+      background: #10b981;
+      color: white;
+    }
+
+    .indicador-secuencia.vencida {
+      background: #ef4444;
+      color: white;
+    }
+
+    .estado-cierre-inactivo {
+      padding: 1rem;
+      background: #F5F5F5;
+      border-radius: 8px;
+      text-align: center;
+      color: #999;
+      border: 1px dashed #CCCCCC;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-section {
+        grid-template-columns: 1fr;
+      }
+
+      .macro-tarea-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .macro-tarea-collapse-btn {
+        align-self: flex-start;
+      }
+    }
   `]
 })
 export class ActividadesComponent implements OnInit {
@@ -572,6 +679,7 @@ export class ActividadesComponent implements OnInit {
 
   actividades: Actividad[] = [];
   actividadesFiltradas: Actividad[] = [];
+  gruposMacroTareas: GrupoMacroTarea[] = [];
 
   vistaActual: 'mis' | 'grupo' | 'total' | 'seguimiento' = 'mis';
   fechaSeguimientoInicio: Date = new Date();
@@ -582,6 +690,8 @@ export class ActividadesComponent implements OnInit {
   proyectosDisponibles: string[] = [];
   proyectosAsignacion: string[] = [];
   proyectosAsignacionFiltrados: string[] = [];
+
+  expandedMacroTareas: { [key: string]: boolean } = {};
 
   formData = {
     proyecto: '',
@@ -776,6 +886,7 @@ export class ActividadesComponent implements OnInit {
             });
             
             console.log('📊 Actividades filtradas por grupo:', this.actividadesFiltradas.length);
+            this.actualizarGruposMacroTareas();
             this.cdr.detectChanges();
           },
           error: (err: any) => {
@@ -783,7 +894,7 @@ export class ActividadesComponent implements OnInit {
             this.actividadesFiltradas = [];
           }
         });
-        break;
+        return;
   
       case 'total':
         let filtradoTotal = this.actividades;
@@ -826,6 +937,115 @@ export class ActividadesComponent implements OnInit {
       default:
         this.actividadesFiltradas = [];
     }
+
+    this.actualizarGruposMacroTareas();
+  }
+
+  actualizarGruposMacroTareas(): void {
+    this.gruposMacroTareas = this.actividadesService.agruparPorMacroTarea(this.actividadesFiltradas);
+    
+    // ✅ NUEVA LÓGICA: Verificar si actividad "Cierre de Proyecto" puede activarse
+    this.gruposMacroTareas.forEach((grupo, index) => {
+      const key = grupo.macroTareaId || `grupo-${index}`;
+      if (!(key in this.expandedMacroTareas)) {
+        this.expandedMacroTareas[key] = true; // Expandido por defecto
+      }
+
+      // Marcar si es cierre de proyecto
+      if (grupo.microTareas.length === 1 && grupo.microTareas[0].macroTareaId === 'cierre-proyecto') {
+        grupo['esGrupoCierre'] = true;
+      }
+    });
+
+    this.cdr.detectChanges();
+  }
+
+  // ✅ NUEVA FUNCIÓN: Verificar si todas las macro tareas de un proyecto están cerradas
+  todasLasMacroTareasCerradas(proyecto: string): boolean {
+    // Obtener todas las actividades del proyecto (no filtradas)
+    const actividadesProyecto = this.actividades.filter(a => a.proyecto === proyecto);
+    
+    // Obtener solo las macro tareas (excluyendo cierre de proyecto)
+    const macroTareas = actividadesProyecto.filter(a => 
+      a.macroTareaId && a.macroTareaId !== 'cierre-proyecto'
+    );
+
+    // Si no hay macro tareas, retornar false
+    if (macroTareas.length === 0) {
+      return false;
+    }
+
+    // Agrupar por macroTareaId para verificar estado de cada macro tarea
+    const macroTareasAgrupadas = new Map<string, Actividad[]>();
+    macroTareas.forEach(act => {
+      if (!macroTareasAgrupadas.has(act.macroTareaId!)) {
+        macroTareasAgrupadas.set(act.macroTareaId!, []);
+      }
+      macroTareasAgrupadas.get(act.macroTareaId!)!.push(act);
+    });
+
+    // Verificar que todas las macro tareas tengan todas sus micro tareas cerradas
+    for (const [macroId, microTareas] of macroTareasAgrupadas.entries()) {
+      const todasCerradas = microTareas.every(m => 
+        m.estado === 'cerrado' || m.estado === 'cerrada_vencida'
+      );
+      
+      if (!todasCerradas) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // ✅ NUEVA FUNCIÓN: Verificar si cierre de proyecto puede cerrarse
+  puedeCerrarCierreProyecto(microTarea: Actividad): boolean {
+    // Obtener el proyecto
+    const proyecto = microTarea.proyecto;
+
+    // Verificar si todas las macro tareas del proyecto están cerradas
+    return this.todasLasMacroTareasCerradas(proyecto);
+  }
+
+  // ✅ NUEVA FUNCIÓN: Obtener estado visual del cierre de proyecto
+  getEstadoCierrePorcentaje(microTarea: Actividad): string {
+    const proyecto = microTarea.proyecto;
+    const todasCerradas = this.todasLasMacroTareasCerradas(proyecto);
+
+    if (microTarea.estado === 'cerrado' || microTarea.estado === 'cerrada_vencida') {
+      return '100%';
+    }
+
+    // Calcular porcentaje de macro tareas cerradas
+    const actividadesProyecto = this.actividades.filter(a => a.proyecto === proyecto);
+    const macroTareas = actividadesProyecto.filter(a => 
+      a.macroTareaId && a.macroTareaId !== 'cierre-proyecto'
+    );
+
+    if (macroTareas.length === 0) {
+      return '0%';
+    }
+
+    const macroTareasAgrupadas = new Map<string, Actividad[]>();
+    macroTareas.forEach(act => {
+      if (!macroTareasAgrupadas.has(act.macroTareaId!)) {
+        macroTareasAgrupadas.set(act.macroTareaId!, []);
+      }
+      macroTareasAgrupadas.get(act.macroTareaId!)!.push(act);
+    });
+
+    let cerradas = 0;
+    for (const [macroId, microTareas] of macroTareasAgrupadas.entries()) {
+      const todasCerradas = microTareas.every(m => 
+        m.estado === 'cerrado' || m.estado === 'cerrada_vencida'
+      );
+      if (todasCerradas) {
+        cerradas++;
+      }
+    }
+
+    const porcentaje = Math.round((cerradas / macroTareasAgrupadas.size) * 100);
+    return `${porcentaje}%`;
   }
 
   aplicarFiltrosSeguimiento(): void {
@@ -902,6 +1122,12 @@ export class ActividadesComponent implements OnInit {
     const actividad = this.actividades.find(a => a._id === actividadId);
     if (!actividad) return;
 
+    // ✅ Si es cierre de proyecto, verificar que todas las macro tareas estén cerradas
+    if (actividad.macroTareaId === 'cierre-proyecto' && !this.puedeCerrarCierreProyecto(actividad)) {
+      this.error = '❌ No se puede cerrar el proyecto hasta que todas las macro tareas estén cerradas.';
+      return;
+    }
+
     const hoy = new Date();
     const hoyString = hoy.toISOString().split('T')[0];
 
@@ -926,6 +1152,9 @@ export class ActividadesComponent implements OnInit {
           if (indexFiltered !== -1) {
             this.actividadesFiltradas[indexFiltered] = actividadActualizada;
           }
+          
+          // Actualizar grupos de macro tareas
+          this.actualizarGruposMacroTareas();
           this.cdr.detectChanges();
         },
         error: (err: any) => {
@@ -981,6 +1210,7 @@ export class ActividadesComponent implements OnInit {
         this.justificacionForm[actividadId] = '';
         this.showJustificacion[actividadId] = false;
         this.loading = false;
+        this.actualizarGruposMacroTareas();
         this.cdr.detectChanges();
       },
       error: (err: any) => {
@@ -1025,6 +1255,7 @@ export class ActividadesComponent implements OnInit {
         this.observacionForm[actividadId] = '';
         this.horasForm[actividadId] = 0;
         this.loading = false;
+        this.actualizarGruposMacroTareas();
         this.cdr.detectChanges();
       },
       error: (err: any) => {
@@ -1065,10 +1296,10 @@ export class ActividadesComponent implements OnInit {
   }
 
   esVencida(actividad: Actividad): boolean {
-  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
-  if (actividad.estado === 'pendiente validacion') return false;
-  if (!actividad.fechaCierre) return false;
-    
+    if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
+    if (actividad.estado === 'pendiente validacion') return false;
+    if (!actividad.fechaCierre) return false;
+      
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
     
@@ -1078,11 +1309,10 @@ export class ActividadesComponent implements OnInit {
     return fechaCierre < hoy;
   }
 
-  
   esProxima(actividad: Actividad): boolean {
-  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
-  if (!actividad.fechaCierre) return false;
-    
+    if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') return false;
+    if (!actividad.fechaCierre) return false;
+      
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
     
@@ -1093,56 +1323,56 @@ export class ActividadesComponent implements OnInit {
     return diasRestantes > 0 && diasRestantes <= 2;
   }
 
-calcularRiesgo(actividad: Actividad): string {
-  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') {
-    return 'success';
+  calcularRiesgo(actividad: Actividad): string {
+    if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') {
+      return 'success';
+    }
+    if (actividad.estado === 'pendiente validacion') {
+      return 'warning';
+    }
+    if (this.esVencida(actividad)) {
+      return 'danger';
+    }
+    if (this.esProxima(actividad)) {
+      return 'warning';
+    }
+    return 'info';
   }
-  if (actividad.estado === 'pendiente validacion') {
-    return 'warning';
-  }
-  if (this.esVencida(actividad)) {
-    return 'danger';
-  }
-  if (this.esProxima(actividad)) {
-    return 'warning';
-  }
-  return 'info';
-}
 
   diasHabilesRestantes(actividad: Actividad): number {
     if (!actividad.fechaCierre) return 0;
     return this.calcularDiasHabiles(new Date(), new Date(actividad.fechaCierre));
   }
 
-getRiesgoTexto(actividad: Actividad): string {
-  if (actividad.estado === 'pendiente validacion') {
-    return '⏳ Pendiente validación';
-  }
-  if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') {
-    return '✅ Cerrado';
-  }
+  getRiesgoTexto(actividad: Actividad): string {
+    if (actividad.estado === 'pendiente validacion') {
+      return '⏳ Pendiente validación';
+    }
+    if (actividad.estado === 'cerrado' || actividad.estado === 'cerrada_vencida') {
+      return '✅ Cerrado';
+    }
 
-  const diasHabiles = this.diasHabilesRestantes(actividad);
-  if (diasHabiles < 0) {
-    return `❌ Vencido hace ${Math.abs(diasHabiles)} días hábiles`;
+    const diasHabiles = this.diasHabilesRestantes(actividad);
+    if (diasHabiles < 0) {
+      return `❌ Vencido hace ${Math.abs(diasHabiles)} días hábiles`;
+    }
+    if (diasHabiles === 0) {
+      return '⚠️ Hoy vence';
+    }
+    if (diasHabiles === 1) {
+      return `⚠️ ${diasHabiles} día hábil restante`;
+    }
+    return `📅 ${diasHabiles} días hábiles restantes`;
   }
-  if (diasHabiles === 0) {
-    return '⚠️ Hoy vence';
-  }
-  if (diasHabiles === 1) {
-    return `⚠️ ${diasHabiles} día hábil restante`;
-  }
-  return `📅 ${diasHabiles} días hábiles restantes`;
-}
 
   conteoEstado(estado: string): number {
-  if (estado === 'cerrado') {
-    return this.actividadesFiltradas.filter(
-      (a) => a.estado === 'cerrado' || a.estado === 'cerrada_vencida'
-    ).length;
+    if (estado === 'cerrado') {
+      return this.actividadesFiltradas.filter(
+        (a) => a.estado === 'cerrado' || a.estado === 'cerrada_vencida'
+      ).length;
+    }
+    return this.actividadesFiltradas.filter((a) => a.estado === estado).length;
   }
-  return this.actividadesFiltradas.filter((a) => a.estado === estado).length;
-}
 
   conteoVencidas(): number {
     return this.actividadesFiltradas.filter(
@@ -1168,6 +1398,48 @@ getRiesgoTexto(actividad: Actividad): string {
   esCoordinador(): boolean {
     const rol = this.usuario?.rol?.toLowerCase();
     return rol === 'coordinador' || rol === 'administrador';
+  }
+
+  // ✅ NUEVA FUNCIÓN: Verificar si una micro tarea puede cerrarse
+  puedeCerrarMicroTarea(microTarea: Actividad, grupo: GrupoMacroTarea): boolean {
+    // ✅ Si es cierre de proyecto, solo puede cerrarse si TODAS las macro tareas están cerradas
+    if (microTarea.macroTareaId === 'cierre-proyecto') {
+      return this.puedeCerrarCierreProyecto(microTarea) && microTarea.estado === 'en progreso';
+    }
+
+    // Solo las micro tareas en estado "en progreso" pueden cerrarse
+    if (microTarea.estado !== 'en progreso') {
+      return false;
+    }
+
+    // Si es la primera micro tarea del grupo, siempre puede cerrarse
+    if (microTarea.indiceSecuencia === 0) {
+      return true;
+    }
+
+    // Si no es la primera, solo puede cerrarse si la anterior está cerrada
+    const indicePrevio = (microTarea.indiceSecuencia || 1) - 1;
+    const microTareaPrevía = grupo.microTareas.find(m => m.indiceSecuencia === indicePrevio);
+
+    if (!microTareaPrevía) {
+      return false;
+    }
+
+    return microTareaPrevía.estado === 'cerrado' || microTareaPrevía.estado === 'cerrada_vencida';
+  }
+
+  // ✅ NUEVA FUNCIÓN: Obtener estado del indicador de secuencia
+  getEstadoIndicador(microTarea: Actividad, grupo: GrupoMacroTarea): string {
+    if (microTarea.estado === 'cerrado' || microTarea.estado === 'cerrada_vencida') {
+      return 'cerrada';
+    }
+    if (this.puedeCerrarMicroTarea(microTarea, grupo)) {
+      return 'activa';
+    }
+    if (this.esVencida(microTarea)) {
+      return 'vencida';
+    }
+    return 'inactiva';
   }
 
   validarFormulario(): boolean {
@@ -1205,6 +1477,11 @@ getRiesgoTexto(actividad: Actividad): string {
 
   toggleJustificacion(actividadId: string): void {
     this.showJustificacion[actividadId] = !this.showJustificacion[actividadId];
+    this.cdr.detectChanges();
+  }
+
+  toggleMacroTarea(key: string): void {
+    this.expandedMacroTareas[key] = !this.expandedMacroTareas[key];
     this.cdr.detectChanges();
   }
 }

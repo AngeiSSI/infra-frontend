@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import html2canvas from 'html2canvas';
@@ -23,7 +23,7 @@ type TabAsignacionProyectos = 'nueva' | 'borradores' | 'historico';
 @Component({
   selector: 'app-asignacion-proyectos',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './asignacion-proyectos.html',
   styles: [`
     .page-wrapper {
@@ -1333,7 +1333,7 @@ export class AsignacionProyectosComponent implements OnInit {
     });
   }
 
-   // ✅ NUEVO MÉTODO: CREAR ACTIVIDADES AUTOMÁTICAMENTE
+  // ✅ NUEVO MÉTODO: CREAR ACTIVIDADES AUTOMÁTICAMENTE
   crearActividadesDesdeAsignacion(): void {
     console.log('=== INICIANDO CREACIÓN DE ACTIVIDADES ===');
     console.log('Macro tareas en proyecto:', this.actividadesProyecto.length);
