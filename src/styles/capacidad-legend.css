@@ -1,0 +1,283 @@
+/* Leyenda de Capacidad */
+
+.capacidad-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: var(--color-gray-50);
+  border-radius: 8px;
+  border: 1px solid var(--color-gray-200);
+}
+
+.legend-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.legend-indicator {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+}
+
+.legend-disponible {
+  background-color: #06A77D;
+}
+
+.legend-comprometida {
+  background-color: #F77F00;
+}
+
+.legend-sobreasignado {
+  background-color: #E63946;
+}
+
+.legend-content {
+  flex: 1;
+}
+
+.legend-content h6 {
+  font-weight: 700;
+  color: var(--color-gray-800);
+  margin-bottom: 0.25rem;
+}
+
+.legend-content p {
+  font-size: 0.85rem;
+  color: var(--color-gray-600);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Barra de Capacidad */
+.capacidad-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.capacidad-bar-container {
+  flex: 1;
+  height: 20px;
+  background-color: var(--color-gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.capacidad-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: width 0.3s ease;
+}
+
+.capacidad-bar-fill.disponible {
+  background-color: #06A77D;
+}
+
+.capacidad-bar-fill.comprometida {
+  background: linear-gradient(90deg, #F77F00 0%, #E8941F 100%);
+}
+
+.capacidad-bar-fill.sobreasignado {
+  background: linear-gradient(90deg, #E63946 0%, #D91F3E 100%);
+}
+
+.capacidad-bar-label {
+  min-width: 60px;
+  text-align: right;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+/* Tabla de Capacidad */
+.capacidad-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.capacidad-table thead {
+  background-color: var(--color-primary-lighter);
+}
+
+.capacidad-table thead th {
+  padding: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: left;
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.capacidad-table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.capacidad-table tbody tr:hover {
+  background-color: var(--color-gray-50);
+}
+
+.capacidad-estado-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.capacidad-estado-badge.disponible {
+  background-color: #e7f5f0;
+  color: #055c67;
+}
+
+.capacidad-estado-badge.comprometida {
+  background-color: #fff8e7;
+  color: #b85c00;
+}
+
+.capacidad-estado-badge.sobreasignado {
+  background-color: #ffe7eb;
+  color: #b81c2f;
+}
+
+/* Indicador de Semáforo */
+.capacidad-semaforo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.capacidad-semaforo-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.capacidad-semaforo-dot.disponible {
+  background-color: #06A77D;
+  box-shadow: 0 0 8px rgba(6, 168, 125, 0.5);
+}
+
+.capacidad-semaforo-dot.comprometida {
+  background-color: #F77F00;
+  box-shadow: 0 0 8px rgba(247, 127, 0, 0.5);
+}
+
+.capacidad-semaforo-dot.sobreasignado {
+  background-color: #E63946;
+  box-shadow: 0 0 8px rgba(230, 57, 70, 0.5);
+}
+
+/* Alert de Capacidad */
+.alert-capacidad {
+  padding: 1rem;
+  border-radius: 6px;
+  border-left: 4px solid;
+  margin-bottom: 1rem;
+}
+
+.alert-capacidad.disponible {
+  background-color: #e7f5f0;
+  border-left-color: #06A77D;
+  color: #055c67;
+}
+
+.alert-capacidad.comprometida {
+  background-color: #fff8e7;
+  border-left-color: #F77F00;
+  color: #b85c00;
+}
+
+.alert-capacidad.sobreasignado {
+  background-color: #ffe7eb;
+  border-left-color: #E63946;
+  color: #b81c2f;
+}
+
+.alert-capacidad strong {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Gráfico de Capacidad */
+.capacidad-grafico {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: var(--color-gray-50);
+  border-radius: 6px;
+  border: 1px solid var(--color-gray-200);
+}
+
+.capacidad-grafico-titulo {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.capacidad-grafico-barras {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.capacidad-grafico-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.capacidad-grafico-label {
+  min-width: 120px;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  font-size: 0.9rem;
+}
+
+.capacidad-grafico-bar {
+  flex: 1;
+  height: 24px;
+  background-color: white;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.capacidad-grafico-bar-fill {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: width 0.3s ease;
+}
+
+.capacidad-grafico-valor {
+  min-width: 50px;
+  text-align: right;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}

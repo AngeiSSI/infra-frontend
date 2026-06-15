@@ -1,0 +1,123 @@
+<div class="main-sidebar">
+  <div class="sidebar-header">
+    <h2>📊 Seguimiento Infraestructura</h2>
+  </div>
+
+  <nav class="menu">
+    <div class="sidebar-main-item" 
+         [class.active]="activeMenuItem === 'mis-actividades' || submenuOpen"
+         [class.expanded]="submenuOpen"
+         (click)="toggleSubmenu()">
+      <span class="icon">📝</span>
+      <span>Actividades</span>
+      <span class="chevron">›</span>
+    </div>
+
+    <div class="sidebar-submenu" [class.open]="submenuOpen">
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'mis-actividades'"
+           (click)="setActiveMenu('mis-actividades')">
+        📝 Mis Actividades
+      </div>
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'grupo'"
+           (click)="setActiveMenu('grupo')">
+        👥 Actividades por Grupo
+      </div>
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'total'"
+           *ngIf="puedeVerTotal()"
+           (click)="setActiveMenu('total')">
+        📊 Total de Actividades
+      </div>
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'seguimiento'"
+           *ngIf="puedeVerSeguimiento()"
+           (click)="setActiveMenu('seguimiento')">
+        📈 Seguimiento Semanal
+      </div>
+      <div class="sidebar-subitem" 
+           [class.active]="activeMenuItem === 'aprobacion'"
+           *ngIf="puedeVerAprobacionVencimientos()"
+           (click)="setActiveMenu('aprobacion')">
+        ⚠️ Aprobación Vencimientos
+      </div>
+    </div>
+
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'reportes'"
+         *ngIf="puedeVerReportes()"
+         (click)="navigateTo('reportes')">
+      <span class="icon">📊</span>
+      <span>Reportes</span>
+    </div>
+
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'catalogo'"
+         *ngIf="puedeVerCatalogo()"
+         (click)="navigateTo('catalogo')">
+      <span class="icon">📖</span>
+      <span>Catálogo</span>
+    </div>
+
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'festivos'"
+         *ngIf="puedeVerFestivos()"
+         (click)="navigateTo('festivos')">
+      <span class="icon">📅</span>
+      <span>Gestión Festivos</span>
+    </div>
+
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'asignacion-proyectos'"
+         *ngIf="puedeVerAsignacionProyectos()"
+         (click)="navigateTo('asignacion-proyectos')">
+      <span class="icon">📁</span>
+      <span>Asignación de Proyectos</span>
+    </div>
+
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'macro-tareas'"
+         *ngIf="puedeVerMacroTareas()"
+         (click)="navigateTo('macro-tareas')">
+      <span class="icon">🎯</span>
+      <span>Macro Tareas</span>
+    </div>
+
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'asignacion'"
+         *ngIf="puedeVerAsignacion()"
+         (click)="navigateTo('asignacion')">
+      <span class="icon">👥</span>
+      <span>Asignación</span>
+    </div>
+
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'listas-maestras'"
+         *ngIf="puedeVerListasMaestras()"
+         (click)="navigateTo('listas-maestras')">
+      <span class="icon">🗂️</span>
+      <span>Listas maestras</span>
+    </div>
+
+    <div class="sidebar-main-item"
+         [class.active]="activeMenuItem === 'gestion-usuarios'"
+         *ngIf="puedeVerGestionUsuarios()"
+         (click)="navigateTo('gestion-usuarios')">
+      <span class="icon">👨‍💼</span>
+      <span>Gestión Usuarios</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-item">
+      👤 <strong>{{ usuario?.nombre }}</strong>
+    </div>
+    <div class="sidebar-footer-item">
+      🔑 {{ usuario?.rol | titlecase }}
+    </div>
+    <button class="logout-btn" (click)="logout()">
+      🚪 Cerrar Sesión
+    </button>
+  </div>
+</div>
