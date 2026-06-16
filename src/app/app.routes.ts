@@ -14,81 +14,23 @@ import { AsignacionProyectosComponent } from './pages/asignacion-proyectos/asign
 import { MacroTareasComponent } from './pages/macro-tareas/macro-tareas.component';
 
 export const appRoutes: Routes = [
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: 'cambiar-password',
-    component: CambiarPasswordComponent
-  },
-  {
-    path: 'recuperar-password',
-    component: RecuperarPasswordComponent
-  },
-  {
-    path: 'actividades',
-    component: ActividadesComponent,
-    data: { vista: 'mis' }
-  },
-  {
-    path: 'actividades/grupo',
-    component: ActividadesComponent,
-    data: { vista: 'grupo' }
-  },
-  {
-    path: 'actividades/total',
-    component: ActividadesComponent,
-    data: { vista: 'total' }
-  },
-  {
-    path: 'actividades/seguimiento',
-    component: ActividadesComponent,
-    data: { vista: 'seguimiento' }
-  },
-  {
-    path: 'actividades/aprobacion-vencimientos',
-    component: AprobacionVencimientosComponent
-  },
-  {
-    path: 'asignacion-proyectos',
-    component: AsignacionProyectosComponent
-  },
-  {
-    path: 'macro-tareas',
-    component: MacroTareasComponent
-  },
-  {
-    path: 'reportes',
-    component: ReportesComponent
-  },
-  {
-    path: 'catalogo',
-    component: CatalogoComponent
-  },
-  {
-    path: 'festivos',
-    component: FestivosComponent
-  },
-  {
-    path: 'asignacion',
-    component: AsignacionComponent
-  },
-  {
-    path: 'listas-maestras',
-    component: ListasMaestrasComponent
-  },
-  {
-    path: 'gestion-usuarios',
-    component: GestionUsuariosComponent
-  },
-  {
-    path: '',
-    redirectTo: '/actividades',
-    pathMatch: 'full'
-  },
-  {
-    path: '**',
-    redirectTo: '/login'
-  }
+  { path: 'login', component: LoginComponent },
+  { path: 'cambiar-password', component: CambiarPasswordComponent },
+  { path: 'recuperar-password', component: RecuperarPasswordComponent },
+  { path: 'inicio', redirectTo: '/dashboard-ejecutivo', pathMatch: 'full' },
+  { path: 'actividades', component: ActividadesComponent, data: { vista: 'mis' } },
+  { path: 'actividades/grupo', component: ActividadesComponent, data: { vista: 'grupo' } },
+  { path: 'actividades/total', component: ActividadesComponent, data: { vista: 'total' } },
+  { path: 'actividades/seguimiento', component: ActividadesComponent, data: { vista: 'seguimiento' } },
+  { path: 'actividades/aprobacion-vencimientos', component: AprobacionVencimientosComponent },
+  { path: 'asignacion-proyectos', component: AsignacionProyectosComponent },
+  { path: 'macro-tareas', component: MacroTareasComponent },
+  { path: 'reportes', component: ReportesComponent },
+  { path: 'catalogo', component: CatalogoComponent },
+  { path: 'festivos', component: FestivosComponent },
+  { path: 'asignacion', component: AsignacionComponent },
+  { path: 'listas-maestras', component: ListasMaestrasComponent },
+  { path: 'gestion-usuarios', component: GestionUsuariosComponent },
+  { path: '', redirectTo: '/dashboard-ejecutivo', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login' }
 ];

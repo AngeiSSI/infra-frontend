@@ -1,0 +1,15 @@
+:root {
+  --color-rojo-principal: #E30613;
+  --color-rojo-hover: #C90410;
+  --color-rojo-light: #F5EAEA;
+  --color-rojo-light2: #FFE5E7;
+  --color-rojo-dark: #8B0409;
+  --color-blanco: #FFFFFF;
+  --color-gris-claro: #F4F6F9;
+  --color-gris-medio: #E8EEF5;
+  --color-gris-oscuro: #333333;
+  --color-exito: #06A77D;
+  --color-advertencia: #F77F00;
+  --color-error: #CC0000;
+  --color-info: #457B9D;
+}

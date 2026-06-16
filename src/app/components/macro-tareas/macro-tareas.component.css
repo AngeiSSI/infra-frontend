@@ -1,0 +1,189 @@
+.macro-tareas-container {
+  padding: 20px;
+}
+
+.macro-tareas-container h1 {
+  color: #E30613;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+.macro-tareas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn-nueva-macro {
+  background: #E30613;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-nueva-macro:hover {
+  background: #C90410;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.3);
+}
+
+.macro-tareas-lista {
+  display: grid;
+  gap: 15px;
+}
+
+.macro-tarea-card {
+  background: white;
+  border-radius: 8px;
+  border-top: 4px solid #E30613;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.macro-tarea-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(227, 6, 19, 0.15);
+}
+
+.macro-tarea-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.macro-tarea-titulo {
+  color: #E30613;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.macro-tarea-estado {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.estado-activa {
+  background-color: #D4EDDA;
+  color: #065141;
+}
+
+.estado-inactiva {
+  background-color: #F8D7DA;
+  color: #721C24;
+}
+
+.macro-tarea-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: #F5EAEA;
+  border-radius: 5px;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #8B0409;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.info-item p {
+  color: #333;
+  margin: 5px 0 0 0;
+  font-size: 14px;
+}
+
+.micro-tareas {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #E8EEF5;
+}
+
+.micro-tareas h4 {
+  color: #E30613;
+  margin: 0 0 10px 0;
+  font-size: 14px;
+}
+
+.micro-tarea-item {
+  background: #FFE5E7;
+  padding: 10px;
+  border-left: 3px solid #E30613;
+  margin-bottom: 8px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.macro-tarea-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-accion {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.btn-editar {
+  background: #F77F00;
+  color: white;
+}
+
+.btn-editar:hover {
+  background: #E67000;
+}
+
+.btn-eliminar {
+  background: #CC0000;
+  color: white;
+}
+
+.btn-eliminar:hover {
+  background: #990000;
+}
+
+.btn-desactivar {
+  background: #6C757D;
+  color: white;
+}
+
+.btn-desactivar:hover {
+  background: #5A6268;
+}
+
+@media (max-width: 768px) {
+  .macro-tareas-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .macro-tarea-info {
+    grid-template-columns: 1fr;
+  }
+
+  .macro-tarea-acciones {
+    flex-wrap: wrap;
+  }
+}

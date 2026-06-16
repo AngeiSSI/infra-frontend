@@ -1,0 +1,190 @@
+.asignacion-sustitucion {
+  padding: 20px;
+}
+
+.asignacion-sustitucion h1 {
+  color: #E30613;
+  margin-bottom: 20px;
+}
+
+.sustitucion-form {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border-top: 4px solid #E30613;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.form-grupo {
+  margin-bottom: 20px;
+}
+
+.form-grupo label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-grupo input,
+.form-grupo select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #E8EEF5;
+  border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-grupo input:focus,
+.form-grupo select:focus {
+  border-color: #E30613;
+  box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+  outline: none;
+}
+
+.tipo-sustitucion {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.radio-grupo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.radio-grupo input[type="radio"] {
+  width: auto;
+  margin: 0;
+}
+
+.radio-grupo label {
+  margin-bottom: 0;
+  font-weight: normal;
+}
+
+.razon-ausentismo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.checkbox-grupo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-grupo input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.checkbox-grupo label {
+  margin-bottom: 0;
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.btn-guardar,
+.btn-cancelar {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-right: 10px;
+}
+
+.btn-guardar {
+  background: #E30613;
+  color: white;
+}
+
+.btn-guardar:hover {
+  background: #C90410;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.3);
+}
+
+.btn-cancelar {
+  background: #6C757D;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background: #5A6268;
+}
+
+.lista-sustituciones {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tabla-sustituciones {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-sustituciones thead {
+  background: linear-gradient(135deg, #E30613 0%, #8B0409 100%);
+  color: white;
+}
+
+.tabla-sustituciones th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.tabla-sustituciones td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #E8EEF5;
+  font-size: 13px;
+}
+
+.tabla-sustituciones tbody tr:hover {
+  background-color: #FFE5E7;
+}
+
+.badge-temporal {
+  background: #FFF3CD;
+  color: #664D03;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-definitivo {
+  background: #F8D7DA;
+  color: #721C24;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .tipo-sustitucion,
+  .razon-ausentismo {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-guardar,
+  .btn-cancelar {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}

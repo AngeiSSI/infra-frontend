@@ -1,0 +1,117 @@
+.dashboard-ttm {
+  padding: 20px;
+}
+
+.dashboard-ttm h1 {
+  color: #E30613;
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.ttm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.ttm-card {
+  background: linear-gradient(135deg, #F5EAEA 0%, #FFE5E7 100%);
+  border-left: 4px solid #E30613;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(227, 6, 19, 0.1);
+}
+
+.ttm-card h3 {
+  color: #8B0409;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.ttm-card .valor {
+  color: #E30613;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.ttm-card .unidad {
+  color: #666;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.filtros {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filtros h3 {
+  color: #E30613;
+  margin-top: 0;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.filtro-grupo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.filtro-grupo label {
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.filtro-grupo input,
+.filtro-grupo select {
+  border: 1px solid #E8EEF5;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.filtro-grupo input:focus,
+.filtro-grupo select:focus {
+  border-color: #E30613;
+  box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+  outline: none;
+}
+
+.btn-filtrar {
+  background: #E30613;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-filtrar:hover {
+  background: #C90410;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.3);
+}
+
+@media (max-width: 768px) {
+  .ttm-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filtro-grupo {
+    grid-template-columns: 1fr;
+  }
+}
