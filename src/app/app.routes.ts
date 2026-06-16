@@ -1,54 +1,94 @@
 import { Routes } from '@angular/router';
-
-// Componentes existentes
-
-
-// ✅ NUEVOS Componentes
-
+import { LoginComponent } from './pages/login/login';
+import { CambiarPasswordComponent } from './pages/cambiar-password/cambiar-password.component';
+import { ActividadesComponent } from './pages/actividades/actividades';
+import { AprobacionVencimientosComponent } from './pages/actividades/aprobacion-vencimientos/aprobacion-vencimientos.component';
+import { GestionUsuariosComponent } from './pages/gestion-usuarios/gestion-usuarios.component';
 import { CatalogoComponent } from './pages/catalogo/catalogo.component';
-import { MacroTareasComponent } from './pages/macro-tareas/macro-tareas.component';
+import { RecuperarPasswordComponent } from './pages/recuperar-password/recuperar-password.component';
+import { AsignacionComponent } from './pages/asignacion/asignacion';
 import { ReportesComponent } from './pages/reportes/reportes.component';
+import { FestivosComponent } from './pages/festivos/festivos.component';
+import { ListasMaestrasComponent } from './pages/listas-maestras/listas-maestras.component';
+import { AsignacionProyectosComponent } from './pages/asignacion-proyectos/asignacion-proyectos.component';
+import { MacroTareasComponent } from './pages/macro-tareas/macro-tareas.component';
 
-// Guards
-import { AuthGuard } from './guards/auth.guard';
-import { RoleGuard } from './guards/role.guard';
-
-export const routes: Routes = [
-  { path: '', redirectTo: 'inicio', pathMatch: 'full' },
-
-    {
-    path: 'catalogo',
-    canActivate: [AuthGuard],
-    children: [
-      {
-        path: '',
-        component: CatalogoComponent,
-        data: { title: 'Catálogo' }
-      },
-     
-    ]
+export const appRoutes: Routes = [
+  {
+    path: 'login',
+    component: LoginComponent
   },
-
+  {
+    path: 'cambiar-password',
+    component: CambiarPasswordComponent
+  },
+  {
+    path: 'recuperar-password',
+    component: RecuperarPasswordComponent
+  },
+  {
+    path: 'actividades',
+    component: ActividadesComponent,
+    data: { vista: 'mis' }
+  },
+  {
+    path: 'actividades/grupo',
+    component: ActividadesComponent,
+    data: { vista: 'grupo' }
+  },
+  {
+    path: 'actividades/total',
+    component: ActividadesComponent,
+    data: { vista: 'total' }
+  },
+  {
+    path: 'actividades/seguimiento',
+    component: ActividadesComponent,
+    data: { vista: 'seguimiento' }
+  },
+  {
+    path: 'actividades/aprobacion-vencimientos',
+    component: AprobacionVencimientosComponent
+  },
+  {
+    path: 'asignacion-proyectos',
+    component: AsignacionProyectosComponent
+  },
   {
     path: 'macro-tareas',
-    canActivate: [AuthGuard],
-    children: [
-      {
-        path: '',
-        component: MacroTareasComponent,
-        data: { title: 'Macro Tareas' }
-      },
-      
-    ]
+    component: MacroTareasComponent
   },
-
   {
     path: 'reportes',
-    component: ReportesComponent,
-    canActivate: [AuthGuard],
-    data: { title: 'Reportes' }
+    component: ReportesComponent
   },
-
-   // Ruta comodín
-  { path: '**', redirectTo: 'inicio' }
+  {
+    path: 'catalogo',
+    component: CatalogoComponent
+  },
+  {
+    path: 'festivos',
+    component: FestivosComponent
+  },
+  {
+    path: 'asignacion',
+    component: AsignacionComponent
+  },
+  {
+    path: 'listas-maestras',
+    component: ListasMaestrasComponent
+  },
+  {
+    path: 'gestion-usuarios',
+    component: GestionUsuariosComponent
+  },
+  {
+    path: '',
+    redirectTo: '/actividades',
+    pathMatch: 'full'
+  },
+  {
+    path: '**',
+    redirectTo: '/login'
+  }
 ];
