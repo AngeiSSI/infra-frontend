@@ -1,9 +1,31 @@
-<div style="display: flex; min-height: 100vh; width: 100%;">
-  <!-- Sidebar solo si está autenticado -->
-  <app-sidebar *ngIf="isAuthenticated && !isLoginPage"></app-sidebar>
-  
-  <!-- Contenido principal -->
-  <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; width: 100%;">
-    <router-outlet></router-outlet>
+<div class="app-container">
+  <!-- Topbar -->
+  <div class="topbar" *ngIf="isAuthenticated && !isLoginPage">
+    <div class="topbar-left">
+      <div class="topbar-logo">🏢 INFRA</div>
+    </div>
+    <div class="topbar-center">
+      <h1>Gestión de Infraestructuras</h1>
+    </div>
+    <div class="topbar-right" *ngIf="usuario">
+      <div class="user-info">
+        <span>👤 {{ usuario.nombre }}</span>
+        <button (click)="authService.logout()">Salir</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-wrapper">
+    <!-- Sidebar -->
+    <app-sidebar *ngIf="isAuthenticated && !isLoginPage"></app-sidebar>
+
+    <!-- Contenido -->
+    <div class="main-content" [class.login-page]="isLoginPage">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </div>
+
+<footer *ngIf="isAuthenticated && !isLoginPage">
+  <p>&copy; 2026 Gestión de Infraestructuras - Todos los derechos reservados</p>
+</footer>

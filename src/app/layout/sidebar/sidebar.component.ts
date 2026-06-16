@@ -1,174 +1,91 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+
+interface MenuItem {
+  path?: string;
+  label: string;
+  icono?: string;
+  submenu?: MenuItem[];
+}
+
+interface MenuStructure {
+  [key: string]: MenuItem[];
+}
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.html',
-  styleUrls: ['./sidebar.css'],
-  host: {
-    style: 'display: block; flex-shrink: 0;'
-  }
+  styleUrls: ['./sidebar.css']
 })
 export class SidebarComponent implements OnInit {
-  usuario: any = null;
-  activeMenuItem: string = 'mis-actividades';
-  submenuOpen: boolean = false;
+  usuario: any;
+  menuItems: MenuItem[] = [];
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.usuario = this.authService.getUsuario();
-    this.actualizarMenuActivo();
-
-    this.router.events.subscribe(() => {
-      this.actualizarMenuActivo();
-    });
+    this.cargarMenu();
   }
 
-  actualizarMenuActivo(): void {
-    const url = this.router.url;
+  cargarMenu() {
+    const rol = this.usuario?.rol?.toLowerCase() || '';
 
-    if (url.includes('actividades/aprobacion-vencimientos')) {
-      this.activeMenuItem = 'aprobacion';
-      this.submenuOpen = true;
-    } else if (url.includes('actividades/seguimiento')) {
-      this.activeMenuItem = 'seguimiento';
-      this.submenuOpen = true;
-    } else if (url.includes('actividades/total')) {
-      this.activeMenuItem = 'total';
-      this.submenuOpen = true;
-    } else if (url.includes('actividades/grupo')) {
-      this.activeMenuItem = 'grupo';
-      this.submenuOpen = true;
-    } else if (url.includes('actividades') && !url.includes('actividades/')) {
-      this.activeMenuItem = 'mis-actividades';
-      this.submenuOpen = true;
-    } else if (url.includes('asignacion-proyectos')) {
-      this.activeMenuItem = 'asignacion-proyectos';
-      this.submenuOpen = false;
-    } else if (url.includes('macro-tareas')) {
-      this.activeMenuItem = 'macro-tareas';
-      this.submenuOpen = false;
-    } else if (url.includes('reportes')) {
-      this.activeMenuItem = 'reportes';
-      this.submenuOpen = false;
-    } else if (url.includes('catalogo')) {
-      this.activeMenuItem = 'catalogo';
-      this.submenuOpen = false;
-    } else if (url.includes('festivos')) {
-      this.activeMenuItem = 'festivos';
-      this.submenuOpen = false;
-    } else if (url.includes('asignacion')) {
-      this.activeMenuItem = 'asignacion';
-      this.submenuOpen = false;
-    } else if (url.includes('listas-maestras')) {
-      this.activeMenuItem = 'listas-maestras';
-      this.submenuOpen = false;
-    } else if (url.includes('gestion-usuarios')) {
-      this.activeMenuItem = 'gestion-usuarios';
-      this.submenuOpen = false;
-    }
+    const MENUS: MenuStructure = {
+      super_admin: [
+        { path: '/inicio', label: 'Inicio', icono: '🏠' },
+        { path: '/dashboard-ejecutivo', label: 'Dashboard Ejecutivo', icono: '📊' },
+        { path: '/dashboard-ttm', label: 'Dashboard TTM', icono: '⏱' },
+        { label: 'Actividades', icono: '📋', submenu: [
+          { path: '/actividades', label: 'Mis Actividades', icono: '✓' },
+          { path: '/actividades/grupo', label: 'De Mi Grupo', icono: '✓' },
+          { path: '/actividades/total', label: 'Total', icono: '✓' },
+          { path: '/actividades/seguimiento', label: 'Seguimiento', icono: '✓' }
+        ]},
+        { path: '/asignacion-proyectos', label: 'Asignación de Proyectos', icono: '📁' },
+        { path: '/macro-tareas', label: 'Macro Tareas', icono: '🎯' },
+        { path: '/catalogo', label: 'Catálogo', icono: '📖' },
+        { path: '/listas-maestras', label: 'Listas Maestras', icono: '🗂' },
+        { path: '/festivos', label: 'Festivos', icono: '📅' },
+        { path: '/gestion-usuarios', label: 'Usuarios', icono: '👥' },
+        { path: '/auditoria', label: 'Auditoría', icono: '📝' },
+        { path: '/reportes', label: 'Reportes', icono: '📈' }
+      ],
+      administrador: [
+        { path: '/inicio', label: 'Inicio', icono: '🏠' },
+        { path: '/dashboard-ejecutivo', label: 'Dashboard Ejecutivo', icono: '📊' },
+        { path: '/actividades', label: 'Actividades', icono: '📋' },
+        { path: '/asignacion-proyectos', label: 'Asignación', icono: '📁' },
+        { path: '/macro-tareas', label: 'Macro Tareas', icono: '🎯' },
+        { path: '/catalogo', label: 'Catálogo', icono: '📖' },
+        { path: '/reportes', label: 'Reportes', icono: '📈' },
+        { path: '/auditoria', label: 'Auditoría', icono: '📝' }
+      ],
+      coordinador: [
+        { path: '/inicio', label: 'Inicio', icono: '🏠' },
+        { path: '/dashboard-ejecutivo', label: 'Dashboard Ejecutivo', icono: '📊' },
+        { path: '/actividades', label: 'Actividades', icono: '📋' },
+        { path: '/asignacion-proyectos', label: 'Asignación', icono: '📁' },
+        { path: '/macro-tareas', label: 'Macro Tareas', icono: '🎯' },
+        { path: '/reportes', label: 'Reportes', icono: '📈' }
+      ],
+      lider: [
+        { path: '/inicio', label: 'Inicio', icono: '🏠' },
+        { path: '/actividades', label: 'Mis Actividades', icono: '📋' },
+        { path: '/macro-tareas', label: 'Macro Tareas', icono: '🎯' },
+        { path: '/reportes', label: 'Reportes', icono: '📈' }
+      ]
+    };
+
+    const menuDefault = MENUS[rol] || MENUS['lider'];
+    this.menuItems = menuDefault;
   }
 
-  toggleSubmenu(): void {
-    this.submenuOpen = !this.submenuOpen;
-  }
-
-  navigateTo(ruta: string): void {
-    this.activeMenuItem = ruta;
-    this.submenuOpen = false;
-    this.router.navigate([`/${ruta}`]);
-  }
-
-  setActiveMenu(item: string): void {
-    this.activeMenuItem = item;
-
-    if (item === 'mis-actividades') {
-      this.router.navigate(['/actividades']);
-    } else if (item === 'grupo') {
-      this.router.navigate(['/actividades/grupo']);
-    } else if (item === 'total') {
-      this.router.navigate(['/actividades/total']);
-    } else if (item === 'seguimiento') {
-      this.router.navigate(['/actividades/seguimiento']);
-    } else if (item === 'aprobacion') {
-      this.router.navigate(['/actividades/aprobacion-vencimientos']);
-    }
-  }
-
-  puedeVerTotal(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerSeguimiento(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerAprobacionVencimientos(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerGestionUsuarios(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerReportes(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerCatalogo(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerFestivos(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerAsignacion(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerAsignacionProyectos(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerMacroTareas(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'senior' || rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  puedeVerListasMaestras(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'coordinador' || rol === 'administrador' || rol === 'super_admin';
-  }
-
-  esAdministrador(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'administrador' || rol === 'super_admin';
-  }
-
-  esSuperAdmin(): boolean {
-    const rol = this.usuario?.rol?.toLowerCase();
-    return rol === 'super_admin';
-  }
-
-  logout(): void {
+  logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
   }

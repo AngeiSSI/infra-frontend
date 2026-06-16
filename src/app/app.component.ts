@@ -9,36 +9,40 @@ import { filter, takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, RouterOutlet],  /* ← AGREGÁ CommonModule */
+  imports: [CommonModule, SidebarComponent, RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.css']
+  styleUrls: ['./app.component.css']
 })
-
 export class AppComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  isAuthenticated = true;
+  isAuthenticated = false;
   isLoginPage = false;
   usuario: any = null;
+  authService: AuthService; // ← AGREGA ESTA LÍNEA COMO PROPIEDAD PÚBLICA
 
   constructor(
-    private authService: AuthService,
+    authService: AuthService,
     private router: Router
-  ) {}
+  ) {
+    this.authService = authService; // ← ASIGNA AQUÍ
+  }
 
   ngOnInit(): void {
-    // Verificar autenticación inicial
+    console.log('🔄 AppComponent iniciando...');
+    
     this.usuario = this.authService.getUsuario();
     this.isAuthenticated = !!this.usuario;
     this.checkIfLoginPage();
 
-    // Escuchar cambios de ruta
+    console.log('👤 Usuario:', this.usuario);
+    console.log('🔐 Autenticado:', this.isAuthenticated);
+
     this.router.events
       .pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         takeUntil(this.destroy$)
       )
       .subscribe(() => {
-        // Actualizar estado de autenticación
         this.usuario = this.authService.getUsuario();
         this.isAuthenticated = !!this.usuario;
         this.checkIfLoginPage();
@@ -46,9 +50,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private checkIfLoginPage(): void {
-    // No mostrar sidebar en login, cambiar-password, recuperar-password
     const loginPages = ['/login', '/cambiar-password', '/recuperar-password'];
     this.isLoginPage = loginPages.some(page => this.router.url.includes(page));
+    console.log('📄 Es página de login:', this.isLoginPage);
   }
 
   ngOnDestroy(): void {

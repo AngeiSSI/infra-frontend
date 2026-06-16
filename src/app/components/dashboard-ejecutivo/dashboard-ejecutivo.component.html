@@ -1,9 +1,15 @@
 <div class="dashboard-ejecutivo">
   <h1>📊 Dashboard Ejecutivo</h1>
 
-  <div *ngIf="cargando" class="spinner">Cargando...</div>
+  <div *ngIf="cargando" class="spinner">
+    <p>Cargando dashboard...</p>
+  </div>
 
-  <div *ngIf="!cargando" class="kpis-grid">
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!cargando && !error" class="kpis-grid">
     <div class="kpi-card">
       <h3>Actividades Abiertas</h3>
       <p class="valor">{{ dashboard.actividadesAbiertas || 0 }}</p>
@@ -15,20 +21,17 @@
     </div>
 
     <div class="kpi-card">
-      <h3>Cumplimiento Promedio</h3>
-      <p class="valor exito">{{ (dashboard.cumplimientoPorLider | json | slice:0:5)}}%</p>
+      <h3>Total de Proyectos</h3>
+      <p class="valor">{{ dashboard.cumplimientoPorLider?.length || 0 }}</p>
+    </div>
+
+    <div class="kpi-card">
+      <h3>Productividad</h3>
+      <p class="valor exito">{{ dashboard.productividadMensual?.length || 0 }}%</p>
     </div>
   </div>
 
-  <div class="graficos">
-    <div class="grafico-card">
-      <h3>Productividad Mensual</h3>
-      <div id="chart-productividad"></div>
-    </div>
-
-    <div class="grafico-card">
-      <h3>Tendencia Trimestral</h3>
-      <div id="chart-tendencia"></div>
-    </div>
+  <div class="mensaje-carga" *ngIf="!cargando && !error && !dashboard.actividadesAbiertas">
+    <p>📊 Dashboard sin datos. Comienza a crear actividades.</p>
   </div>
 </div>

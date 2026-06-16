@@ -1,0 +1,41 @@
+<div class="dashboard-ttm">
+  <h1>⏱ Dashboard TTM</h1>
+
+  <div *ngIf="cargando" class="spinner">
+    <p>Cargando métricas TTM...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!cargando && !error" class="ttm-grid">
+    <div class="ttm-card">
+      <h3>Lead Time Promedio</h3>
+      <p class="valor">{{ ttm.leadTimePromedio || 0 }}</p>
+      <p class="unidad">días</p>
+    </div>
+
+    <div class="ttm-card">
+      <h3>Cycle Time Promedio</h3>
+      <p class="valor">{{ ttm.cycleTimePromedio || 0 }}</p>
+      <p class="unidad">días</p>
+    </div>
+
+    <div class="ttm-card">
+      <h3>Features en Progreso</h3>
+      <p class="valor">{{ ttm.ttmPorFeature?.length || 0 }}</p>
+      <p class="unidad">features</p>
+    </div>
+
+    <div class="ttm-card">
+      <h3>Etapas Registradas</h3>
+      <p class="valor">{{ ttm.tiempoPorEtapa?.length || 0 }}</p>
+      <p class="unidad">etapas</p>
+    </div>
+  </div>
+
+  <div class="mensaje-carga" *ngIf="!cargando && !error && !ttm.leadTimePromedio">
+    <p>⏱ TTM sin datos. Comienza a crear actividades.</p>
+  </div>
+</div>

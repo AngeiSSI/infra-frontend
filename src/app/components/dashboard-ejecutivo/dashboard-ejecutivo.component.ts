@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { DashboardService } from '../../services/dashboard.service';
 import { CommonModule } from '@angular/common';
+import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard-ejecutivo',
@@ -12,21 +12,25 @@ import { CommonModule } from '@angular/common';
 export class DashboardEjecutivoComponent implements OnInit {
   dashboard: any = {};
   cargando = true;
+  error: string | null = null;
 
-  constructor(private dashboardService: DashboardService) { }
+  constructor(private dashboardService: DashboardService) {}
 
   ngOnInit() {
+    console.log('📊 Dashboard Ejecutivo iniciando...');
     this.cargarDashboard();
   }
 
   cargarDashboard() {
     this.dashboardService.getDashboardEjecutivo().subscribe({
       next: (data) => {
-        this.dashboard = data.kpis;
+        console.log('✅ Dashboard cargado:', data);
+        this.dashboard = data.kpis || data;
         this.cargando = false;
       },
       error: (err) => {
-        console.error('Error cargando dashboard:', err);
+        console.error('❌ Error cargando dashboard:', err);
+        this.error = 'Error cargando el dashboard';
         this.cargando = false;
       }
     });
