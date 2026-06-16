@@ -10,7 +10,7 @@
     <div class="topbar-right" *ngIf="usuario">
       <div class="user-info">
         <span>👤 {{ usuario.nombre }}</span>
-        <button (click)="authService.logout()">Salir</button>
+        <button (click)="authService.logout(); router.navigate(['/login'])">Salir</button>
       </div>
     </div>
   </div>
@@ -27,5 +27,5 @@
 </div>
 
 <footer *ngIf="isAuthenticated && !isLoginPage">
-  <p>&copy; 2026 Gestión de Infraestructuras - Todos los derechos reservados</p>
+  <p>&copy; 2026 Gestión de Infraestructuras</p>
 </footer>

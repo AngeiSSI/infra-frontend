@@ -18,24 +18,16 @@ export class AppComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   isLoginPage = false;
   usuario: any = null;
-  authService: AuthService; // ← AGREGA ESTA LÍNEA COMO PROPIEDAD PÚBLICA
 
   constructor(
-    authService: AuthService,
+    public authService: AuthService,
     private router: Router
-  ) {
-    this.authService = authService; // ← ASIGNA AQUÍ
-  }
+  ) {}
 
   ngOnInit(): void {
-    console.log('🔄 AppComponent iniciando...');
-    
     this.usuario = this.authService.getUsuario();
     this.isAuthenticated = !!this.usuario;
     this.checkIfLoginPage();
-
-    console.log('👤 Usuario:', this.usuario);
-    console.log('🔐 Autenticado:', this.isAuthenticated);
 
     this.router.events
       .pipe(
@@ -52,7 +44,6 @@ export class AppComponent implements OnInit, OnDestroy {
   private checkIfLoginPage(): void {
     const loginPages = ['/login', '/cambiar-password', '/recuperar-password'];
     this.isLoginPage = loginPages.some(page => this.router.url.includes(page));
-    console.log('📄 Es página de login:', this.isLoginPage);
   }
 
   ngOnDestroy(): void {

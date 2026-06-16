@@ -21,7 +21,7 @@ export class LoginComponent {
 
   login() {
     if (!this.email || !this.password) {
-      this.error = 'Email y contraseña son requeridos';
+      this.error = 'Email y contraseña requeridos';
       return;
     }
 
@@ -29,12 +29,12 @@ export class LoginComponent {
     this.error = '';
 
     this.authService.login(this.email, this.password).subscribe({
-      next: (response) => {
-        console.log('✅ Login exitoso:', response);
+      next: () => {
+        console.log('✅ Login exitoso');
         this.router.navigate(['/dashboard-ejecutivo']);
       },
-      error: (err) => {
-        console.error('❌ Error de login:', err);
+      error: (err: any) => {
+        console.error('❌ Error:', err);
         this.error = err.error?.error || 'Error en el login';
         this.cargando = false;
       }
