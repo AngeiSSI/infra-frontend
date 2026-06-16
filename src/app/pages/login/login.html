@@ -1,78 +1,46 @@
 <div class="login-container">
-  <!-- Lado Izquierdo -->
-  <div class="login-left">
-    <div class="login-brand">
-      <div class="login-logo-container">
-        <img src="/claro-logo.png" alt="Claro Logo" class="login-logo">
-      </div>
-      <h1 class="login-title">Infraestructura</h1>
-      <p class="login-subtitle">Gestión de Actividades</p>
+  <div class="login-card">
+    <div class="login-header">
+      <h1>🏢 INFRA</h1>
+      <p>Gestión de Infraestructuras</p>
     </div>
-  </div>
 
-  <!-- Lado Derecho -->
-  <div class="login-right">
-    <div class="login-form">
-      <h2>Acceso</h2>
-      <p class="login-form-subtitle">Ingresa con tus credenciales</p>
+    <form (ngSubmit)="login()" class="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="tu@email.com"
+          required
+        />
+      </div>
 
-      <div *ngIf="error" class="error-message">
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="••••••••"
+          required
+        />
+      </div>
+
+      <div *ngIf="error" class="alert alert-error">
         {{ error }}
       </div>
 
-      <div *ngIf="!showRecuperarPassword">
-        <div class="form-group">
-          <label>Email</label>
-          <input 
-            type="email" 
-            [(ngModel)]="email"
-            placeholder="tu@email.com"
-            (keypress)="onKeypress($event)">
-        </div>
+      <button type="submit" [disabled]="cargando" class="btn-login">
+        {{ cargando ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+      </button>
+    </form>
 
-        <div class="form-group">
-          <label>Contraseña</label>
-          <div class="password-container">
-            <input 
-              [type]="showPassword ? 'text' : 'password'" 
-              [(ngModel)]="password"
-              placeholder="••••••••"
-              (keypress)="onKeypress($event)">
-            <button class="password-toggle" (click)="togglePassword()">
-              {{ showPassword ? '👁️' : '👁️‍🗨️' }}
-            </button>
-          </div>
-        </div>
-
-        <div class="login-actions">
-          <button class="btn-login" (click)="ingresar()" [disabled]="cargando">
-            {{ cargando ? '⏳ Iniciando...' : 'Ingresar' }}
-          </button>
-          <button class="btn-secondary" (click)="toggleRecuperarPassword()">
-            ¿Olvidaste?
-          </button>
-        </div>
-      </div>
-
-      <div *ngIf="showRecuperarPassword" class="form-group">
-        <label>Email para recuperación</label>
-        <input 
-          type="email" 
-          placeholder="tu@email.com"
-          #emailRecuperar>
-        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-          <button class="btn-login" style="flex: 1;" (click)="recuperarPassword(emailRecuperar.value)" [disabled]="cargando">
-            {{ cargando ? '⏳ Enviando...' : 'Enviar' }}
-          </button>
-          <button class="btn-secondary" style="flex: 1;" (click)="toggleRecuperarPassword()">
-            Cancelar
-          </button>
-        </div>
-      </div>
-
-      <div class="login-footer" style="margin-top: 2rem;">
-        <p>¿Necesitas ayuda? Contacta al <a>administrador</a></p>
-      </div>
+    <div class="login-footer">
+      <p>Demo: usa email: admin@infra.com | pass: 123456</p>
     </div>
   </div>
 </div>
